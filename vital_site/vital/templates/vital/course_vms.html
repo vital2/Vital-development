@@ -1,0 +1,89 @@
+{% extends 'vital/base.html' %}
+{% load staticfiles %}
+{% block content_without_center %}
+    <script type="application/javascript">
+    function windowpop(url, name, width, height) {
+    var leftPosition, topPosition;
+    //Allow for borders.
+    leftPosition = (window.screen.width / 2) - ((width / 2) + 10);
+    //Allow for title and status bars.
+    topPosition = (window.screen.height / 2) - ((height / 2) + 50);
+    //Open the window.
+    window.open(url, name,
+            "status=no,height=" + height + ",width=" + width + ",resizable=yes,left=" + leftPosition
+            + ",top=" + topPosition + ",screenX=" + leftPosition + ",screenY=" + topPosition
+            + ",toolbar=no,menubar=no,scrollbars=no,location=no,directories=no");return false;
+}
+    </script>
+<style type="text/css">
+    #center{
+        width : 800px
+    }
+	.box {
+	    border:1px solid #ccc;
+	    margin:20px;
+	    height:120px;
+	    width:140px;
+		float:left;
+	}
+	.overlay {
+	    background:rgba(0, 0, 0, .5);
+	    text-align:center;
+	    opacity:0;
+	    width:100%;height:100%;
+	    -webkit-transition: all 0.3s ease-in-out;
+	    -moz-transition: all 0.3s ease-in-out;
+	    -o-transition: all 0.3s ease-in-out;
+	    -ms-transition: all 0.3s ease-in-out;
+	    transition: all 0.3s ease-in-out;
+	}
+	.box:hover {
+	    border:1px solid #555;
+	    border-radius:5px;
+	}
+	.box:hover .overlay {
+	    opacity:1;
+	}
+    </style>
+
+    {% if virtual_machines %}
+    <div id="center" align="center" style="width: 800px">
+        <div width="500px">
+            {% for vm in virtual_machines %}
+                <div class="box" width="25%" style='background:url({% static  vm.type.icon_location %}) no-repeat 50% 50%;background-size: contain;'
+                     title={{ vm.name }}>
+		            <div class="overlay" style="width:100%;height:100%">
+	                    <div style="height:33%;padding-top:7px">
+                            <a href='http://vital-dev2.poly.edu:13004/vnc_auto.html' onclick="return windowpop(this.href,'Terminal1', 545, 320)">
+                                <img src="{% static  'vital/power-red.png' %}" width="30px" height="30px" title="Start VM"/>
+                            </a>
+                        </div>
+                        <div style="float:left;width:33%;height:33%;" align="left">
+                            <a href=#2>
+                                <img src="{% static  'vital/save-state.png' %}" width="30px" height="30px" title="Save state"/>
+                            </a></div>
+                        <div style="float:left;width:33%;height:33%;" align="center">
+                            <a href="/vital/console/dummy" onclick="return windowpop(this.href, 'Terminal2', 545, 320)">
+                                <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console"/>
+                            </a>
+                        </div>
+                        <div style="float:left;width:33%;height:33%;" align="right">
+                            <a href=#3>
+                                <img src="{% static  'vital/backup-restore.png' %}" width="30px" height="30px" title="Restore state"/>
+                            </a>
+                        </div>
+                        <div style="height:33%;vertical-align:center">
+                            <a href=#4>
+                                <img src="{% static  'vital/reimage.png' %}" width="30px" height="30px" title="Reimage VM"/>
+                            </a>
+                        </div>
+		            </div>
+		            <div style="width:100%; margin-top:-5px; font-weight:bold" align="center">{{ vm.name }}</div>
+		        </div>
+            {% endfor %}
+        </div>
+     </div>
+    {% endif %}
+
+
+{% endblock content_without_center %}

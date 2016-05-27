@@ -1,0 +1,29 @@
+{% extends 'vital/base.html' %}
+
+{% block content %}
+<form action="{% url 'vital:login' %}" method='POST' style="width: 300px">
+    {% csrf_token %}
+    {% if error_message %}
+    <p class="error">
+            {{ error_message }}
+    </p>
+    {% endif %}
+    <table style="width: auto">
+        {% for field in form %}
+            <tr>
+            <td>{{ field.label_tag }}</td>
+            <td>{{ field }}</td>
+            </tr>
+        {% endfor %}
+    <tr><td colspan="3" align="right"><input type='submit' value='Login'/></td></tr>
+    </table>
+    <hr style="width: 80%"/>
+    <div style="width: 100%;font-size:small" align="center">
+        <a href="{% url 'vital:user_forgot_password' %}">Can't access your account?</a>
+    </div>
+    <br />
+    <div style="width: 100%;font-size:small" align="center">
+        New to Vital? <br/><a href="{% url 'vital:user_register' %}">Signup for a new account</a>
+    </div>
+</form>
+{% endblock content %}

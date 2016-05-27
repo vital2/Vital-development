@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0027)http://engineering.nyu.edu/ -->
+{% load staticfiles %}
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" class="js"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>Vital - Virtual Lab</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="theme-color" content="#57068c">
+<link rel="mask-icon" href="http://engineering.nyu.edu/sites/all/themes/polyframe/nyu_torch_tab.svg" color="#57068c">
+<link rel="stylesheet" type="text/css" href="{% static 'vital/fonts.css' %}">
+<link rel="shortcut icon" href="http://engineering.nyu.edu/sites/all/themes/polyframe/favicon.ico" type="image/x-icon">
+    <link type="text/css" rel="stylesheet" media="all" href="{% static 'vital/css_cd6d3dd120867819c204fb9822c0abf0.css' %}">
+<link type="text/css" rel="stylesheet" media="all" href="{% static 'vital/homepage.css' %}">
+    <!--[if lte IE 7]>
+    	<link type="text/css" rel="stylesheet" media="all" href="/sites/all/themes/polyframe/css/fix-ie.css" />    <![endif]--> <!--If Less Than or Equal (lte) to IE 6-->
+ <script type="text/javascript" src="{% static 'vital/jquery-1.12.0.min.js' %}">
+</script>
+  </head>
+  <body id="background" class="homepage wide-body">
+    {% include 'session_security/all.html' %}
+    <div id="hug">
+    <div id="header-wrapper">
+	<div id="header">
+	  <a href="/vital" title="NYU Tandon School of Engineering" id="logo">
+	    <img src="{% static 'vital/NYU_Tandon_logo.png' %}" alt="NYU Tandon School of Engineering" width="257" height="40">
+	  </a>
+	  <img src="{% static 'vital/poly_header.png' %}" id="poly-header" width="254px" height="12px">
+	  <div id="user-nav-container">
+          <ul id="user-nav">
+            {% if user.is_faculty %}
+                <li class="menu-335"><a href="/vital/courses/registered/">Registered Courses</a></li>
+                <li class="menu-335"><a href="/vital/courses/advising/">Advising Courses</a></li>
+            {% endif %}
+            {% if user.is_admin %}
+                <li class="menu-334"><a href="http://engineering.nyu.edu/alumni">Courses</a></li>
+                <li class="menu-334"><a href="http://engineering.nyu.edu/alumni">Users</a></li>
+            {% endif %}
+            {% if user.is_authenticated %}
+                {% if not user.is_admin and not user.is_faculty %}
+                <li class="menu-335"><a href="/vital/courses/registered/">Registered Courses</a></li>
+                {% endif %}
+                <li class="menu-334"><a href="/vital/users/reset-password">Reset Password</a></li>
+            {% endif %}
+        </ul>
+      </div>
+	</div> <!-- /#header --> 
+	</div>
+	
+	<div id="main-nav-container" style="padding-left: 20px;padding-top: 7px">
+		<div class="container-12 clearfix" style="font-size: 18px; color: white; font-weight: 500; font-family: inherit; font-variant: small-caps;">
+            <div style="float: left; width: 50%">Vital</div>
+            {% if request.user.first_name%}
+                <div style="float: left;font-size: 12px; color: white; text-align:right;width: 50%">Welcome, {{ request.user.first_name }} &nbsp;| &nbsp;
+                <a href="/vital/logout">Logout</a>&nbsp;</div>
+            {% endif %}
+		</div>
+	</div> 
+    
+      <div id="container" align="center">
+      <!--div id="inner"-->
+      {% block content_with_center %}
+      <div id="center" align="center" style="width: 600px">
+
+          {% block content %} {% endblock content %}
+
+      </div>
+      {% endblock content_with_center %}
+      {% block content_without_center %}
+      {% endblock content_without_center %}
+      <div class="clear"></div>
+      <!--/div--> <!-- /#inner -->
+      </div> <!-- /#container -->
+    <div id="footer" class="clearfix">
+    	<div id="footer-top"><div class="container-12 clearfix"><div id="engineering-is" class="col-6"><h4><a href="http://engineering.nyu.edu/engineeringis">Engineering <span class="is">is</span> <span class="tagname">NYU</span></a></h4></div><div class="container-12 clearfix">
+<address class="col-9"><strong>NYU School of Engineering</strong> 6 MetroTech Center, Brooklyn, NY 11201 </address><p class="col-3 copy">© NYU School of Engineering</p>    	</div>
+    </div> <!--#footer -->
+            </div>
+    </div>
+    </div>
+
+    
+</body></html>
