@@ -23,6 +23,13 @@ class XenAPI:
         """
         return VirtualMachine(vm_name).start()
 
+    def stop_vm(self, vm_name):
+        """
+        stops the specified vm
+        :param vm_name: name of the vm to be stopped
+        """
+        VirtualMachine(vm_name).shutdown()
+
     def list_all_vms(self):
         """
         lists all vms in the server (output of xl list)
@@ -62,7 +69,7 @@ class XenAPI:
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:
-            raise Exception('ERROR : cannot start the vm. \n Reason : %s' % err.rstrip())
+            raise Exception('ERROR : cannot list the vm. \n Reason : %s' % err.rstrip())
 
         output = out.split("\n")
         line = output[1]
@@ -84,7 +91,7 @@ class XenAPI:
 
 class VirtualMachine:
     """
-    References virtual machines which Xen services
+    References virtual machines which Xen maintains
     """
 
     def __init__(self, name):
@@ -132,8 +139,8 @@ class VirtualMachine:
 
 # XenAPI().start_vm("bt5-qemu73")
 print XenAPI().list_all_vms()
-print XenAPI().list_vm('bt5-qemu14')
-XenAPI().list_vm('bt5-qemu73')
+print pprint(XenAPI().list_vm('bt5-qemu14'))
+XenAPI().stop_vm('bt5-qemu73')
 vm = XenAPI().start_vm('bt5-qemu73')
 pprint(vars(vm))
-XenAPI().list_vm('bt5-qemu73')
+XenAPI().stop_vm('bt5-qemu73')
