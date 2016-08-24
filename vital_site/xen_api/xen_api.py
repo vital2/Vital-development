@@ -121,7 +121,7 @@ class VirtualMachine:
             newvm.vnc_port = out.rstrip()
             return newvm
 
-    def shutdown(self, vm_name):
+    def shutdown(self):
         """
         this forcefully shuts down the virtual machine
         :param vm_name name of the vm to be shutdown
