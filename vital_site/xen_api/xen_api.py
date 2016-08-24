@@ -124,10 +124,16 @@ class VirtualMachine:
         cmd = 'xl destroy '+vm_name
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
+        if not p.returncode == 0:
+            # silently ignore if vm is already destroyed
+            if 'invalid domain identifier' not in err.rstrip():
+                raise Exception('ERROR : cannot stop the vm '
+                                '\n Reason : %s' % err.rstrip())
 
 # XenAPI().start_vm("bt5-qemu73")
 print XenAPI().list_all_vms()
 print XenAPI().list_vm('bt5-qemu14')
+XenAPI().list_vm('bt5-qemu73')
 vm = XenAPI().start_vm('bt5-qemu73')
-print vm.name+"<>"+vm.vnc_port
 pprint(vars(vm))
+XenAPI().list_vm('bt5-qemu73')
