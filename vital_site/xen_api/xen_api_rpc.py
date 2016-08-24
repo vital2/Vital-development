@@ -1,6 +1,7 @@
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from security_util import expose, requires_user_privilege, requires_authentication_only, \
     requires_admin_privilege, is_exposed, is_authorized
+import xen_api.XenAPI as XenAPI
 
 
 class XenAPIExposer:
@@ -27,19 +28,12 @@ class XenAPIExposer:
         return func(*params)
 
     @expose
-    @requires_admin_privilege
-    def public(self, user, passwd):
-        return 'This is public'
-
-    @expose
-    def public2(self, user, passwd):
-        return 'This is public'
-
-    def private(self):
-        return 'This is private'
+    @requires_authentication_only
+    def start_vm(self, user, passwd, vm_name):
+        XenAPI().start(vm_name)
 
 
-server = SimpleXMLRPCServer(('localhost', 9000), logRequests=True)
+server = SimpleXMLRPCServer(('128.238.77.10', 8000), logRequests=True)
 server.register_instance(XenAPIExposer())
 
 try:

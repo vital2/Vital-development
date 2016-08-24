@@ -139,7 +139,7 @@ class VirtualMachine:
 
 # XenAPI().start_vm("bt5-qemu73")
 print XenAPI().list_all_vms()
-print pprint(XenAPI().list_vm('bt5-qemu14'))
+pprint(XenAPI().list_vm('bt5-qemu14'))
 XenAPI().stop_vm('bt5-qemu73')
 vm = XenAPI().start_vm('bt5-qemu73')
 pprint(vars(vm))
