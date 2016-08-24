@@ -22,6 +22,8 @@ class XenAPI:
         print out.rstrip()
         print '>' * 80
         print err.rstrip()
+        if not p.returncode == 0:
+            raise Exception('ERROR : cannot start the vm. \n Reason : %s' % err.rstrip())
 
     def check_if_port_is_used(self):
         pass
