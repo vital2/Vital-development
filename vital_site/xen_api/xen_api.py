@@ -110,7 +110,7 @@ class VirtualMachine:
             if not p.returncode == 0:
                 raise Exception('ERROR : cannot start the vm - error while getting vnc-port. '
                                 '\n Reason : %s' % err.rstrip())
-            vm.vnc_port = out.rstrip()
+            newvm.vnc_port = out.rstrip()
             return newvm
 
 # XenAPI().start_vm("bt5-qemu73")
