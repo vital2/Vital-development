@@ -24,7 +24,8 @@ class XenAPI:
             raise Exception('ERROR : cannot start the vm. \n Reason : %s' % err.rstrip())
 
         for line in out.split("\n"):
-            val = line.strip().split("\t")
+            line = "#".join(line.split())
+            val = line.strip().split("#")
             print val
 
         # print "Return code: ", p.returncode
