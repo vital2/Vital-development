@@ -1,6 +1,7 @@
 from subprocess import Popen, PIPE
 
 import ConfigParser
+from pprint import pprint
 
 
 config = ConfigParser.ConfigParser()
@@ -113,8 +114,20 @@ class VirtualMachine:
             newvm.vnc_port = out.rstrip()
             return newvm
 
+    def shutdown(self, vm_name):
+        """
+        this forcefully shuts down the virtual machine
+        :param vm_name name of the vm to be shutdown
+        """
+        # xl destroy is used to forcefully shut down the vm
+        # xl shutdown gracefully shuts down the vm but does not guarantee the shutdown
+        cmd = 'xl destroy '+vm_name
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        out, err = p.communicate()
+
 # XenAPI().start_vm("bt5-qemu73")
 print XenAPI().list_all_vms()
 print XenAPI().list_vm('bt5-qemu14')
 vm = XenAPI().start_vm('bt5-qemu73')
 print vm.name+"<>"+vm.vnc_port
+pprint(vars(vm))
