@@ -30,8 +30,8 @@ class XenAPI:
         for i in range(1, len(output)):
             # removing first line
             line = output[i]
-            line = "#".join(line.split())
-            val = line.strip().split("#")
+            line = " ".join(line.split())
+            val = line.strip().split(" ")
             vm = VirtualMachine(val[0])
             vm.id = val[1]
             vm.memory = val[2]
@@ -56,8 +56,8 @@ class XenAPI:
 
         output = out.split("\n")
         line = output[1]
-        line = "#".join(line.split())
-        val = line.strip().split("#")
+        line = " ".join(line.split())
+        val = line.strip().split(" ")
         vm = VirtualMachine(val[0])
         vm.id = val[1]
         vm.memory = val[2]
