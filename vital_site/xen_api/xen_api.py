@@ -8,12 +8,12 @@ class XenAPI:
 
     def start_vm(self, vm_name):
         # subprocess.call('xl create '+vm_name+".conf", shell=True)
-        cmd = "ls -l ~/"
+        cmd = 'xl create '+vm_name+'.conf'
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         print "Return code: ", p.returncode
         print out.rstrip()
-        #print err.rstrip()
+        print err.rstrip()
 
     def check_if_port_is_used(self):
         pass
@@ -21,4 +21,4 @@ class XenAPI:
     def server_stats(self):
         pass
 
-XenAPI().start_vm("bt5")
+XenAPI().start_vm("bt5-qemu73")
