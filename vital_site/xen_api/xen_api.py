@@ -128,7 +128,7 @@ class VirtualMachine:
         """
         # xl destroy is used to forcefully shut down the vm
         # xl shutdown gracefully shuts down the vm but does not guarantee the shutdown
-        cmd = 'xl destroy '+vm_name
+        cmd = 'xl destroy '+self.name
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:
