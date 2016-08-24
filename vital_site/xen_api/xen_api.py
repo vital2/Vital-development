@@ -104,7 +104,7 @@ class VirtualMachine:
             # even though value of vnc port is set in the config file, if the port is already in use
             # by the vnc server, it allocates a new vnc port without throwing an error. this additional
             # step makes sure that we get the updated vnc-port
-            cmd = 'xenstore-read /local/domain/'+vm.id+'/console/vnc-port'
+            cmd = 'xenstore-read /local/domain/'+newvm.id+'/console/vnc-port'
             p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
             out, err = p.communicate()
             if not p.returncode == 0:
