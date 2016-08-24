@@ -27,7 +27,7 @@ class XenAPI:
 
         vms = []
         output = out.split("\n")
-        for i in range(1, len(output)):
+        for i in range(1, len(output.strip())):
             # removing first line
             line = output[i]
             print line
