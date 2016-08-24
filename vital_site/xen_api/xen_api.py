@@ -18,7 +18,9 @@ class XenAPI:
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         print "Return code: ", p.returncode
+        print '>'*80
         print out.rstrip()
+        print '>' * 80
         print err.rstrip()
 
     def check_if_port_is_used(self):
