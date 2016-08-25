@@ -30,7 +30,7 @@ class XenAPIExposer:
     @expose
     @requires_authentication_only
     def start_vm(self, user, passwd, vm_name):
-        XenAPI().start(vm_name)
+        XenAPI().start_vm(vm_name)
 
     @expose
     @requires_authentication_only
