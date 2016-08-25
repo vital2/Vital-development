@@ -5,7 +5,7 @@ import ConfigParser
 
 
 config = ConfigParser.ConfigParser()
-config.read("/Users/richie/vital-work/config.ini")
+config.read("/home/vlab/config.ini")
 
 
 def expose(func):
