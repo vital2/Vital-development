@@ -96,6 +96,15 @@ class XenAPI:
         """
         VirtualMachine(vm_name).register(student_id,course_id)
 
+    def unregister_vm(self, vm_name):
+        """
+        registers a new vm
+        :param vm_name:
+        :param student_id:
+        :param course_id:
+        """
+        VirtualMachine(vm_name).unregister()
+
 
 class VirtualMachine:
     """
@@ -169,4 +178,31 @@ class VirtualMachine:
         if not p.returncode == 0:
             raise Exception('ERROR : cannot register the vm - conf '
                             '\n Reason : %s' % err.rstrip())
+
         # TODO update conf file with required values
+        f = open(config.get("VMConfig", "VM_CONF_LOCATION") + '/' + student_id + '_' + course_id + '_' +
+                 self.name + '.conf', 'r')
+        filedata = f.read()
+        f.close()
+
+        newdata = filedata.replace('<VM_NAME>', student_id + '_' + course_id + '_' + self.name)
+
+        f = open(config.get("VMConfig", "VM_CONF_LOCATION") + '/' + student_id + '_' + course_id + '_' +
+                 self.name + '.conf', 'w')
+        f.write(newdata)
+        f.close()
+
+    def unregister(self):
+        cmd = 'rm ' + config.get("VMConfig", "VM_DSK_LOCATION") + '/' + self.name + '.qcow'
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        out, err = p.communicate()
+        if not p.returncode == 0:
+            raise Exception('ERROR : cannot unregister the vm - qcow '
+                            '\n Reason : %s' % err.rstrip())
+
+        cmd = 'rm ' + config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf'
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        out, err = p.communicate()
+        if not p.returncode == 0:
+            raise Exception('ERROR : cannot unregister the vm - conf '
+                            '\n Reason : %s' % err.rstrip())

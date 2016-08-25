@@ -54,6 +54,11 @@ class XenAPIExposer:
     def register_vm(self, user, passwd, vm_name, student_id, course_id):
         XenAPI().register_vm(vm_name, student_id, course_id)
 
+    @expose
+    @requires_authentication_only
+    def unregister_vm(self, user, passwd, vm_name, student_id, course_id):
+        vm_name = student_id + '_' + course_id + '_' + vm_name
+        XenAPI().unregister_vm(vm_name)
 
 server = SimpleXMLRPCServer(('128.238.77.10', 8000), logRequests=True, allow_none=True)
 server.register_instance(XenAPIExposer())
