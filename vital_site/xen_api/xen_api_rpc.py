@@ -48,7 +48,7 @@ class XenAPIExposer:
         return XenAPI().list_vm(vm_name)
 
 
-server = SimpleXMLRPCServer(('128.238.77.10', 8000), logRequests=True)
+server = SimpleXMLRPCServer(('128.238.77.10', 8000), logRequests=True, allow_none=True)
 server.register_instance(XenAPIExposer())
 
 try:
