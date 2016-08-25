@@ -40,12 +40,12 @@ class XenAPIExposer:
     @expose
     @requires_authentication_only
     def list_all_vms(self, user, passwd):
-        XenAPI().list_all_vms()
+        return XenAPI().list_all_vms()
 
     @expose
     @requires_authentication_only
     def list_vm(self, user, passwd, vm_name):
-        XenAPI().list_vm(vm_name)
+        return XenAPI().list_vm(vm_name)
 
 
 server = SimpleXMLRPCServer(('128.238.77.10', 8000), logRequests=True)
