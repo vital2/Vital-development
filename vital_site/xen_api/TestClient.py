@@ -17,7 +17,7 @@ proxy.xenapi.stop_vm('richiedjohnson@yahoo.co.in', 'Test123!', 'GY12345_bt5', '3
 
 print "Starting VM..."
 vm = proxy.xenapi.start_vm('richiedjohnson@yahoo.co.in', 'Test123!', 'GY12345_bt5', '3', '1')
-pprint(vars(vm))
+pprint(vm)
 
 print "Listing all VMs..."
 print proxy.xenapi.list_all_vms('richiedjohnson@yahoo.co.in', 'Test123!')
