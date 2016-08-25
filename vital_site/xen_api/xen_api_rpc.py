@@ -29,12 +29,14 @@ class XenAPIExposer:
 
     @expose
     @requires_authentication_only
-    def start_vm(self, user, passwd, vm_name):
+    def start_vm(self, user, passwd, vm_name, student_id, course_id):
+        vm_name = student_id + '_' + course_id + '_' + vm_name
         return XenAPI().start_vm(vm_name)
 
     @expose
     @requires_authentication_only
-    def stop_vm(self, user, passwd, vm_name):
+    def stop_vm(self, user, passwd, vm_name, student_id, course_id):
+        vm_name = student_id + '_' + course_id + '_' + vm_name
         XenAPI().stop_vm(vm_name)
 
     @expose

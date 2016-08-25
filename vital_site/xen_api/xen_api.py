@@ -94,7 +94,7 @@ class XenAPI:
         :param student_id:
         :param course_id:
         """
-        VirtualMachine(vm_name).register(student_id, course_id)
+        VirtualMachine(vm_name).register(student_id,course_id)
 
 
 class VirtualMachine:
