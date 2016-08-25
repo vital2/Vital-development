@@ -1,6 +1,6 @@
 import xmlrpclib
 
-proxy = xmlrpclib.ServerProxy('http://128.238.77.10:9000')
+proxy = xmlrpclib.ServerProxy('http://128.238.77.10:8000')
 print 'public():', proxy.xenapi.public('richiedjohnson@yahoo.co.in', 'Test123!')
 
 try:
