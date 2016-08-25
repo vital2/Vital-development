@@ -47,6 +47,11 @@ class XenAPIExposer:
     def list_vm(self, user, passwd, vm_name):
         return XenAPI().list_vm(vm_name)
 
+    @expose
+    @requires_authentication_only
+    def register_vm(self, user, passwd, vm_name, student_id, course_id):
+        XenAPI().register_vm(vm_name, student_id, course_id)
+
 
 server = SimpleXMLRPCServer(('128.238.77.10', 8000), logRequests=True, allow_none=True)
 server.register_instance(XenAPIExposer())

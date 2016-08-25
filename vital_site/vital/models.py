@@ -71,7 +71,7 @@ class VLAB_User(AbstractBaseUser, PermissionsMixin):
 
 class Course(models.Model):
     name = models.CharField(max_length=200)
-    course_number = models.CharField(max_length=200)
+    course_number = models.CharField(max_length=200, unique=True)
     registration_code = models.CharField(max_length=10, unique=True)
     capacity = models.IntegerField(default=0)
     start_date = models.DateTimeField(default=datetime.now, blank=True)
@@ -98,7 +98,8 @@ class Virtual_Machines(models.Model):
     course = models.ForeignKey(Course)
     name = models.CharField(max_length=200)
     type = models.ForeignKey(Virtual_Machine_Type, null=True)
-    base_image = models.ForeignKey(Base_Image, null=True)
+    clean_img = models.CharField(max_length=200, unique=True)
+    clean_conf = models.CharField(max_length=200, unique=True)
 
 
 class Network_Configuration(models.Model):

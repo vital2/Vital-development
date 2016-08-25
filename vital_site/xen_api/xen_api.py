@@ -87,6 +87,15 @@ class XenAPI:
     def server_stats(self):
         pass
 
+    def register_vm(self, vm_name, student_id, course_id):
+        """
+        registers a new vm
+        :param vm_name:
+        :param student_id:
+        :param course_id:
+        """
+        VirtualMachine(vm_name).register(student_id, course_id)
+
 
 class VirtualMachine:
     """
@@ -136,10 +145,28 @@ class VirtualMachine:
                 raise Exception('ERROR : cannot stop the vm '
                                 '\n Reason : %s' % err.rstrip())
 
+    def register(self, student_id, course_id):
+        """
+        registers a new vm for the student - creates qcow and required conf files
+        :param student_id: id of the student
+        :param course_id: id of the course
+        """
 
-# print XenAPI().list_all_vms()
-# pprint(XenAPI().list_vm('bt5-qemu14'))
-# XenAPI().stop_vm('bt5-qemu73')
-# vm = XenAPI().start_vm('bt5-qemu73')
-# pprint(vars(vm))
-# XenAPI().stop_vm('bt5-qemu73')
+        cmd = 'cp ' + config.get("VMConfig", "VM_DSK_LOCATION") + '/clean/' + self.name + '.qcow ' +\
+              config.get("VMConfig", "VM_DSK_LOCATION") + '/' + student_id + '_' + course_id + '_' +\
+              self.name + '.qcow'
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        out, err = p.communicate()
+        if not p.returncode == 0:
+            raise Exception('ERROR : cannot register the vm - qcow '
+                            '\n Reason : %s' % err.rstrip())
+
+        cmd = 'cp ' + config.get("VMConfig", "VM_CONF_LOCATION") + '/clean/' + self.name + '.conf ' + \
+              config.get("VMConfig", "VM_CONF_LOCATION") + '/' + student_id + '_' + course_id + '_' + \
+              self.name + '.conf'
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        out, err = p.communicate()
+        if not p.returncode == 0:
+            raise Exception('ERROR : cannot register the vm - conf '
+                            '\n Reason : %s' % err.rstrip())
+        # TODO update conf file with required values
