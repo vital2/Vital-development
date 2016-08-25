@@ -1,7 +1,7 @@
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from security_util import expose, requires_user_privilege, requires_authentication_only, \
     requires_admin_privilege, is_exposed, is_authorized
-import xen_api.XenAPI as XenAPI
+from xen_api import XenAPI
 
 
 class XenAPIExposer:
@@ -31,6 +31,21 @@ class XenAPIExposer:
     @requires_authentication_only
     def start_vm(self, user, passwd, vm_name):
         XenAPI().start(vm_name)
+
+    @expose
+    @requires_authentication_only
+    def stop_vm(self, user, passwd, vm_name):
+        XenAPI().stop_vm(vm_name)
+
+    @expose
+    @requires_authentication_only
+    def list_all_vms(self, user, passwd):
+        XenAPI().list_all_vms()
+
+    @expose
+    @requires_authentication_only
+    def list_vm(self, user, passwd, vm_name):
+        XenAPI().list_vm(vm_name)
 
 
 server = SimpleXMLRPCServer(('128.238.77.10', 8000), logRequests=True)

@@ -1,17 +1,22 @@
 import xmlrpclib
+from pprint import pprint
 
 proxy = xmlrpclib.ServerProxy('http://128.238.77.10:8000')
-print 'public():', proxy.xenapi.public('richiedjohnson@yahoo.co.in', 'Test123!')
 
-try:
-    print 'public2():', proxy.xenapi.public2('richie', 'pass')
-except Exception, err:
-    print 'ERROR:', err
-try:
-    print 'private():', proxy.xenapi.private()
-except Exception, err:
-    print 'ERROR:', err
-try:
-    print 'public() without prefix:', proxy.public()
-except Exception, err:
-    print 'ERROR:', err
+# listing all vms
+print "Listing all VMs..."
+pprint(proxy.xenapi.list_all_vms('richiedjohnson@yahoo.co.in', 'Test123!'))
+
+# listing specific vm
+print "Listing specific VM..."
+pprint(proxy.xenapi.list_vm('bt5-qemu14'))
+
+print "Stopping vm if exists..."
+proxy.xenapi.stop_vm('bt5-qemu73')
+
+print "Starting VM..."
+vm = proxy.xenapi.start_vm('bt5-qemu73')
+pprint(vars(vm))
+
+print "Stopping created VM..."
+proxy.xenapi.stop_vm('bt5-qemu73')

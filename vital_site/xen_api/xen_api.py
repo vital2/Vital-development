@@ -1,7 +1,6 @@
 from subprocess import Popen, PIPE
 
 import ConfigParser
-from pprint import pprint
 
 
 config = ConfigParser.ConfigParser()
@@ -137,10 +136,10 @@ class VirtualMachine:
                 raise Exception('ERROR : cannot stop the vm '
                                 '\n Reason : %s' % err.rstrip())
 
-# XenAPI().start_vm("bt5-qemu73")
-print XenAPI().list_all_vms()
-pprint(XenAPI().list_vm('bt5-qemu14'))
-XenAPI().stop_vm('bt5-qemu73')
-vm = XenAPI().start_vm('bt5-qemu73')
-pprint(vars(vm))
-XenAPI().stop_vm('bt5-qemu73')
+
+# print XenAPI().list_all_vms()
+# pprint(XenAPI().list_vm('bt5-qemu14'))
+# XenAPI().stop_vm('bt5-qemu73')
+# vm = XenAPI().start_vm('bt5-qemu73')
+# pprint(vars(vm))
+# XenAPI().stop_vm('bt5-qemu73')
