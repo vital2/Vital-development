@@ -87,21 +87,18 @@ class XenAPI:
     def server_stats(self):
         pass
 
-    def register_vm(self, vm_name, student_id, course_id):
+    def register_vm(self, vm_name, base_vm):
         """
         registers a new vm
-        :param vm_name:
-        :param student_id:
-        :param course_id:
+        :param vm_name name of the new VM
+        :param base_vm name of base vm qcow and conf
         """
-        VirtualMachine(vm_name).register(student_id,course_id)
+        VirtualMachine(vm_name).register(base_vm)
 
     def unregister_vm(self, vm_name):
         """
         registers a new vm
         :param vm_name:
-        :param student_id:
-        :param course_id:
         """
         VirtualMachine(vm_name).unregister()
 
@@ -154,25 +151,21 @@ class VirtualMachine:
                 raise Exception('ERROR : cannot stop the vm '
                                 '\n Reason : %s' % err.rstrip())
 
-    def register(self, student_id, course_id):
+    def register(self, base_vm):
         """
         registers a new vm for the student - creates qcow and required conf files
-        :param student_id: id of the student
-        :param course_id: id of the course
+        :param base_vm: name of the base vm which is replicated
         """
-
-        cmd = 'cp ' + config.get("VMConfig", "VM_DSK_LOCATION") + '/clean/' + self.name + '.qcow ' +\
-              config.get("VMConfig", "VM_DSK_LOCATION") + '/' + student_id + '_' + course_id + '_' +\
-              self.name + '.qcow'
+        cmd = 'cp ' + config.get("VMConfig", "VM_DSK_LOCATION") + '/clean/' + base_vm + '.qcow ' +\
+              config.get("VMConfig", "VM_DSK_LOCATION") + '/' + self.name + '.qcow'
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:
             raise Exception('ERROR : cannot register the vm - qcow '
                             '\n Reason : %s' % err.rstrip())
 
-        cmd = 'cp ' + config.get("VMConfig", "VM_CONF_LOCATION") + '/clean/' + self.name + '.conf ' + \
-              config.get("VMConfig", "VM_CONF_LOCATION") + '/' + student_id + '_' + course_id + '_' + \
-              self.name + '.conf'
+        cmd = 'cp ' + config.get("VMConfig", "VM_CONF_LOCATION") + '/clean/' + base_vm + '.conf ' + \
+              config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf'
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:
@@ -180,19 +173,20 @@ class VirtualMachine:
                             '\n Reason : %s' % err.rstrip())
 
         # TODO update conf file with required values
-        f = open(config.get("VMConfig", "VM_CONF_LOCATION") + '/' + student_id + '_' + course_id + '_' +
-                 self.name + '.conf', 'r')
-        filedata = f.read()
+        f = open(config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf', 'r')
+        file_data = f.read()
         f.close()
 
-        newdata = filedata.replace('<VM_NAME>', student_id + '_' + course_id + '_' + self.name)
+        new_data = file_data.replace('<VM_NAME>', self.name)
 
-        f = open(config.get("VMConfig", "VM_CONF_LOCATION") + '/' + student_id + '_' + course_id + '_' +
-                 self.name + '.conf', 'w')
-        f.write(newdata)
+        f = open(config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf', 'w')
+        f.write(new_data)
         f.close()
 
     def unregister(self):
+        """
+        un-registers vm for the student - removes qcow and required conf files
+        """
         cmd = 'rm ' + config.get("VMConfig", "VM_DSK_LOCATION") + '/' + self.name + '.qcow'
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
