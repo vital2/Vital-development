@@ -44,6 +44,10 @@ def dummy_console(request):
     return render(request, 'vital/dummy.html')
 
 
+def terminal(request):
+    return render(request, 'vital/terminal.html')
+
+
 @login_required(login_url='/vital/login/')
 def register_for_course(request):
     logger.debug("in register for course")
