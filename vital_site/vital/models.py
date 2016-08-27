@@ -90,7 +90,7 @@ class Virtual_Machine_Type(models.Model):
 class Base_Image(models.Model):
     name = models.CharField(max_length=200)
     backing_file = models.CharField(max_length=500)
-    reimage_file = models.CharField(max_length=500,null=True)
+    reimage_file = models.CharField(max_length=500, null=True)
     memory = models.IntegerField(default=0)
 
 
@@ -98,8 +98,8 @@ class Virtual_Machines(models.Model):
     course = models.ForeignKey(Course)
     name = models.CharField(max_length=200)
     type = models.ForeignKey(Virtual_Machine_Type, null=True)
-    clean_img = models.CharField(max_length=200, unique=True)
-    clean_conf = models.CharField(max_length=200, unique=True)
+    clean_img = models.CharField(max_length=200)
+    clean_conf = models.CharField(max_length=200)
 
 
 class Network_Configuration(models.Model):
