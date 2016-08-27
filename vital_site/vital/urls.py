@@ -17,5 +17,6 @@ urlpatterns = [
     url(r'^logout/$', views.logout, name='logout'),
     url(r'^users/reset-password', views.reset_password, name='user_reset_password'),
     url(r'^users/forgot-password', views.forgot_password, name='user_forgot_password'),
+    url(r'^terminal/$', views.terminal, name='terminal'),
     url(r'^console/dummy', views.dummy_console, name='dummy_console'),
 ]
