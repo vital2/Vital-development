@@ -58,7 +58,9 @@ def is_authorized(func, user, passwd):
 
         row = rows[0]
         # validates username and password (uses Django utils to verify password)
-        if not PBKDF2PasswordHasher().verify(passwd, row[0]):
+        # if not PBKDF2PasswordHasher().verify(passwd, row[0]):
+        #    raise Exception('access to method "%s" with credentials provided is restricted' % func)
+        if not passwd == row[0]:
             raise Exception('access to method "%s" with credentials provided is restricted' % func)
 
         if getattr(func, 'admin_privilege_required', False):
