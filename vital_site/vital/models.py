@@ -99,7 +99,7 @@ class Base_Image(models.Model):
     memory = models.IntegerField(default=0)
 
 
-class Virtual_Machines(models.Model):
+class Virtual_Machine(models.Model):
     course = models.ForeignKey(Course)
     name = models.CharField(max_length=200)
     type = models.ForeignKey(Virtual_Machine_Type, null=True)
@@ -126,7 +126,7 @@ class Faculty(models.Model):
     type = models.CharField(max_length=2, choices=TYPE_CHOICES, default=PROFESSOR)
 
 
-class Registered_Courses(models.Model):
+class Registered_Course(models.Model):
     user_id = models.IntegerField(default=0)
     course = models.ForeignKey(Course)
     registered_date = models.DateTimeField(default=datetime.now, blank=True)
