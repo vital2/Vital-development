@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
-from ..models import Faculty, Course, Virtual_Machines, Registered_Courses
+from ..models import Faculty, Course, Virtual_Machine, Registered_Course
 import logging
 
 logger = logging.getLogger(__name__)
@@ -35,8 +35,8 @@ def course_detail(request, course_id):
                 professors = professors + ',' + ("%s %s" % (faculty.user.first_name, faculty.user.last_name))
             else:
                 teaching_assistants = teaching_assistants + ', ' + ("%s %s" % (faculty.user.first_name, faculty.user.last_name))
-        virtual_machines = Virtual_Machines.objects.filter(course_id=course_id)
-        students_registered = len(Registered_Courses.objects.filter(course_id=course_id))
+        virtual_machines = Virtual_Machine.objects.filter(course_id=course_id)
+        students_registered = len(Registered_Course.objects.filter(course_id=course_id))
     except Course.DoesNotExist:
         logger.error("Course being searched for cannot be found - course id:%d, user id:%d" % (course_id,
                                                                                                request.user.id))

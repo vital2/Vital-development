@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
-from ..models import Course, Registered_Courses, Virtual_Machines
+from ..models import Course, Registered_Course, Virtual_Machine
 from ..forms import Course_Registration_Form
 from ..utils import audit
 import logging
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 def registered_courses(request):
     logger.debug("In registered courses")
     #  reg_courses = Registered_Courses.objects.filter(user_id=request.user.id, course__status='ACTIVE')
-    reg_courses = Registered_Courses.objects.filter(user_id=request.user.id)
+    reg_courses = Registered_Course.objects.filter(user_id=request.user.id)
     message = ''
     if len(reg_courses) == 0:
         message = 'You have no registered courses'
@@ -25,7 +25,7 @@ def registered_courses(request):
 @login_required(login_url='/vital/login/')
 def course_vms(request, course_id):
     logger.debug("in course vms")
-    virtual_machines = Virtual_Machines.objects.filter(course_id=course_id)
+    virtual_machines = Virtual_Machine.objects.filter(course_id=course_id)
     return render(request, 'vital/course_vms.html', {'virtual_machines': virtual_machines})
 
 
@@ -33,7 +33,7 @@ def course_vms(request, course_id):
 def unregister_from_course(request, course_id):
     logger.debug("in course unregister")
     user = request.user
-    reg_courses = Registered_Courses.objects.filter(course_id=course_id, user_id=user.id)
+    reg_courses = Registered_Course.objects.filter(course_id=course_id, user_id=user.id)
     course_to_remove = reg_courses[0]
     audit(request, course_to_remove, 'User '+str(user.id)+' unregistered from course -'+str(course_id))
     course_to_remove.delete()
@@ -60,11 +60,11 @@ def register_for_course(request):
             try:
                 course = Course.objects.get(registration_code=form.cleaned_data['course_registration_code'])
                 user = request.user
-                if len(Registered_Courses.objects.filter(course_id=course.id, user_id=user.id)) > 0:
+                if len(Registered_Course.objects.filter(course_id=course.id, user_id=user.id)) > 0:
                         error_message = 'You have already registered for this course'
                 else:
-                    if course.capacity > len(Registered_Courses.objects.filter(course_id=course.id)):
-                        registered_course = Registered_Courses(course_id=course.id, user_id=user.id)
+                    if course.capacity > len(Registered_Course.objects.filter(course_id=course.id)):
+                        registered_course = Registered_Course(course_id=course.id, user_id=user.id)
                         registered_course.save()
                         audit(request, registered_course, 'User '+str(user.id)+' registered for new course -'+str(course.id))
                         # PLACE TO DO CREATING VMS FOR USER FOR THE COURSE

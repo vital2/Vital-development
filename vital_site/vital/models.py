@@ -109,7 +109,7 @@ class Virtual_Machine(models.Model):
 
 class Network_Configuration(models.Model):
     name = models.CharField(max_length=200)
-    virtual_machine = models.ForeignKey(Virtual_Machines)
+    virtual_machine = models.ForeignKey(Virtual_Machine)
 
 
 class Faculty(models.Model):
