@@ -69,6 +69,11 @@ class VLAB_User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
+class Allowed_Organization(models.Model):
+    name = models.CharField(max_length=200, unique=True)
+    email_suffix = models.CharField(max_length=200)
+
+
 class Course(models.Model):
     name = models.CharField(max_length=200)
     course_number = models.CharField(max_length=200, unique=True)

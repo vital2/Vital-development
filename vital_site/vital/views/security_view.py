@@ -9,8 +9,10 @@ from django.contrib.auth.decorators import login_required
 from ..forms import Registration_Form, User_Activation_Form, Authentication_Form, Reset_Password_Form, \
     Forgot_Password_Form
 from ..models import VLAB_User
+from ..models import Allowed_Organization
 
 import logging
+import re
 from random import randint
 
 
@@ -30,6 +32,12 @@ def register(request):
                 user = VLAB_User.objects.get(email=user.email)
                 error_message = 'User is already registered.'
             except VLAB_User.DoesNotExist:
+                suffix = re.search("@[\w.]+", user.email)
+                try:
+                    allowed_org = Allowed_Organization.objects.get(email_suffix=suffix)
+                except Allowed_Organization.DoesNotExist:
+                    error_message = 'User organization not registered with Vital!'
+                    return render(request, 'vital/user_registration.html', {'form': form, 'error_message':error_message})
                 user.set_password(user.password)  # hashes the password
                 activation_code = randint(100000, 999999)
                 user.activation_code = activation_code
