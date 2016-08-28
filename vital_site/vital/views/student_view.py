@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
 from ..models import Course, Registered_Course, Virtual_Machine
 from ..forms import Course_Registration_Form
-from ..utils import audit
+from ..utils import audit, XenClient
 import logging
 
 logger = logging.getLogger(__name__)
@@ -26,6 +26,7 @@ def registered_courses(request):
 def course_vms(request, course_id):
     logger.debug("in course vms")
     virtual_machines = Virtual_Machine.objects.filter(course_id=course_id)
+    XenClient().list_student_vms(request.user)
     return render(request, 'vital/course_vms.html', {'virtual_machines': virtual_machines})
 
 
