@@ -71,7 +71,7 @@ def register_for_course(request):
                         # PLACE TO DO CREATING VMS FOR USER FOR THE COURSE
                         return redirect('/vital/courses/registered/')
                     else:
-                        error_message = 'The course has reached its maximum student capacity.'
+                        error_message = 'The course is either inactive or has reached its maximum student capacity.'
             except Course.DoesNotExist:
                 error_message = 'Invalid registration code. Check again.'
     else:
