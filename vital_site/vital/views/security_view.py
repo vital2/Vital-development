@@ -33,7 +33,7 @@ def register(request):
                 error_message = 'User is already registered.'
             except VLAB_User.DoesNotExist:
                 suffix = re.search("@[\w.]+", user.email)
-                logger.debug( "$$$$$$$$$$$$$$$$$$$$"+suffix)
+                logger.debug( "$$$$$$$$$$$$$$$$$$$$"+suffix.group())
                 try:
                     allowed_org = Allowed_Organization.objects.get(email_suffix=suffix.group())
                 except Allowed_Organization.DoesNotExist:
