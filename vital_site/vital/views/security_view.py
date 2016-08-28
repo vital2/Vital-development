@@ -35,7 +35,7 @@ def register(request):
                 suffix = re.search("@[\w.]+", user.email)
                 logger.debug( "$$$$$$$$$$$$$$$$$$$$"+suffix)
                 try:
-                    allowed_org = Allowed_Organization.objects.get(email_suffix=suffix)
+                    allowed_org = Allowed_Organization.objects.get(email_suffix=suffix.group())
                 except Allowed_Organization.DoesNotExist:
                     error_message = 'User organization not registered with Vital!'
                     return render(request, 'vital/user_registration.html', {'form': form, 'error_message':error_message})
