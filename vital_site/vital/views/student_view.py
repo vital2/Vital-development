@@ -27,7 +27,7 @@ def course_vms(request, course_id):
     logger.debug("in course vms")
     virtual_machines = Virtual_Machine.objects.filter(course_id=course_id)
     vms = XenClient().list_student_vms(request.user, course_id)
-    logger.debug('<><><><><><>'+vms)
+    logger.debug('<><><><><><>'+vms[0]['name'])
     return render(request, 'vital/course_vms.html', {'virtual_machines': virtual_machines})
 
 
