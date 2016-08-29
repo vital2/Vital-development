@@ -31,12 +31,12 @@ class XenClient:
 
     def register_student_vms(self, user, course):
         xen = XenServer('http://128.238.77.10:8000')
-        for vm in course.virtual_machine_set:
+        for vm in course.virtual_machine_set.all():
             xen.register_vm(user, str(user.id)+'_'+str(course.id)+'_'+str(vm.id), str(course.id)+'_'+str(vm.id))
 
     def unregister_student_vms(self, user, course):
         xen = XenServer('http://128.238.77.10:8000')
-        for vm in course.virtual_machine_set:
+        for vm in course.virtual_machine_set.all():
             xen.stop_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
             xen.unregister_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
 
