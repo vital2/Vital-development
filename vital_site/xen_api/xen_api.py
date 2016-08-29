@@ -191,12 +191,14 @@ class VirtualMachine:
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:
-            raise Exception('ERROR : cannot unregister the vm - qcow '
-                            '\n Reason : %s' % err.rstrip())
+            if 'No such file or directory' not in err.rstrip():
+                raise Exception('ERROR : cannot unregister the vm - qcow '
+                                '\n Reason : %s' % err.rstrip())
 
         cmd = 'rm ' + config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf'
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:
-            raise Exception('ERROR : cannot unregister the vm - conf '
-                            '\n Reason : %s' % err.rstrip())
+            if 'No such file or directory' not in err.rstrip():
+                raise Exception('ERROR : cannot unregister the vm - conf '
+                                '\n Reason : %s' % err.rstrip())
