@@ -26,8 +26,12 @@ def registered_courses(request):
 def course_vms(request, course_id):
     logger.debug("in course vms")
     virtual_machines = Virtual_Machine.objects.filter(course_id=course_id)
-    user_vm_configs = virtual_machines.user_VM_Config_set.filter(user_id=request.user.id)
-    logger.debug(user_vm_configs)
+    for vm in virtual_machines:
+        user_vm_configs = vm.user_vm_config_set.filter(user_id=request.user.id)
+        if user_vm_configs is not None or len(user_vm_configs) == 0:
+            vm.state = 'R'
+        else:
+            vm.state = 'S'
     # vms = XenClient().list_student_vms(request.user, course_id)
     # for virtual_machine in virtual_machines:
     #     _vm = next((vm for vm in vms if vm['name'].endswith(str(virtual_machine.id))), None)
