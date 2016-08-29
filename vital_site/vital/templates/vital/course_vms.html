@@ -54,7 +54,7 @@
                      title={{ vm.name }}>
 		            <div class="overlay" style="width:100%;height:100%">
 	                    <div style="height:33%;padding-top:7px">
-                            <a href='http://vital-dev2.poly.edu:13004/vnc_auto.html' onclick="return windowpop(this.href,'Terminal1', 545, 320)">
+                            <a href='http://vital-dev2.poly.edu:{{ vm.terminal_port }}/vnc_auto.html' onclick="return windowpop(this.href,'Terminal1', 625, 380)">
                                 <img src="{% static  'vital/power-red.png' %}" width="30px" height="30px" title="Start VM"/>
                             </a>
                         </div>
@@ -63,7 +63,7 @@
                                 <img src="{% static  'vital/save-state.png' %}" width="30px" height="30px" title="Save state"/>
                             </a></div>
                         <div style="float:left;width:33%;height:33%;" align="center">
-                            <a href="/vital/terminal" onclick="return windowpop(this.href, 'Terminal2', 545, 320)">
+                            <a href="/vital/terminal/{{ vm.id }}" onclick="return windowpop(this.href, 'Terminal2', 625, 380)">
                                 <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console"/>
                             </a>
                         </div>

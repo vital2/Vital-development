@@ -32,15 +32,6 @@ def course_vms(request, course_id):
             vm.state = 'R'
         else:
             vm.state = 'S'
-    # vms = XenClient().list_student_vms(request.user, course_id)
-    # for virtual_machine in virtual_machines:
-    #     _vm = next((vm for vm in vms if vm['name'].endswith(str(virtual_machine.id))), None)
-    #     if _vm is not None:
-    #         virtual_machine.state = 'R'
-    #         _vm_details = XenClient().list_vm(_vm['name'])
-    #         # - start nohup
-    #     else:
-    #         virtual_machine.state = 'S'
     return render(request, 'vital/course_vms.html', {'virtual_machines': virtual_machines})
 
 
@@ -59,8 +50,19 @@ def dummy_console(request):
     return render(request, 'vital/dummy.html')
 
 
-def terminal(request):
-    return render(request, 'vital/terminal.html')
+@login_required(login_url='/vital/login/')
+def terminal(request, vm_id):
+    logger.debug("in terminal request")
+    try:
+        virtual_machine = Virtual_Machine.objects.get(pk=vm_id)
+        user_vm_configs = virtual_machine.user_vm_config_set.filter(user_id=request.user.id)
+        for config in user_vm_configs:
+            if config.vm.id == virtual_machine.id:
+                virtual_machine.terminal_port = config.terminal_port
+                break
+        return render(request, 'vital/terminal.html', {'virtual_machine':virtual_machine})
+    except Virtual_Machine.DoesNotExist as e:
+        logger.error("Could not find requesting terminal:"+str(e))
 
 
 @login_required(login_url='/vital/login/')
