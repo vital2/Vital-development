@@ -29,7 +29,7 @@ def course_vms(request, course_id):
     vms = XenClient().list_student_vms(request.user, course_id)
     logger.debug('<><><><><><>'+vms[0]['name'])
     for virtual_machine in virtual_machines:
-        _vm = next((vm for vm in vms if vm['name'].endswith(virtual_machine.id)))
+        _vm = next((vm for vm in vms if vm['name'].endswith(str(virtual_machine.id))))
         if _vm is not None:
             virtual_machine.state = 'R'
         else:
