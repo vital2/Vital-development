@@ -24,7 +24,7 @@ class XenClient:
         prefix = str(user.id) + '_' + str(course_id)
         logger.debug(prefix)
         logger.debug(vms)
-        return [vm for vm in vms if vm.name.startswith(prefix)]
+        return [vm for vm in vms if vm['name'].startswith(prefix)]
 
 
 class XenServer:
