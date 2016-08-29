@@ -28,7 +28,7 @@ def course_vms(request, course_id):
     virtual_machines = Virtual_Machine.objects.filter(course_id=course_id)
     for vm in virtual_machines:
         user_vm_configs = vm.user_vm_config_set.filter(user_id=request.user.id)
-        if user_vm_configs is not None or len(user_vm_configs) == 0:
+        if user_vm_configs is not None and not len(user_vm_configs) == 0:
             vm.state = 'R'
         else:
             vm.state = 'S'
