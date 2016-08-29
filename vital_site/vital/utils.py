@@ -23,6 +23,7 @@ class XenClient:
         vms = XenServer('http://128.238.77.10:8000').list_vms(user)
         prefix = str(user.id) + '_' + str(course_id)
         logger.debug(prefix)
+        logger.debug(vms)
         return [vm for vm in vms if vm.name.startswith(prefix)]
 
 
