@@ -68,8 +68,8 @@ def start_vm(request, course_id, vm_id):
         cmd = 'nohup sh /var/www/clone.com/interim/noVNC/utils/launch.sh --vnc vlab-dev-xen1:'+started_vm['vnc_port']
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         # out, err = p.communicate()
-        if not p.returncode > 0:
-            raise Exception('ERROR : cannot start the vm.')
+        #if not p.returncode > 0:
+        #    raise Exception('ERROR : cannot start the vm.')
         config.no_vnc_pid = p.pid
         output = p.stdout.read().rstrip()
         logger.debug(output)
