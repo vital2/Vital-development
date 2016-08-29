@@ -65,7 +65,7 @@ def start_vm(request, course_id, vm_id):
         config.vnc_port = started_vm['vnc_port']
         # run novnc launch script
         # TODO replace vlab-dev-xen1 with configured values <based on LB & already existing vms>
-        cmd = 'nohup /var/www/clone.com/interim/noVNC/utils/launch.sh --vnc vlab-dev-xen1:'+started_vm['vnc_port']
+        cmd = 'nohup sh /var/www/clone.com/interim/noVNC/utils/launch.sh --vnc vlab-dev-xen1:'+started_vm['vnc_port']
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:
@@ -76,7 +76,6 @@ def start_vm(request, course_id, vm_id):
         config.save()
     except Virtual_Machine.DoesNotExist as e:
         logger.error(str(e))
-
 
 
 def dummy_console(request):
