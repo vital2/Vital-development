@@ -3,6 +3,11 @@
 <head>
      <script type="text/javascript" src="{% static 'vital/jquery-1.12.0.min.js' %}">
 </script>
+    <script>
+$('body').bind("keyup keydown keypress", function(e) {
+  window.parent && window.parent.funcKey && window.parent.funcKey(e);
+});
+</script>
 </head>
 <body style="height: 100%;width: 100%">
 {% include 'session_security/all.html' %}

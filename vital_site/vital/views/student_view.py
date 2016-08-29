@@ -30,6 +30,11 @@ def course_vms(request, course_id):
         user_vm_configs = vm.user_vm_config_set.filter(user_id=request.user.id)
         if user_vm_configs is not None and not len(user_vm_configs) == 0:
             vm.state = 'R'
+            user_vm_configs = vm.user_vm_config_set.filter(user_id=request.user.id)
+            for config in user_vm_configs:
+                if config.vm.id == vm.id:
+                    vm.terminal_port = config.terminal_port
+                    break
         else:
             vm.state = 'S'
     return render(request, 'vital/course_vms.html', {'virtual_machines': virtual_machines})
@@ -48,21 +53,6 @@ def unregister_from_course(request, course_id):
 
 def dummy_console(request):
     return render(request, 'vital/dummy.html')
-
-
-@login_required(login_url='/vital/login/')
-def terminal(request, vm_id):
-    logger.debug("in terminal request")
-    try:
-        virtual_machine = Virtual_Machine.objects.get(pk=vm_id)
-        user_vm_configs = virtual_machine.user_vm_config_set.filter(user_id=request.user.id)
-        for config in user_vm_configs:
-            if config.vm.id == virtual_machine.id:
-                virtual_machine.terminal_port = config.terminal_port
-                break
-        return render(request, 'vital/terminal.html', {'virtual_machine':virtual_machine})
-    except Virtual_Machine.DoesNotExist as e:
-        logger.error("Could not find requesting terminal:"+str(e))
 
 
 @login_required(login_url='/vital/login/')
