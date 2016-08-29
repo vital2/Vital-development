@@ -62,7 +62,7 @@ def start_vm(request, course_id, vm_id):
         config.user_id = request.user.id
         # start vm with xen api which returns handle to the vm
         started_vm = XenClient().start_vm(request.user, course_id, vm_id)
-        config.vnc_port = started_vm.vnc_port
+        config.vnc_port = started_vm['vnc_port']
         # run novnc launch script
         # TODO replace vlab-dev-xen1 with configured values <based on LB & already existing vms>
         cmd = 'nohup /var/www/clone.com/interim/noVNC/utils/launch.sh --vnc vlab-dev-xen1:'+started_vm.vnc_port
