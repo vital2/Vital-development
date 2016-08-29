@@ -19,9 +19,9 @@ class XenClient:
     def __init__(self):
         pass
 
-    def list_student_vms(self, user, course):
+    def list_student_vms(self, user, course_id):
         vms = XenServer('http://128.238.77.10:8000').list_vms(user)
-        prefix = str(user.id) + '_' + str(course.id)
+        prefix = str(user.id) + '_' + str(course_id)
         return [vm for vm in vms if vm.name.startswith(prefix)]
 
 
