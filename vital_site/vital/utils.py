@@ -29,6 +29,17 @@ class XenClient:
     def list_vm(self, user, vm_name):
         XenServer('http://128.238.77.10:8000').list_vm(vm_name)
 
+    def register_student_vms(self, user, course):
+        xen = XenServer('http://128.238.77.10:8000')
+        for vm in course.virtual_machine_set:
+            xen.register_vm(user, str(user.id)+'_'+str(course.id)+'_'+str(vm.id), str(course.id)+'_'+str(vm.id))
+
+    def unregister_student_vms(self, user, course):
+        xen = XenServer('http://128.238.77.10:8000')
+        for vm in course.virtual_machine_set:
+            xen.stop_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
+            xen.unregister_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
+
 
 class XenServer:
 
@@ -36,16 +47,19 @@ class XenServer:
         self.proxy = xmlrpclib.ServerProxy(url)
 
     def list_vms(self, user):
-        try:
-            vms = self.proxy.xenapi.list_all_vms(user.email, user.password)
-            logger.debug(len(vms))
-            return vms
-        except Exception as e:
-            logger.error(str(e))
+        vms = self.proxy.xenapi.list_all_vms(user.email, user.password)
+        logger.debug(len(vms))
+        return vms
 
     def list_vm(self, user, vm_name):
-        try:
-            vm = self.proxy.xenapi.list_vm(user.email, user.password, vm_name)
-            return vm
-        except Exception as e:
-            logger.error(str(e))
+        vm = self.proxy.xenapi.list_vm(user.email, user.password, vm_name)
+        return vm
+
+    def register_vm(self, user, vm_name, base_name):
+        self.proxy.xenapi.register_vm(user.email, user.password, vm_name, base_name)
+
+    def unregister_vm(self, user, vm_name):
+        self.proxy.xenapi.unregister_vm(user.email, user.password, vm_name)
+
+    def stop_vm(self, user, vm_name):
+        self.proxy.xenapi.stop_vm(user.email, user.password, vm_name)

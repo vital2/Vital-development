@@ -46,6 +46,7 @@ def unregister_from_course(request, course_id):
     user = request.user
     reg_courses = Registered_Course.objects.filter(course_id=course_id, user_id=user.id)
     course_to_remove = reg_courses[0]
+    XenClient().unregister_student_vms(request.user, course_to_remove)
     audit(request, course_to_remove, 'User '+str(user.id)+' unregistered from course -'+str(course_id))
     course_to_remove.delete()
     return redirect('/vital/courses/registered/')
@@ -72,10 +73,10 @@ def register_for_course(request):
                 else:
                     if course.capacity > len(Registered_Course.objects.filter(course_id=course.id)) \
                             and course.status == 'ACTIVE':
+                        XenClient().register_student_vms(request.user, course)
                         registered_course = Registered_Course(course_id=course.id, user_id=user.id)
                         registered_course.save()
                         audit(request, registered_course, 'User '+str(user.id)+' registered for new course -'+str(course.id))
-                        # PLACE TO DO CREATING VMS FOR USER FOR THE COURSE
                         return redirect('/vital/courses/registered/')
                     else:
                         error_message = 'The course is either inactive or has reached its maximum student capacity.'
