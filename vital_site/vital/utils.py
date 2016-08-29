@@ -31,6 +31,7 @@ class XenClient:
 
     def register_student_vms(self, user, course):
         xen = XenServer('http://128.238.77.10:8000')
+        logger.debug(course.virtual_machine_set.all())
         for vm in course.virtual_machine_set.all():
             xen.register_vm(user, str(user.id)+'_'+str(course.id)+'_'+str(vm.id), str(course.id)+'_'+str(vm.id))
 
