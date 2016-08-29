@@ -1,9 +1,10 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
-from ..models import Course, Registered_Course, Virtual_Machine
+from ..models import Course, Registered_Course, Virtual_Machine, User_VM_Config
 from ..forms import Course_Registration_Form
 from ..utils import audit, XenClient
 import logging
+from subprocess import Popen, PIPE
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +38,7 @@ def course_vms(request, course_id):
                     break
         else:
             vm.state = 'S'
-    return render(request, 'vital/course_vms.html', {'virtual_machines': virtual_machines})
+    return render(request, 'vital/course_vms.html', {'virtual_machines': virtual_machines, 'course_id':course_id})
 
 
 @login_required(login_url='/vital/login/')
@@ -50,6 +51,32 @@ def unregister_from_course(request, course_id):
     audit(request, course_to_remove, 'User '+str(user.id)+' unregistered from course -'+str(course_id))
     course_to_remove.delete()
     return redirect('/vital/courses/registered/')
+
+
+@login_required(login_url='/vital/login/')
+def start_vm(request, course_id, vm_id):
+    try:
+        vm = Virtual_Machine.objects.get(pk=vm_id)
+        config = User_VM_Config()
+        config.vm = vm
+        config.user_id = request.user.id
+        # start vm with xen api which returns handle to the vm
+        started_vm = XenClient.start_vm(request.user, course_id, vm_id)
+        config.vnc_port = started_vm.vnc_port
+        # run novnc launch script
+        # TODO replace vlab-dev-xen1 with configured values <based on LB & already existing vms>
+        cmd = 'nohup /var/www/clone.com/interim/noVNC/utils/launch.sh --vnc vlab-dev-xen1:'+started_vm.vnc_port
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        out, err = p.communicate()
+        if not p.returncode == 0:
+            raise Exception('ERROR : cannot start the vm. \n Reason : %s' % err.rstrip())
+        config.no_vnc_pid = p.pid
+        output = out.rstrip()
+        config.vnc_port = output[output.index('port=')+5:output.index('Press')].strip()
+        config.save()
+    except Virtual_Machine.DoesNotExist as e:
+        logger.error(str(e))
+
 
 
 def dummy_console(request):

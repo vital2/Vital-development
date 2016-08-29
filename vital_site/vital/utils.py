@@ -41,6 +41,14 @@ class XenClient:
             xen.stop_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
             xen.unregister_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
 
+    def start_vm(self, user, vm_id, course_id):
+        xen = XenServer('http://128.238.77.10:8000')
+        xen.start_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
+
+    def stop_vm(self, user, vm_id, course_id):
+        xen = XenServer('http://128.238.77.10:8000')
+        xen.stop_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
+
 
 class XenServer:
 
@@ -64,3 +72,6 @@ class XenServer:
 
     def stop_vm(self, user, vm_name):
         self.proxy.xenapi.stop_vm(user.email, user.password, vm_name)
+
+    def start_vm(self, user, vm_name):
+        return self.proxy.xenapi.start_vm(user.email, user.password, vm_name)
