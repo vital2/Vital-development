@@ -82,6 +82,17 @@ class XenAPI:
         vm.vcpus = val[3]
         vm.state = val[4]
         vm.uptime = val[5]
+
+        # even though value of vnc port is set in the config file, if the port is already in use
+        # by the vnc server, it allocates a new vnc port without throwing an error. this additional
+        # step makes sure that we get the updated vnc-port
+        cmd = 'xenstore-read /local/domain/' + vm.id + '/console/vnc-port'
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        out, err = p.communicate()
+        if not p.returncode == 0:
+            raise Exception('ERROR : cannot start the vm - error while getting vnc-port. '
+                            '\n Reason : %s' % err.rstrip())
+        vm.vnc_port = out.rstrip()
         return vm
 
     def server_stats(self):
@@ -122,18 +133,7 @@ class VirtualMachine:
         if not p.returncode == 0:
             raise Exception('ERROR : cannot start the vm. \n Reason : %s' % err.rstrip())
         else:
-            newvm = XenAPI().list_vm(self.name)
-            # even though value of vnc port is set in the config file, if the port is already in use
-            # by the vnc server, it allocates a new vnc port without throwing an error. this additional
-            # step makes sure that we get the updated vnc-port
-            cmd = 'xenstore-read /local/domain/'+newvm.id+'/console/vnc-port'
-            p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-            out, err = p.communicate()
-            if not p.returncode == 0:
-                raise Exception('ERROR : cannot start the vm - error while getting vnc-port. '
-                                '\n Reason : %s' % err.rstrip())
-            newvm.vnc_port = out.rstrip()
-            return newvm
+            return XenAPI().list_vm(self.name)
 
     def shutdown(self):
         """

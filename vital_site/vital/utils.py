@@ -26,6 +26,9 @@ class XenClient:
         logger.debug(vms)
         return [vm for vm in vms if vm['name'].startswith(prefix)]
 
+    def list_vm(self, user, vm_name):
+        XenServer('http://128.238.77.10:8000').list_vm(vm_name)
+
 
 class XenServer:
 
@@ -37,5 +40,12 @@ class XenServer:
             vms = self.proxy.xenapi.list_all_vms(user.email, user.password)
             logger.debug(len(vms))
             return vms
+        except Exception as e:
+            logger.error(str(e))
+
+    def list_vm(self, user, vm_name):
+        try:
+            vm = self.proxy.xenapi.list_vm(user.email, user.password, vm_name)
+            return vm
         except Exception as e:
             logger.error(str(e))

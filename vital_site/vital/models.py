@@ -107,6 +107,14 @@ class Virtual_Machine(models.Model):
     clean_conf = models.CharField(max_length=200)
 
 
+class User_VM_Config(models.Model):
+    vm = models.ForeignKey(Virtual_Machine)
+    user_id = models.IntegerField(default=0)
+    vnc_port = models.CharField(max_length=10)
+    terminal_port = models.CharField(max_length=10)
+    no_vnc_pid = models.CharField(max_length=10)
+
+
 class Network_Configuration(models.Model):
     name = models.CharField(max_length=200)
     virtual_machine = models.ForeignKey(Virtual_Machine)
