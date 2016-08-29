@@ -43,7 +43,7 @@ class XenClient:
 
     def start_vm(self, user, course_id, vm_id):
         xen = XenServer('http://128.238.77.10:8000')
-        xen.start_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
+        return xen.start_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
 
     def stop_vm(self, user, course_id, vm_id):
         xen = XenServer('http://128.238.77.10:8000')
