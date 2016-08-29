@@ -28,6 +28,12 @@ def course_vms(request, course_id):
     virtual_machines = Virtual_Machine.objects.filter(course_id=course_id)
     vms = XenClient().list_student_vms(request.user, course_id)
     logger.debug('<><><><><><>'+vms[0]['name'])
+    for virtual_machine in virtual_machines:
+        _vm = next((vm for vm in vms if vm.name == virtual_machine.id))
+        if _vm is not None:
+            virtual_machine.state = 'R'
+        else:
+            virtual_machine.state = 'S'
     return render(request, 'vital/course_vms.html', {'virtual_machines': virtual_machines})
 
 

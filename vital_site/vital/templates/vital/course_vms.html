@@ -78,7 +78,11 @@
                             </a>
                         </div>
 		            </div>
-                    <div style="width:100%; margin-top:-5px; background-color: red; height: 7px">&nbsp;</div>
+                    {% if vm.state == 'R'%}
+                        <div style="width:100%; margin-top:-5px; background-color: green; height: 7px">&nbsp;</div>
+                    {% else %}
+                        <div style="width:100%; margin-top:-5px; background-color: red; height: 7px">&nbsp;</div>
+                    {% endif %}
 		            <div style="width:100%; margin-top:-5px; font-weight:bold" align="center">{{ vm.name }}</div>
 		        </div>
             {% endfor %}
