@@ -56,11 +56,11 @@
 	                    <div style="height:33%;padding-top:7px">
                             {% if vm.state == 'R'%}
                                 <a href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/stop'>
-                                    <img src="{% static  'vital/power-red.png' %}" width="30px" height="30px" title="Stop VM"/>
+                                    <img src="{% static  'vital/red-power.png' %}" width="30px" height="30px" title="Stop VM"/>
                                 </a>
                             {% else %}
                                 <a href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/start'>
-                                <img src="{% static  'vital/green_power.png' %}" width="30px" height="30px" title="Start VM"/>
+                                <img src="{% static  'vital/green-power.png' %}" width="30px" height="30px" title="Start VM"/>
                             </a>
                             {% endif %}
                         </div>
