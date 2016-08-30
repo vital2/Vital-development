@@ -14,6 +14,10 @@
             + ",top=" + topPosition + ",screenX=" + leftPosition + ",screenY=" + topPosition
             + ",toolbar=no,menubar=no,scrollbars=no,location=no,directories=no");return false;
 }
+
+$(window).load(function(){
+    $("#message").delay(5000).fadeOut();
+});
     </script>
 <style type="text/css">
     #center{
@@ -48,6 +52,9 @@
 
     {% if virtual_machines %}
     <div id="center" align="center" style="width: 800px">
+       {% if not message == '' %}
+           <div id="message" style="width:100%; height:10px; background-color: #8861a2">{{ message }}</div>
+       {% endif %}
         <div width="500px">
             {% for vm in virtual_machines %}
                 <div class="box" width="25%" style='background:url({% static  vm.type.icon_location %}) no-repeat 50% 50%;background-size: contain;'

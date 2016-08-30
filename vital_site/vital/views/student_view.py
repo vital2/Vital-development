@@ -39,7 +39,8 @@ def course_vms(request, course_id):
                     break
         else:
             vm.state = 'S'
-    return render(request, 'vital/course_vms.html', {'virtual_machines': virtual_machines, 'course_id':course_id})
+    return render(request, 'vital/course_vms.html', {'virtual_machines': virtual_machines,
+                                                     'course_id':course_id, 'message':'sample message'})
 
 
 @login_required(login_url='/vital/login/')
