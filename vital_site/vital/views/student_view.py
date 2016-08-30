@@ -85,7 +85,7 @@ def stop_vm(request, course_id, vm_id):
             if 'No such process' not in err.rstrip():
                 raise Exception('ERROR : cannot stop the vm '
                                 '\n Reason : %s' % err.rstrip())
-        XenClient.stop_vm(request.user,course_id,vm_id)
+        XenClient().stop_vm(request.user,course_id,vm_id)
         config = Available_Config()
         config.category = 'TERM_PORT'
         config.value = vms[0].terminal_port
