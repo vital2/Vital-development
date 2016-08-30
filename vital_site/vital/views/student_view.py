@@ -54,22 +54,23 @@ def unregister_from_course(request, course_id):
     return redirect('/vital/courses/registered/')
 
 
-@transaction.commit_on_success
 @login_required(login_url='/vital/login/')
 def start_vm(request, course_id, vm_id):
     try:
-        vm = Virtual_Machine.objects.get(pk=vm_id)
-        config = User_VM_Config()
-        config.vm = vm
-        config.user_id = request.user.id
-        # start vm with xen api which returns handle to the vm
-        started_vm = XenClient().start_vm(request.user, course_id, vm_id)
-        config.vnc_port = started_vm['vnc_port']
+        with transaction.commit_manually():
+            vm = Virtual_Machine.objects.get(pk=vm_id)
+            config = User_VM_Config()
+            config.vm = vm
+            config.user_id = request.user.id
+            # start vm with xen api which returns handle to the vm
+            started_vm = XenClient().start_vm(request.user, course_id, vm_id)
+            config.vnc_port = started_vm['vnc_port']
 
-        # run novnc launch script
-        # TODO replace vlab-dev-xen1 with configured values <based on LB & already existing vms>
-        start_novnc(config,started_vm)
-        config.save()
+            # run novnc launch script
+            # TODO replace vlab-dev-xen1 with configured values <based on LB & already existing vms>
+            start_novnc(config,started_vm)
+            config.save()
+            transaction.commit()
     except Virtual_Machine.DoesNotExist as e:
         logger.error(str(e))
 
