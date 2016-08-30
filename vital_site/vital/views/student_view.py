@@ -1,10 +1,11 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
-from ..models import Course, Registered_Course, Virtual_Machine, User_VM_Config
+from ..models import Course, Registered_Course, Virtual_Machine, User_VM_Config, Available_Config
 from ..forms import Course_Registration_Form
 from ..utils import audit, XenClient
 import logging
 from subprocess import Popen, PIPE
+from django.db import transaction
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +54,7 @@ def unregister_from_course(request, course_id):
     return redirect('/vital/courses/registered/')
 
 
+@transaction.commit_on_success
 @login_required(login_url='/vital/login/')
 def start_vm(request, course_id, vm_id):
     try:
@@ -63,20 +65,31 @@ def start_vm(request, course_id, vm_id):
         # start vm with xen api which returns handle to the vm
         started_vm = XenClient().start_vm(request.user, course_id, vm_id)
         config.vnc_port = started_vm['vnc_port']
+
         # run novnc launch script
         # TODO replace vlab-dev-xen1 with configured values <based on LB & already existing vms>
-        cmd = 'nohup sh /var/www/clone.com/interim/noVNC/utils/launch.sh --vnc vlab-dev-xen1:'+started_vm['vnc_port']
-        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-        # out, err = p.communicate()
-        #if not p.returncode > 0:
-        #    raise Exception('ERROR : cannot start the vm.')
-        config.no_vnc_pid = p.pid
-        output = p.stdout.read().rstrip()
-        logger.debug(output)
-        config.vnc_port = output[output.index('port=')+5:output.index('Press')].strip()
+        start_novnc(config,started_vm)
         config.save()
     except Virtual_Machine.DoesNotExist as e:
         logger.error(str(e))
+
+
+def start_novnc(config, started_vm):
+    flag = True
+    while flag:
+        available_config = Available_Config.objects.all().order_by('id')[:1]
+        locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
+        locked_conf.delete()
+
+        cmd = 'sh /var/www/clone.com/interim/noVNC/utils/launch.sh --listen '+locked_conf.value+' --vnc vlab-dev-xen1:'\
+              + started_vm['vnc_port']
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        config.no_vnc_pid = p.pid
+        line = p.stdout.readline()
+        if 'on port' in line:
+            port = line[line.index('on port')+7:].strip()
+            config.terminal_port = port
+            flag = False
 
 
 def dummy_console(request):
