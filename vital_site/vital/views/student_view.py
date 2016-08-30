@@ -70,15 +70,32 @@ def start_vm(request, course_id, vm_id):
             # TODO replace vlab-dev-xen1 with configured values <based on LB & already existing vms>
             start_novnc(config,started_vm)
             config.save()
-
     except Virtual_Machine.DoesNotExist as e:
         logger.error(str(e))
+    return redirect('/vital/courses/' + course_id + '/vms')
+
+
+def stop_vm(request, course_id, vm_id):
+    vms = User_VM_Config.objects.filter(user_id=request.user.id,vm_id=vm_id)
+    if len(vms) == 0:
+        cmd = 'kill ' +vms[0].no_vnc_pid
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        out, err = p.communicate()
+        if not p.returncode == 0:
+            raise Exception('ERROR : cannot stop the vm '
+                            '\n Reason : %s' % err.rstrip())
+        XenClient.stop_vm(request.user,course_id,vm_id)
+        config = Available_Config()
+        config.category = 'TERM_PORT'
+        config.value = vms[0].terminal_port
+        config.save()
+        vms[0].delete()
 
 
 def start_novnc(config, started_vm):
     flag = True
     while flag:
-        available_config = Available_Config.objects.all().order_by('id')[0]
+        available_config = Available_Config.objects.filter(category='TERM_PORT').order_by('id')[0]
         locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
 
         cmd = 'sh /var/www/clone.com/interim/noVNC/utils/launch.sh --listen '+available_config.value + \
