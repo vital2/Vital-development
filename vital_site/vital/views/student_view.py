@@ -82,8 +82,9 @@ def stop_vm(request, course_id, vm_id):
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:
-            raise Exception('ERROR : cannot stop the vm '
-                            '\n Reason : %s' % err.rstrip())
+            if 'No such process' not in err.rstrip():
+                raise Exception('ERROR : cannot stop the vm '
+                                '\n Reason : %s' % err.rstrip())
         XenClient.stop_vm(request.user,course_id,vm_id)
         config = Available_Config()
         config.category = 'TERM_PORT'
