@@ -115,6 +115,11 @@ class User_VM_Config(models.Model):
     no_vnc_pid = models.CharField(max_length=10)
 
 
+class Available_Config(models.Model):
+    category = models.CharField(max_length=10)
+    value = models.CharField(max_length=10)
+
+
 class Network_Configuration(models.Model):
     name = models.CharField(max_length=200)
     virtual_machine = models.ForeignKey(Virtual_Machine)
