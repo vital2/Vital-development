@@ -80,10 +80,10 @@ def start_novnc(config, started_vm):
     while flag:
         available_config = Available_Config.objects.all().order_by('id')[0]
         locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
-        locked_conf.delete()
 
         cmd = 'sh /var/www/clone.com/interim/noVNC/utils/launch.sh --listen '+locked_conf.value+' --vnc vlab-dev-xen1:'\
               + started_vm['vnc_port']
+        locked_conf.delete()
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         config.no_vnc_pid = p.pid
         line = p.stdout.readline()
