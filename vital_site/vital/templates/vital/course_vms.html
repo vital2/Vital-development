@@ -51,10 +51,10 @@ $(window).load(function(){
     </style>
 
     {% if virtual_machines %}
-    <div id="center" align="center" style="width: 800px">
-       {% if not message == '' %}
+               {% if not message %}
            <div id="message" style="width:100%; height:10px; background-color: #8861a2">{{ message }}</div>
        {% endif %}
+    <div id="center" align="center" style="width: 800px">
         <div width="500px">
             {% for vm in virtual_machines %}
                 <div class="box" width="25%" style='background:url({% static  vm.type.icon_location %}) no-repeat 50% 50%;background-size: contain;'
