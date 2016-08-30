@@ -57,7 +57,7 @@ def unregister_from_course(request, course_id):
 @login_required(login_url='/vital/login/')
 def start_vm(request, course_id, vm_id):
     try:
-        with transaction.commit_manually():
+        with transaction.atomic():
             vm = Virtual_Machine.objects.get(pk=vm_id)
             config = User_VM_Config()
             config.vm = vm
@@ -70,7 +70,7 @@ def start_vm(request, course_id, vm_id):
             # TODO replace vlab-dev-xen1 with configured values <based on LB & already existing vms>
             start_novnc(config,started_vm)
             config.save()
-            transaction.commit()
+
     except Virtual_Machine.DoesNotExist as e:
         logger.error(str(e))
 
@@ -78,7 +78,7 @@ def start_vm(request, course_id, vm_id):
 def start_novnc(config, started_vm):
     flag = True
     while flag:
-        available_config = Available_Config.objects.all().order_by('id')[:1]
+        available_config = Available_Config.objects.all().order_by('id')[0]
         locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
         locked_conf.delete()
 
