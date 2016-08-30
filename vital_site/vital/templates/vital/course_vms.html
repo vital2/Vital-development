@@ -69,9 +69,13 @@
                                 <img src="{% static  'vital/save-state.png' %}" width="30px" height="30px" title="Save state"/>
                             </a></div>
                         <div style="float:left;width:33%;height:33%;" align="center">
+                            {% if vm.state == 'R'%}
                             <a href="http://vital-dev2.poly.edu:{{ vm.terminal_port }}/vnc_auto.html" onclick="return windowpop(this.href, 'Terminal2', 825, 680)">
                                 <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console"/>
                             </a>
+                            {% else %}
+                                &nbsp;
+                            {% endif %}
                         </div>
                         <div style="float:left;width:33%;height:33%;" align="right">
                             <a href=#3>
