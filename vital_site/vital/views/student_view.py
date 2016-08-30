@@ -77,7 +77,7 @@ def start_vm(request, course_id, vm_id):
 
 def stop_vm(request, course_id, vm_id):
     vms = User_VM_Config.objects.filter(user_id=request.user.id,vm_id=vm_id)
-    if len(vms) == 0:
+    if len(vms) == 1:
         cmd = 'kill ' +vms[0].no_vnc_pid
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
@@ -90,6 +90,7 @@ def stop_vm(request, course_id, vm_id):
         config.value = vms[0].terminal_port
         config.save()
         vms[0].delete()
+    return redirect('/vital/courses/' + course_id + '/vms')
 
 
 def start_novnc(config, started_vm):
