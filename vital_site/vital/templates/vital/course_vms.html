@@ -49,11 +49,11 @@ $(window).load(function(){
 	    opacity:1;
 	}
     </style>
-
-    {% if virtual_machines %}
-               {% if not message %}
+               {% if message %}
            <div id="message" style="width:100%; height:10px; background-color: #8861a2">{{ message }}</div>
        {% endif %}
+    {% if virtual_machines %}
+
     <div id="center" align="center" style="width: 800px">
         <div width="500px">
             {% for vm in virtual_machines %}
