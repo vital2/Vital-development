@@ -41,20 +41,6 @@ $(window).load(function(){
 	    -ms-transition: all 0.3s ease-in-out;
 	    transition: all 0.3s ease-in-out;
 	}
-    .messageB {
-    position: absolute;
-    z-index: 101;
-    top: 0;
-    left: 0;
-    right: 0;
-    background: #fde073;
-    text-align: center;
-    line-height: 2.5;
-    overflow: hidden;
-    -webkit-box-shadow: 0 0 5px black;
-    -moz-box-shadow:    0 0 5px black;
-    box-shadow:         0 0 5px black;
-    }
 	.box:hover {
 	    border:1px solid #555;
 	    border-radius:5px;
@@ -64,7 +50,7 @@ $(window).load(function(){
 	}
     </style>
                {% if message %}
-           <div id="message" class="messageB">{{ message }}</div>
+           <div id="message" style="width:100%; height:20px; background-color: #8861a2; font-size: small">{{ message }}</div>
        {% endif %}
     {% if virtual_machines %}
 
