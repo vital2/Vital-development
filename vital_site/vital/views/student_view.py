@@ -39,10 +39,12 @@ def course_vms(request, course_id):
                     break
         else:
             vm.state = 'S'
-    #if request.GET.get('message', False):
-    #    message = request.GET.get('message')
-    #    return render(request, 'vital/course_vms.html', {'virtual_machines': virtual_machines,
-    #                                                 'course_id':course_id, 'message': message})
+            
+    if request.method == 'GET':
+        if not request.GET.get('message', '') == '':
+            message = request.GET.get('message')
+            return render(request, 'vital/course_vms.html', {'virtual_machines': virtual_machines,
+                                                             'course_id':course_id, 'message': message})
 
     return render(request, 'vital/course_vms.html', {'virtual_machines': virtual_machines})
 
