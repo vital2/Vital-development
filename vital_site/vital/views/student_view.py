@@ -43,8 +43,8 @@ def course_vms(request, course_id):
             vm.state = 'S'
 
     params['virtual_machines'] = virtual_machines
-    if request.GET.get('message', False):
-        params['message'] = request.GET.get('message')
+    if request.POST.get('message', False):
+        params['message'] = request.POST.get('message')
 
     return render(request, 'vital/course_vms.html', params)
 
