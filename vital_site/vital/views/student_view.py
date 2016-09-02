@@ -27,6 +27,7 @@ def registered_courses(request):
 @login_required(login_url='/vital/login/')
 def course_vms(request, course_id):
     logger.debug("in course vms")
+    params = dict()
     virtual_machines = Virtual_Machine.objects.filter(course_id=course_id)
     for vm in virtual_machines:
         user_vm_configs = vm.user_vm_config_set.filter(user_id=request.user.id)
@@ -39,14 +40,13 @@ def course_vms(request, course_id):
                     break
         else:
             vm.state = 'S'
-            
-    if request.method == 'GET':
-        if not request.GET.get('message', '') == '':
-            message = request.GET.get('message')
-            return render(request, 'vital/course_vms.html', {'virtual_machines': virtual_machines,
-                                                             'course_id':course_id, 'message': message})
+    params['virtual_machines'] = virtual_machines
+    params['course_id'] = course_id
 
-    return render(request, 'vital/course_vms.html', {'virtual_machines': virtual_machines})
+    if not request.GET.get('message', '') == '':
+        params['message'] = request.GET.get('message')
+
+    return render(request, 'vital/course_vms.html', params)
 
 
 @login_required(login_url='/vital/login/')
