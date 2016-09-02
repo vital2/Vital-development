@@ -43,6 +43,8 @@ def course_vms(request, course_id):
     params['virtual_machines'] = virtual_machines
     params['course_id'] = course_id
 
+    logger.debug('>>>>>>>'+request.GET.get('message', ''))
+
     if not request.GET.get('message', '') == '':
         params['message'] = request.GET.get('message')
 
@@ -98,7 +100,7 @@ def stop_vm(request, course_id, vm_id):
         config.value = vms[0].terminal_port
         config.save()
         vms[0].delete()
-    return redirect('/vital/courses/' + course_id + '/vms', {'VM stopped ...'})
+    return redirect('/vital/courses/' + course_id + '/vms', {'message':'VM stopped ...'})
 
 
 def start_novnc(config, started_vm):
