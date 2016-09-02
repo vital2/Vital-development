@@ -16,7 +16,7 @@
 }
 
 $(window).load(function(){
-    $("#message").delay(5000).fadeOut();
+    $("#message").delay(4000).fadeOut();
 });
     </script>
 <style type="text/css">
@@ -50,8 +50,8 @@ $(window).load(function(){
 	}
     </style>
                {% if message %}
-           <div id="message" style="position: absolute; width:60%; height:20px; background-color: yellow; z-index: 1100;
-           top:155px; font-size: small">{{ message }}</div>
+           <div id="message" style="position: absolute; width:60%; height:20px; background-color: #8861a2;
+           z-index: 1100; top:160px; font-size: small; color: rebeccapurple">{{ message }}</div>
        {% endif %}
     {% if virtual_machines %}
 
