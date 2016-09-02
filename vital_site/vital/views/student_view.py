@@ -81,7 +81,7 @@ def start_vm(request, course_id, vm_id):
             config.save()
     except Virtual_Machine.DoesNotExist as e:
         logger.error(str(e))
-    return redirect('/vital/courses/' + course_id + '/vms?message=:'+ vm.name+' is started')
+    return redirect('/vital/courses/' + course_id + '/vms?message='+ vm.name+' VM started')
 
 
 def stop_vm(request, course_id, vm_id):
