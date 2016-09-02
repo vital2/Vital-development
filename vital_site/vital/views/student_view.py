@@ -39,8 +39,10 @@ def course_vms(request, course_id):
                     break
         else:
             vm.state = 'S'
+    if request.GET['message']:
+        message = request.GET['message']
     return render(request, 'vital/course_vms.html', {'virtual_machines': virtual_machines,
-                                                     'course_id':course_id, 'message':'sample message'})
+                                                     'course_id':course_id, 'message': message})
 
 
 @login_required(login_url='/vital/login/')
@@ -73,7 +75,7 @@ def start_vm(request, course_id, vm_id):
             config.save()
     except Virtual_Machine.DoesNotExist as e:
         logger.error(str(e))
-    return redirect('/vital/courses/' + course_id + '/vms')
+    return redirect('/vital/courses/' + course_id + '/vms', {'message': vm.name+' is started'})
 
 
 def stop_vm(request, course_id, vm_id):
@@ -92,7 +94,7 @@ def stop_vm(request, course_id, vm_id):
         config.value = vms[0].terminal_port
         config.save()
         vms[0].delete()
-    return redirect('/vital/courses/' + course_id + '/vms')
+    return redirect('/vital/courses/' + course_id + '/vms', {'VM stopped ...'})
 
 
 def start_novnc(config, started_vm):
