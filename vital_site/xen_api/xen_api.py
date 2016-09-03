@@ -164,14 +164,14 @@ class VirtualMachine:
                      config.get("VMConfig", "VM_DSK_LOCATION") + '/' + self.name + '.qcow')
         except Exception as e:
             raise Exception('ERROR : cannot register the vm - qcow '
-                            '\n Reason : %s' % e.rstrip())
+                            '\n Reason : %s' % str(e).rstrip())
 
         try:
             copyfile(config.get("VMConfig", "VM_CONF_LOCATION") + '/clean/' + base_vm + '.conf ',
                      config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf')
         except Exception as e:
             raise Exception('ERROR : cannot register the vm - conf '
-                            '\n Reason : %s' % e.rstrip())
+                            '\n Reason : %s' % str(e).rstrip())
 
         # TODO update conf file with required values
         f = open(config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf', 'r')
@@ -199,14 +199,14 @@ class VirtualMachine:
                 os.remove(filename)
         except Exception as e:
             raise Exception('ERROR : cannot unregister the vm - qcow '
-                            '\n Reason : %s' % e.rstrip())
+                            '\n Reason : %s' % str(e).rstrip())
 
         try:
             os.remove(config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf')
         except OSError as e:
             if e.errno != errno.ENOENT:
                 raise Exception('ERROR : cannot unregister the vm - conf '
-                                '\n Reason : %s' % e.rstrip())
+                                '\n Reason : %s' % str(e).rstrip())
 
     def save(self):
         """
