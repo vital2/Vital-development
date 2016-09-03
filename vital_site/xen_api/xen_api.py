@@ -222,3 +222,4 @@ class VirtualMachine:
         """
         restores from previous saved state or rebases from clean files
         """
+        pass
