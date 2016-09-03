@@ -160,14 +160,14 @@ class VirtualMachine:
         :param base_vm: name of the base vm which is replicated
         """
         try:
-            copyfile(config.get("VMConfig", "VM_DSK_LOCATION") + '/clean/' + base_vm + '.qcow ',
+            copyfile(config.get("VMConfig", "VM_DSK_LOCATION") + '/clean/' + base_vm + '.qcow',
                      config.get("VMConfig", "VM_DSK_LOCATION") + '/' + self.name + '.qcow')
         except Exception as e:
             raise Exception('ERROR : cannot register the vm - qcow '
                             '\n Reason : %s' % str(e).rstrip())
 
         try:
-            copyfile(config.get("VMConfig", "VM_CONF_LOCATION") + '/clean/' + base_vm + '.conf ',
+            copyfile(config.get("VMConfig", "VM_CONF_LOCATION") + '/clean/' + base_vm + '.conf',
                      config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf')
         except Exception as e:
             raise Exception('ERROR : cannot register the vm - conf '
