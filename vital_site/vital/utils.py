@@ -33,13 +33,13 @@ class XenClient:
         xen = XenServer('http://128.238.77.10:8000')
         logger.debug(course.virtual_machine_set.all())
         for vm in course.virtual_machine_set.all():
-            xen.register_vm(user, str(user.id)+'_'+str(course.id)+'_'+str(vm.id), str(course.id)+'_'+str(vm.id))
+            xen.setup_vm(user, str(user.id)+'_'+str(course.id)+'_'+str(vm.id), str(course.id)+'_'+str(vm.id))
 
     def unregister_student_vms(self, user, course):
         xen = XenServer('http://128.238.77.10:8000')
         for vm in course.virtual_machine_set.all():
             xen.stop_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
-            xen.unregister_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
+            xen.cleanup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
 
     def start_vm(self, user, course_id, vm_id):
         xen = XenServer('http://128.238.77.10:8000')
@@ -49,6 +49,10 @@ class XenClient:
         xen = XenServer('http://128.238.77.10:8000')
         xen.stop_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
 
+    def rebase_vm(self, user, course, vm_id):
+        xen = XenServer('http://128.238.77.10:8000')
+        xen.stop_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm_id))
+        xen.setup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm_id), str(course.id) + '_' + str(vm_id))
 
 class XenServer:
 
@@ -64,11 +68,11 @@ class XenServer:
         vm = self.proxy.xenapi.list_vm(user.email, user.password, vm_name)
         return vm
 
-    def register_vm(self, user, vm_name, base_name):
-        self.proxy.xenapi.register_vm(user.email, user.password, vm_name, base_name)
+    def setup_vm(self, user, vm_name, base_name):
+        self.proxy.xenapi.setup_vm(user.email, user.password, vm_name, base_name)
 
-    def unregister_vm(self, user, vm_name):
-        self.proxy.xenapi.unregister_vm(user.email, user.password, vm_name)
+    def cleanup_vm(self, user, vm_name):
+        self.proxy.xenapi.cleanup_vm(user.email, user.password, vm_name)
 
     def stop_vm(self, user, vm_name):
         self.proxy.xenapi.stop_vm(user.email, user.password, vm_name)

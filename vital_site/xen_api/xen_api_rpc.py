@@ -49,13 +49,13 @@ class XenAPIExposer:
 
     @expose
     @requires_authentication_only
-    def register_vm(self, user, passwd, vm_name, base_vm):
-        XenAPI().register_vm(vm_name, base_vm)
+    def setup_vm(self, user, passwd, vm_name, base_vm):
+        XenAPI().setup_vm(vm_name, base_vm)
 
     @expose
     @requires_authentication_only
-    def unregister_vm(self, user, passwd, vm_name):
-        XenAPI().unregister_vm(vm_name)
+    def cleanup_vm(self, user, passwd, vm_name):
+        XenAPI().cleanup_vm(vm_name)
 
 server = SimpleXMLRPCServer(('128.238.77.10', 8000), logRequests=True, allow_none=True)
 server.register_instance(XenAPIExposer())

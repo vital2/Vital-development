@@ -101,20 +101,20 @@ class XenAPI:
     def server_stats(self):
         pass
 
-    def register_vm(self, vm_name, base_vm):
+    def setup_vm(self, vm_name, base_vm):
         """
         registers a new vm
         :param vm_name name of the new VM
         :param base_vm name of base vm qcow and conf
         """
-        VirtualMachine(vm_name).register(base_vm)
+        VirtualMachine(vm_name).setup(base_vm)
 
-    def unregister_vm(self, vm_name):
+    def cleanup_vm(self, vm_name):
         """
         registers a new vm
         :param vm_name:
         """
-        VirtualMachine(vm_name).unregister()
+        VirtualMachine(vm_name).cleanup()
 
 
 class VirtualMachine:
@@ -154,7 +154,7 @@ class VirtualMachine:
                 raise Exception('ERROR : cannot stop the vm '
                                 '\n Reason : %s' % err.rstrip())
 
-    def rebase(self, base_vm):
+    def setup(self, base_vm):
         """
         registers a new vm for the student - creates qcow and required conf files
         :param base_vm: name of the base vm which is replicated
@@ -163,14 +163,14 @@ class VirtualMachine:
             copyfile(config.get("VMConfig", "VM_DSK_LOCATION") + '/clean/' + base_vm + '.qcow',
                      config.get("VMConfig", "VM_DSK_LOCATION") + '/' + self.name + '.qcow')
         except Exception as e:
-            raise Exception('ERROR : cannot register the vm - qcow '
+            raise Exception('ERROR : cannot setup the vm - qcow '
                             '\n Reason : %s' % str(e).rstrip())
 
         try:
             copyfile(config.get("VMConfig", "VM_CONF_LOCATION") + '/clean/' + base_vm + '.conf',
                      config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf')
         except Exception as e:
-            raise Exception('ERROR : cannot register the vm - conf '
+            raise Exception('ERROR : cannot setup the vm - conf '
                             '\n Reason : %s' % str(e).rstrip())
 
         # TODO update conf file with required values
@@ -184,13 +184,7 @@ class VirtualMachine:
         f.write(new_data)
         f.close()
 
-    def register(self, base_vm):
-        """
-         this re-images the student vm to the base image
-        """
-        self.rebase(base_vm)
-
-    def unregister(self):
+    def cleanup(self):
         """
         un-registers vm for the student - removes qcow and required conf files
         """
