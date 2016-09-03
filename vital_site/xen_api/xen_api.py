@@ -1,4 +1,7 @@
 from subprocess import Popen, PIPE
+from shutil import copyfile
+from glob import glob
+import os, errno
 
 import ConfigParser
 
@@ -151,26 +154,24 @@ class VirtualMachine:
                 raise Exception('ERROR : cannot stop the vm '
                                 '\n Reason : %s' % err.rstrip())
 
-    def register(self, base_vm):
+    def rebase(self, base_vm):
         """
         registers a new vm for the student - creates qcow and required conf files
         :param base_vm: name of the base vm which is replicated
         """
-        cmd = 'cp ' + config.get("VMConfig", "VM_DSK_LOCATION") + '/clean/' + base_vm + '.qcow ' +\
-              config.get("VMConfig", "VM_DSK_LOCATION") + '/' + self.name + '.qcow'
-        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-        out, err = p.communicate()
-        if not p.returncode == 0:
+        try:
+            copyfile(config.get("VMConfig", "VM_DSK_LOCATION") + '/clean/' + base_vm + '.qcow ',
+                     config.get("VMConfig", "VM_DSK_LOCATION") + '/' + self.name + '.qcow')
+        except Exception as e:
             raise Exception('ERROR : cannot register the vm - qcow '
-                            '\n Reason : %s' % err.rstrip())
+                            '\n Reason : %s' % e.rstrip())
 
-        cmd = 'cp ' + config.get("VMConfig", "VM_CONF_LOCATION") + '/clean/' + base_vm + '.conf ' + \
-              config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf'
-        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-        out, err = p.communicate()
-        if not p.returncode == 0:
+        try:
+            copyfile(config.get("VMConfig", "VM_CONF_LOCATION") + '/clean/' + base_vm + '.conf ',
+                     config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf')
+        except Exception as e:
             raise Exception('ERROR : cannot register the vm - conf '
-                            '\n Reason : %s' % err.rstrip())
+                            '\n Reason : %s' % e.rstrip())
 
         # TODO update conf file with required values
         f = open(config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf', 'r')
@@ -183,22 +184,41 @@ class VirtualMachine:
         f.write(new_data)
         f.close()
 
+    def register(self, base_vm):
+        """
+         this re-images the student vm to the base image
+        """
+        self.rebase(base_vm)
+
     def unregister(self):
         """
         un-registers vm for the student - removes qcow and required conf files
         """
-        cmd = 'rm ' + config.get("VMConfig", "VM_DSK_LOCATION") + '/' + self.name + '.qcow'
-        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-        out, err = p.communicate()
-        if not p.returncode == 0:
-            if 'No such file or directory' not in err.rstrip():
-                raise Exception('ERROR : cannot unregister the vm - qcow '
-                                '\n Reason : %s' % err.rstrip())
+        try:
+            for filename in glob(config.get("VMConfig", "VM_DSK_LOCATION") + '/' + self.name + '.*'):
+                os.remove(filename)
+        except Exception as e:
+            raise Exception('ERROR : cannot unregister the vm - qcow '
+                            '\n Reason : %s' % e.rstrip())
 
-        cmd = 'rm ' + config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf'
+        try:
+            os.remove(config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf')
+        except OSError as e:
+            if e.errno != errno.ENOENT:
+                raise Exception('ERROR : cannot unregister the vm - conf '
+                                '\n Reason : %s' % e.rstrip())
+
+    def save(self):
+        """
+        saves the current state of vms to restore to in future
+        """
+        cmd = 'xl save -c ' + config.get("VMConfig", "VM_DSK_LOCATION") + '/' + self.name + '.saved'
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:
-            if 'No such file or directory' not in err.rstrip():
-                raise Exception('ERROR : cannot unregister the vm - conf '
-                                '\n Reason : %s' % err.rstrip())
+            raise Exception('ERROR : cannot create snapshot the vm \n Reason : %s' % err.rstrip())
+
+    def restore(self):
+        """
+        restores from previous saved state or rebases from clean files
+        """
