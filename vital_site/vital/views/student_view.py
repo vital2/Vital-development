@@ -43,8 +43,6 @@ def course_vms(request, course_id):
     params['virtual_machines'] = virtual_machines
     params['course_id'] = course_id
 
-    logger.debug('>>>>>>>'+request.GET.get('message', ''))
-
     if not request.GET.get('message', '') == '':
         params['message'] = request.GET.get('message')
 
@@ -57,6 +55,7 @@ def unregister_from_course(request, course_id):
     user = request.user
     reg_courses = Registered_Course.objects.filter(course_id=course_id, user_id=user.id)
     course_to_remove = reg_courses[0]
+    # TODO save and get back Xen server for the vm
     XenClient().unregister_student_vms(request.user, course_to_remove.course)
     audit(request, course_to_remove, 'User '+str(user.id)+' unregistered from course -'+str(course_id))
     course_to_remove.delete()

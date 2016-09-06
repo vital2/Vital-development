@@ -2,7 +2,6 @@ from subprocess import Popen, PIPE
 from shutil import copyfile
 from glob import glob
 import os, errno
-
 import ConfigParser
 
 
