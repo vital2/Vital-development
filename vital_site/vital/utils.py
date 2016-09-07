@@ -93,10 +93,11 @@ class LoadBalancer:
 
     def get_best_server(self):
         server_configs = config.items('Servers')
+        #  TODO find best server
         # servers = []
         # for key, server_url in server_configs:
         #    servers.append(XenServer(key, server_url))
-        return XenServer('http://128.238.77.10:8000')
+        return XenServer('xen-server-dev-1', 'http://128.238.77.10:8000')
 
     def get_server(self, name):
-        return XenServer(config.get("Servers", name))
+        return XenServer(name, config.get("Servers", name))
