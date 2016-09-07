@@ -49,6 +49,7 @@ class XenClient:
         xen = LoadBalancer().get_best_server()
         vm = xen.start_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
         vm.xen_server = xen.name
+        logger.debug('>>>>>>>>>>>>>>>'+xen.name)
         return vm
 
     def stop_vm(self, server, user, course_id, vm_id):
