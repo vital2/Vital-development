@@ -5,7 +5,7 @@ import ConfigParser
 
 logger = logging.getLogger(__name__)
 config = ConfigParser.ConfigParser()
-config.read("/home/vlab/config.ini")
+config.read("/home/rdj259/config.ini")
 
 
 def audit(request, obj, action):
