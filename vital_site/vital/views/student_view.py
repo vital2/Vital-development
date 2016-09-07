@@ -55,8 +55,13 @@ def unregister_from_course(request, course_id):
     user = request.user
     reg_courses = Registered_Course.objects.filter(course_id=course_id, user_id=user.id)
     course_to_remove = reg_courses[0]
-    # TODO save and get back Xen server for the vm
-    XenClient().unregister_student_vms(request.user, course_to_remove.course)
+    vms = User_VM_Config.objects.filter(user_id=request.user.id,
+                                        vm_id__id=course_to_remove.course.virtual_machine_set())
+    xen = 'xen-server-dev-1'  # TODO find a way to default this value
+    if len(vms) > 0:
+        xen = vms[0].xen_server
+
+    XenClient().unregister_student_vms(xen, request.user, course_to_remove.course)
     audit(request, course_to_remove, 'User '+str(user.id)+' unregistered from course -'+str(course_id))
     course_to_remove.delete()
     return redirect('/vital/courses/registered/')
@@ -73,10 +78,11 @@ def start_vm(request, course_id, vm_id):
             # start vm with xen api which returns handle to the vm
             started_vm = XenClient().start_vm(request.user, course_id, vm_id)
             config.vnc_port = started_vm['vnc_port']
+            config.xen_server = started_vm['xen_server']
 
             # run novnc launch script
             # TODO replace vlab-dev-xen1 with configured values <based on LB & already existing vms>
-            start_novnc(config,started_vm)
+            start_novnc(config, started_vm)
             config.save()
     except Virtual_Machine.DoesNotExist as e:
         logger.error(str(e))
@@ -93,7 +99,7 @@ def stop_vm(request, course_id, vm_id):
             if 'No such process' not in err.rstrip():
                 raise Exception('ERROR : cannot stop the vm '
                                 '\n Reason : %s' % err.rstrip())
-        XenClient().stop_vm(request.user,course_id,vm_id)
+        XenClient().stop_vm(vms[0].xen_server, request.user, course_id, vm_id)
         config = Available_Config()
         config.category = 'TERM_PORT'
         config.value = vms[0].terminal_port
