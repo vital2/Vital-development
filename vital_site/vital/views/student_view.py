@@ -88,12 +88,13 @@ def start_vm(request, course_id, vm_id):
         logger.error(str(e))
     except Exception as e:
         logger.error(str(e))
-        XenClient().stop_vm(config.xen_server, request.user, course_id, vm_id)
-        released_conf = Available_Config()
-        released_conf.category = 'TERM_PORT'
-        released_conf.value = config.terminal_port
-        released_conf.save()
-        return redirect('/vital/courses/' + course_id + '/vms?message=' + vm.name + ' Unable to start VM')
+        if 'Connection refused' not in str(e).rstrip():
+            XenClient().stop_vm(config.xen_server, request.user, course_id, vm_id)
+            released_conf = Available_Config()
+            released_conf.category = 'TERM_PORT'
+            released_conf.value = config.terminal_port
+            released_conf.save()
+            return redirect('/vital/courses/' + course_id + '/vms?message=' + vm.name + ' Unable to start VM')
 
     return redirect('/vital/courses/' + course_id + '/vms?message='+ vm.name+' VM started')
 
