@@ -75,7 +75,7 @@ class XenAPI:
             raise Exception('ERROR : cannot list the vm. \n Reason : %s' % err.rstrip())
 
         output = out.split("\n")
-        os.killpg(os.getpgid(p.pid), signal.SIGTERM)
+        # os.killpg(os.getpgid(p.pid), signal.SIGTERM)
         line = output[1]
         line = " ".join(line.split())
         val = line.strip().split(" ")
