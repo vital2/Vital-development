@@ -2,6 +2,7 @@ from subprocess import Popen, PIPE
 from shutil import copyfile
 from glob import glob
 import os, errno
+import signal
 import ConfigParser
 
 
@@ -44,6 +45,7 @@ class XenAPI:
 
         vms = []
         output = out.strip().split("\n")
+        os.killpg(os.getpgid(p.pid), signal.SIGTERM)
         for i in range(1, len(output)):
             # removing first line
             line = output[i]
@@ -73,6 +75,7 @@ class XenAPI:
             raise Exception('ERROR : cannot list the vm. \n Reason : %s' % err.rstrip())
 
         output = out.split("\n")
+        os.killpg(os.getpgid(p.pid), signal.SIGTERM)
         line = output[1]
         line = " ".join(line.split())
         val = line.strip().split(" ")
@@ -138,10 +141,13 @@ class VirtualMachine:
         cmd = 'xl create ' + config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf'
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
-        if not p.returncode == 0:
-            raise Exception('ERROR : cannot start the vm. \n Reason : %s' % err.rstrip())
-        else:
-            return XenAPI().list_vm(self.name)
+        try:
+            if not p.returncode == 0:
+                raise Exception('ERROR : cannot start the vm. \n Reason : %s' % err.rstrip())
+            else:
+                return XenAPI().list_vm(self.name)
+        finally:
+            os.killpg(os.getpgid(p.pid), signal.SIGTERM)
 
     def shutdown(self):
         """
@@ -153,11 +159,14 @@ class VirtualMachine:
         cmd = 'xl destroy '+self.name
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
-        if not p.returncode == 0:
-            # silently ignore if vm is already destroyed
-            if 'invalid domain identifier' not in err.rstrip():
-                raise Exception('ERROR : cannot stop the vm '
-                                '\n Reason : %s' % err.rstrip())
+        try:
+            if not p.returncode == 0:
+                # silently ignore if vm is already destroyed
+                if 'invalid domain identifier' not in err.rstrip():
+                    raise Exception('ERROR : cannot stop the vm '
+                                    '\n Reason : %s' % err.rstrip())
+        finally:
+            os.killpg(os.getpgid(p.pid), signal.SIGTERM)
 
     def setup(self, base_vm):
         """
@@ -215,8 +224,11 @@ class VirtualMachine:
         cmd = 'xl save -c ' + config.get("VMConfig", "VM_DSK_LOCATION") + '/' + self.name + '.saved'
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
-        if not p.returncode == 0:
-            raise Exception('ERROR : cannot create snapshot the vm \n Reason : %s' % err.rstrip())
+        try:
+            if not p.returncode == 0:
+                raise Exception('ERROR : cannot create snapshot the vm \n Reason : %s' % err.rstrip())
+        finally:
+            os.killpg(os.getpgid(p.pid), signal.SIGTERM)
 
     def restore(self, base_vm):
         """
@@ -226,8 +238,11 @@ class VirtualMachine:
             cmd = 'xl restore ' + config.get("VMConfig", "VM_DSK_LOCATION") + '/' + self.name + '.saved'
             p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
             out, err = p.communicate()
-            if not p.returncode == 0:
-                raise Exception('ERROR : cannot restore snapshot the vm \n Reason : %s' % err.rstrip())
+            try:
+                if not p.returncode == 0:
+                    raise Exception('ERROR : cannot restore snapshot the vm \n Reason : %s' % err.rstrip())
+            finally:
+                os.killpg(os.getpgid(p.pid), signal.SIGTERM)
         else:
             try:
                 copyfile(config.get("VMConfig", "VM_CONF_LOCATION") + '/clean/' + base_vm + '.conf',
