@@ -58,8 +58,12 @@ def unregister_from_course(request, course_id):
     vms = User_VM_Config.objects.filter(user_id=request.user.id,
                                         vm_id__id=course_to_remove.course.virtual_machine_set())
     xen = 'xen-server-dev-1'  # TODO find a way to default this value
+    logger.debug('>>>>>>>' + len(vms))
     if len(vms) > 0:
         xen = vms[0].xen_server
+        logger.debug('>>>>>>>' + xen)
+
+
 
     XenClient().unregister_student_vms(xen, request.user, course_to_remove.course)
     audit(request, course_to_remove, 'User '+str(user.id)+' unregistered from course -'+str(course_id))
@@ -84,8 +88,10 @@ def start_vm(request, course_id, vm_id):
             # TODO replace vlab-dev-xen1 with configured values <based on LB & already existing vms>
             start_novnc(config, started_vm)
             config.save()
+            return redirect('/vital/courses/' + course_id + '/vms?message=' + vm.name + ' VM started')
     except Virtual_Machine.DoesNotExist as e:
         logger.error(str(e))
+        return redirect('/vital/courses/' + course_id + '/vms?message=Unable to start VM - ' + vm.name)
     except Exception as e:
         logger.error(str(e))
         if 'Connection refused' not in str(e).rstrip():
@@ -94,9 +100,7 @@ def start_vm(request, course_id, vm_id):
             released_conf.category = 'TERM_PORT'
             released_conf.value = config.terminal_port
             released_conf.save()
-        return redirect('/vital/courses/' + course_id + '/vms?message=' + vm.name + ' Unable to start VM')
-
-    return redirect('/vital/courses/' + course_id + '/vms?message='+ vm.name+' VM started')
+        return redirect('/vital/courses/' + course_id + '/vms?message=Unable to start VM - ' + vm.name)
 
 
 def stop_vm(request, course_id, vm_id):
