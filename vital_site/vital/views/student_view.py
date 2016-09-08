@@ -58,7 +58,7 @@ def start_novnc(config, started_vm):
         cmd = 'sh /var/www/clone.com/interim/noVNC/utils/launch.sh --listen '+available_config.value + \
               ' --vnc vlab-dev-xen1:' + started_vm['vnc_port']
         locked_conf.delete()
-        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        p = Popen(cmd.split(),  stdout=PIPE, stderr=PIPE)
         config.no_vnc_pid = p.pid
         line = p.stdout.readline()
         if 'on port' in line:
