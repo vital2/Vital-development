@@ -40,7 +40,6 @@ class XenClient:
             xen.setup_vm(user, str(user.id)+'_'+str(course.id)+'_'+str(vm.id), str(course.id)+'_'+str(vm.id))
 
     def unregister_student_vms(self, server, user, course):
-        logger.debug('>>>>>>>>>>>>>>>' + server)
         xen = LoadBalancer().get_server(server)
         for vm in course.virtual_machine_set.all():
             xen.stop_vm(server, user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
@@ -50,7 +49,6 @@ class XenClient:
         xen = LoadBalancer().get_best_server()
         vm = xen.start_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
         vm['xen_server'] = xen.name
-        logger.debug('>>>>>>>>>>>>>>>'+xen.name)
         return vm
 
     def stop_vm(self, server, user, course_id, vm_id):
