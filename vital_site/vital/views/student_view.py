@@ -54,12 +54,12 @@ def unregister_from_course(request, course_id):
     logger.debug("in course unregister")
     user = request.user
     course_to_remove = Registered_Course.objects.get(course_id=course_id, user_id=user.id)
-    logger.debug('>>>>>>>' + len(course_to_remove.course.virtual_machine_set.all()))
+    logger.debug('>>>>>>>' + str(len(course_to_remove.course.virtual_machine_set.all())))
     vms = User_VM_Config.objects.filter(user_id=request.user.id,
                                         vm_id__id=course_to_remove.course.virtual_machine_set.all())
 
     xen = 'xen-server-dev-1'  # TODO find a way to default this value
-    logger.debug('>>>>>>>' + len(vms))
+    logger.debug('>>>>>>>' + str(len(vms)))
     if len(vms) > 0:
         xen = vms[0].xen_server
         logger.debug('>>>>>>>' + xen)
