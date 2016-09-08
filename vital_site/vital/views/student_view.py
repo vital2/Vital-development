@@ -87,6 +87,7 @@ def start_vm(request, course_id, vm_id):
     except Virtual_Machine.DoesNotExist as e:
         logger.error(str(e))
     except Exception as e:
+        logger.error(str(e))
         XenClient().stop_vm(config.xen_server, request.user, course_id, vm_id)
         released_conf = Available_Config()
         released_conf.category = 'TERM_PORT'
