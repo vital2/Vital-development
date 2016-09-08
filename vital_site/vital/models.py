@@ -108,7 +108,7 @@ class Virtual_Machine(models.Model):
 
 
 class User_VM_Config(models.Model):
-    xen_server = models.CharField(max_length=10)
+    xen_server = models.CharField(max_length=50)
     vm = models.ForeignKey(Virtual_Machine)
     user_id = models.IntegerField(default=0)
     vnc_port = models.CharField(max_length=10)
