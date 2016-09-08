@@ -62,6 +62,7 @@ def unregister_from_course(request, course_id):
     if len(vms) > 0:
         xen = vms[0].xen_server
         logger.debug('>>>>>>>' + xen)
+    logger.debug('>>>>>>>' + xen)
 
     XenClient().unregister_student_vms(xen, request.user, course_to_remove.course)
     audit(request, course_to_remove, 'User '+str(user.id)+' unregistered from course -'+str(course_id))

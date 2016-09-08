@@ -3,7 +3,7 @@ import xmlrpclib
 from models import Audit
 import ConfigParser
 
-logger = logging.getLogger('vital')
+logger = logging.getLogger(__name__)
 config = ConfigParser.ConfigParser()
 config.read("/home/rdj259/config.ini")
 
