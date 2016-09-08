@@ -35,7 +35,7 @@ class XenClient:
 
     def register_student_vms(self, user, course):
         xen = LoadBalancer().get_best_server()
-        logger.debug(course.virtual_machine_set.all())
+        logger.debug(len(course.virtual_machine_set.all()))
         for vm in course.virtual_machine_set.all():
             xen.setup_vm(user, str(user.id)+'_'+str(course.id)+'_'+str(vm.id), str(course.id)+'_'+str(vm.id))
 

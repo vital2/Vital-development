@@ -60,6 +60,8 @@ def unregister_from_course(request, course_id):
     xen = 'xen-server-dev-1'  # TODO find a way to default this value
     if len(vms) > 0:
         xen = vms[0].xen_server
+        for vm_conf in vms:
+            stop_vm(request,course_id, vm_conf.vm.id)
 
     XenClient().unregister_student_vms(xen, request.user, course_to_remove.course)
     audit(request, course_to_remove, 'User '+str(user.id)+' unregistered from course -'+str(course_id))
