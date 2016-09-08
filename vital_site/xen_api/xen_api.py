@@ -135,7 +135,7 @@ class VirtualMachine:
         starts specified virtual machine
         :return: virtual machine stats with id, name, memory, vcpus, state, uptime, vnc_port
         """
-        cmd = 'xl create ' + config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf'
+        cmd = 'xl create -e ' + config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf'
         p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:
@@ -150,7 +150,7 @@ class VirtualMachine:
         """
         # xl destroy is used to forcefully shut down the vm
         # xl shutdown gracefully shuts down the vm but does not guarantee the shutdown
-        cmd = 'xl destroy '+self.name
+        cmd = 'xl shutdown '+self.name+' && xl destroy '+self.name
         p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:
