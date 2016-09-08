@@ -42,7 +42,7 @@ class XenClient:
     def unregister_student_vms(self, server, user, course):
         xen = LoadBalancer().get_server(server)
         for vm in course.virtual_machine_set.all():
-            xen.stop_vm(server, user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
+            xen.stop_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
             xen.cleanup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
 
     def start_vm(self, user, course_id, vm_id):
