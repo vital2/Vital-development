@@ -53,15 +53,15 @@ def course_vms(request, course_id):
 def unregister_from_course(request, course_id):
     logger.debug("in course unregister")
     user = request.user
-    course_to_remove = Registered_Course.objects.get(course_id=course_id, user_id=user.id)
-    # course_to_remove = reg_courses[0]
-    vms = User_VM_Config.objects.filter(user_id=request.user.id,
-                                        vm_id__id=course_to_remove.course.virtual_machine_set())
+    # course_to_remove = Registered_Course.objects.get(course_id=course_id, user_id=user.id)
+
+    # vms = User_VM_Config.objects.filter(user_id=request.user.id,
+    #                                    vm_id__id=course_to_remove.course.virtual_machine_set())
     xen = 'xen-server-dev-1'  # TODO find a way to default this value
-    logger.debug('>>>>>>>' + len(vms))
-    if len(vms) > 0:
-        xen = vms[0].xen_server
-        logger.debug('>>>>>>>' + xen)
+    # logger.debug('>>>>>>>' + len(vms))
+    # if len(vms) > 0:
+    #    xen = vms[0].xen_server
+    #    logger.debug('>>>>>>>' + xen)
     logger.debug('>>>>>>>' + xen)
 
     # XenClient().unregister_student_vms(xen, request.user, course_to_remove.course)
