@@ -42,7 +42,7 @@ class XenClient:
     def unregister_student_vms(self, server, user, course):
         xen = LoadBalancer().get_server(server)
         for vm in course.virtual_machine_set.all():
-            xen.stop_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
+            # xen.stop_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
             xen.cleanup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
 
     def start_vm(self, user, course_id, vm_id):
@@ -55,10 +55,18 @@ class XenClient:
         xen = LoadBalancer().get_server(server)
         xen.stop_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
 
-    def rebase_vm(self, server, user, course, vm_id):
+    def rebase_vm(self, server, user, course_id, vm_id):
         xen = LoadBalancer().get_server(server)
-        xen.stop_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm_id))
-        xen.setup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm_id), str(course.id) + '_' + str(vm_id))
+        # xen.stop_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
+        xen.setup_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id), str(course_id) + '_' + str(vm_id))
+
+    def save_vm(self, server, user, course_id, vm_id):
+        xen = LoadBalancer().get_server(server)
+        xen.save_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
+
+    def restore_vm(self, server, user, course_id, vm_id):
+        xen = LoadBalancer().get_server(server)
+        xen.restore_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id), str(course_id) + '_' + str(vm_id))
 
 
 class XenServer:
@@ -68,13 +76,10 @@ class XenServer:
         self.proxy = xmlrpclib.ServerProxy(url)
 
     def list_vms(self, user):
-        vms = self.proxy.xenapi.list_all_vms(user.email, user.password)
-        logger.debug(len(vms))
-        return vms
+        return self.proxy.xenapi.list_all_vms(user.email, user.password)
 
     def list_vm(self, user, vm_name):
-        vm = self.proxy.xenapi.list_vm(user.email, user.password, vm_name)
-        return vm
+        return self.proxy.xenapi.list_vm(user.email, user.password, vm_name)
 
     def setup_vm(self, user, vm_name, base_name):
         self.proxy.xenapi.setup_vm(user.email, user.password, vm_name, base_name)
@@ -87,6 +92,12 @@ class XenServer:
 
     def start_vm(self, user, vm_name):
         return self.proxy.xenapi.start_vm(user.email, user.password, vm_name)
+
+    def save_vm(self, user, vm_name):
+        return self.proxy.xenapi.save_vm(user.email, user.password, vm_name)
+
+    def restore_vm(self, user, vm_name, base_vm):
+        return self.proxy.xenapi.restore_vm(user.email, user.password, vm_name, base_vm)
 
 
 class LoadBalancer:

@@ -115,6 +115,12 @@ class XenAPI:
         """
         VirtualMachine(vm_name).cleanup()
 
+    def save_vm(self, vm_name):
+        VirtualMachine(vm_name).save()
+
+    def restore_vm(self, vm_name, base_vm):
+        VirtualMachine(vm_name).restore(base_vm)
+
 
 class VirtualMachine:
     """
@@ -201,6 +207,7 @@ class VirtualMachine:
                 raise Exception('ERROR : cannot unregister the vm - conf '
                                 '\n Reason : %s' % str(e).rstrip())
 
+    # TODO : IDEA :: Auto save - for forced VM shutdowns .autosaved
     def save(self):
         """
         saves the current state of vms to restore to in future
@@ -211,8 +218,31 @@ class VirtualMachine:
         if not p.returncode == 0:
             raise Exception('ERROR : cannot create snapshot the vm \n Reason : %s' % err.rstrip())
 
-    def restore(self):
+    def restore(self, base_vm):
         """
         restores from previous saved state or rebases from clean files
         """
-        pass
+        if os.path.isfile(config.get("VMConfig", "VM_DSK_LOCATION") + '/' + self.name + '.saved'):
+            cmd = 'xl restore ' + config.get("VMConfig", "VM_DSK_LOCATION") + '/' + self.name + '.saved'
+            p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+            out, err = p.communicate()
+            if not p.returncode == 0:
+                raise Exception('ERROR : cannot restore snapshot the vm \n Reason : %s' % err.rstrip())
+        else:
+            try:
+                copyfile(config.get("VMConfig", "VM_CONF_LOCATION") + '/clean/' + base_vm + '.conf',
+                         config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf')
+            except Exception as e:
+                raise Exception('ERROR : cannot setup the vm - conf '
+                                '\n Reason : %s' % str(e).rstrip())
+
+            # TODO update conf file with required values
+            f = open(config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf', 'r')
+            file_data = f.read()
+            f.close()
+
+            new_data = file_data.replace('<VM_NAME>', self.name)
+
+            f = open(config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf', 'w')
+            f.write(new_data)
+            f.close()

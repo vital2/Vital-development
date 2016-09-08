@@ -49,24 +49,26 @@ def course_vms(request, course_id):
     return render(request, 'vital/course_vms.html', params)
 
 
-@login_required(login_url='/vital/login/')
-def unregister_from_course(request, course_id):
-    logger.debug("in course unregister")
-    user = request.user
-    course_to_remove = Registered_Course.objects.get(course_id=course_id, user_id=user.id)
-    vms = User_VM_Config.objects.filter(user_id=request.user.id,
-                                        vm_id__id=course_to_remove.course.virtual_machine_set.all())
+def start_novnc(config, started_vm):
+    flag = True
+    while flag:
+        available_config = Available_Config.objects.filter(category='TERM_PORT').order_by('id')[0]
+        locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
 
-    xen = 'xen-server-dev-1'  # TODO find a way to default this value
-    if len(vms) > 0:
-        xen = vms[0].xen_server
-        for vm_conf in vms:
-            stop_vm(request,course_id, vm_conf.vm.id)
+        cmd = 'sh /var/www/clone.com/interim/noVNC/utils/launch.sh --listen '+available_config.value + \
+              ' --vnc vlab-dev-xen1:' + started_vm['vnc_port']
+        locked_conf.delete()
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        config.no_vnc_pid = p.pid
+        line = p.stdout.readline()
+        if 'on port' in line:
+            port = line[line.index('on port')+7:].strip()
+            config.terminal_port = port
+            flag = False
 
-    XenClient().unregister_student_vms(xen, request.user, course_to_remove.course)
-    audit(request, course_to_remove, 'User '+str(user.id)+' unregistered from course -'+str(course_id))
-    course_to_remove.delete()
-    return redirect('/vital/courses/registered/')
+
+def dummy_console(request):
+    return render(request, 'vital/dummy.html')
 
 
 @login_required(login_url='/vital/login/')
@@ -102,44 +104,47 @@ def start_vm(request, course_id, vm_id):
 
 
 def stop_vm(request, course_id, vm_id):
-    vms = User_VM_Config.objects.filter(user_id=request.user.id,vm_id=vm_id)
-    if len(vms) == 1:
-        cmd = 'kill ' +vms[0].no_vnc_pid
-        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-        out, err = p.communicate()
-        if not p.returncode == 0:
-            if 'No such process' not in err.rstrip():
-                raise Exception('ERROR : cannot stop the vm '
-                                '\n Reason : %s' % err.rstrip())
-        XenClient().stop_vm(vms[0].xen_server, request.user, course_id, vm_id)
-        config = Available_Config()
-        config.category = 'TERM_PORT'
-        config.value = vms[0].terminal_port
-        config.save()
-        vms[0].delete()
+    vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
+
+    cmd = 'kill ' + vm.no_vnc_pid
+    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+    out, err = p.communicate()
+    if not p.returncode == 0:
+        if 'No such process' not in err.rstrip():
+            raise Exception('ERROR : cannot stop the vm '
+                            '\n Reason : %s' % err.rstrip())
+    XenClient().stop_vm(vm.xen_server, request.user, course_id, vm_id)
+    config = Available_Config()
+    config.category = 'TERM_PORT'
+    config.value = vm.terminal_port
+    config.save()
+    vm.delete()
     return redirect('/vital/courses/' + course_id + '/vms?message=VM stopped...')
 
 
-def start_novnc(config, started_vm):
-    flag = True
-    while flag:
-        available_config = Available_Config.objects.filter(category='TERM_PORT').order_by('id')[0]
-        locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
-
-        cmd = 'sh /var/www/clone.com/interim/noVNC/utils/launch.sh --listen '+available_config.value + \
-              ' --vnc vlab-dev-xen1:' + started_vm['vnc_port']
-        locked_conf.delete()
-        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-        config.no_vnc_pid = p.pid
-        line = p.stdout.readline()
-        if 'on port' in line:
-            port = line[line.index('on port')+7:].strip()
-            config.terminal_port = port
-            flag = False
+@login_required(login_url='/vital/login/')
+def rebase_vm(request, course_id, vm_id):
+    logger.debug("In rebase vm")
+    vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
+    stop_vm(request, course_id, vm_id)
+    XenClient().rebase_vm(vm.xen_server, request.user, course_id, vm_id)
+    return redirect('/vital/courses/' + course_id + '/vms?message=VM rebased to initial state..')
 
 
-def dummy_console(request):
-    return render(request, 'vital/dummy.html')
+@login_required(login_url='/vital/login/')
+def save_vm(request, course_id, vm_id):
+    logger.debug("In save vm")
+    vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
+    XenClient().save_vm(vm.xen_server, request.user, course_id, vm_id)
+    return redirect('/vital/courses/' + course_id + '/vms?message=VM state saved..')
+
+
+@login_required(login_url='/vital/login/')
+def restore_vm(request, course_id, vm_id):
+    logger.debug("In save vm")
+    vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
+    XenClient().restore_vm(vm.xen_server, request.user, course_id, vm_id)
+    return redirect('/vital/courses/' + course_id + '/vms?message=VM state restored..')
 
 
 @login_required(login_url='/vital/login/')
@@ -171,3 +176,23 @@ def register_for_course(request):
     else:
         form = Course_Registration_Form()
     return render(request, 'vital/course_register.html', {'form': form, 'error_message': error_message})
+
+
+@login_required(login_url='/vital/login/')
+def unregister_from_course(request, course_id):
+    logger.debug("in course unregister")
+    user = request.user
+    course_to_remove = Registered_Course.objects.get(course_id=course_id, user_id=user.id)
+    vms = User_VM_Config.objects.filter(user_id=request.user.id,
+                                        vm_id__id=course_to_remove.course.virtual_machine_set.all())
+
+    xen = 'xen-server-dev-1'  # TODO find a way to default this value
+    if len(vms) > 0:
+        xen = vms[0].xen_server
+        for vm_conf in vms:
+            stop_vm(request,course_id, vm_conf.vm.id)
+
+    XenClient().unregister_student_vms(xen, request.user, course_to_remove.course)
+    audit(request, course_to_remove, 'User '+str(user.id)+' unregistered from course -'+str(course_id))
+    course_to_remove.delete()
+    return redirect('/vital/courses/registered/')

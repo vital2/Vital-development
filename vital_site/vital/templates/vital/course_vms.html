@@ -73,7 +73,7 @@ $(window).load(function(){
                             {% endif %}
                         </div>
                         <div style="float:left;width:33%;height:33%;" align="left">
-                            <a href=#2>
+                            <a href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/save'>
                                 <img src="{% static  'vital/save-state.png' %}" width="30px" height="30px" title="Save state"/>
                             </a></div>
                         <div style="float:left;width:33%;height:33%;" align="center">
@@ -86,12 +86,12 @@ $(window).load(function(){
                             {% endif %}
                         </div>
                         <div style="float:left;width:33%;height:33%;" align="right">
-                            <a href=#3>
+                            <a href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/restore'>
                                 <img src="{% static  'vital/backup-restore.png' %}" width="30px" height="30px" title="Restore state"/>
                             </a>
                         </div>
                         <div style="height:33%;vertical-align:center">
-                            <a href=#4>
+                            <a href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/rebase'>
                                 <img src="{% static  'vital/reimage.png' %}" width="30px" height="30px" title="Reimage VM"/>
                             </a>
                         </div>

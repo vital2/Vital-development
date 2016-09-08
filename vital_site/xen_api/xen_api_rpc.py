@@ -39,6 +39,16 @@ class XenAPIExposer:
 
     @expose
     @requires_authentication_only
+    def save_vm(self, user, passwd, vm_name):
+        XenAPI().save_vm(vm_name)
+
+    @expose
+    @requires_authentication_only
+    def restore_vm(self, user, passwd, vm_name, base_vm):
+        XenAPI().restore_vm(vm_name, base_vm)
+
+    @expose
+    @requires_authentication_only
     def list_all_vms(self, user, passwd):
         return XenAPI().list_all_vms()
 
