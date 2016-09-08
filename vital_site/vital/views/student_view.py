@@ -69,10 +69,10 @@ def unregister_from_course(request, course_id):
 
 @login_required(login_url='/vital/login/')
 def start_vm(request, course_id, vm_id):
+    config = User_VM_Config()
     try:
         with transaction.atomic():
             vm = Virtual_Machine.objects.get(pk=vm_id)
-            config = User_VM_Config()
             config.vm = vm
             config.user_id = request.user.id
             # start vm with xen api which returns handle to the vm
@@ -86,6 +86,14 @@ def start_vm(request, course_id, vm_id):
             config.save()
     except Virtual_Machine.DoesNotExist as e:
         logger.error(str(e))
+    except Exception as e:
+        XenClient().stop_vm(config.xen_server, request.user, course_id, vm_id)
+        released_conf = Available_Config()
+        released_conf.category = 'TERM_PORT'
+        released_conf.value = config.terminal_port
+        released_conf.save()
+        return redirect('/vital/courses/' + course_id + '/vms?message=' + vm.name + ' Unable to start VM')
+
     return redirect('/vital/courses/' + course_id + '/vms?message='+ vm.name+' VM started')
 
 
