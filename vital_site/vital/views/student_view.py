@@ -135,57 +135,6 @@ def rebase_vm(request, course_id, vm_id):
 
 
 @login_required(login_url='/vital/login/')
-def save_vm(request, course_id, vm_id):
-    logger.debug("In save vm")
-    vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
-    XenClient().save_vm(vm.xen_server, request.user, course_id, vm_id)
-    return redirect('/vital/courses/' + course_id + '/vms?message=VM state saved..')
-
-
-@login_required(login_url='/vital/login/')
-def restore_vm(request, course_id, vm_id):
-    logger.debug("In save vm")
-    xen_name = 'xen-server-dev-1'
-    try:
-        vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
-        xen_name = vm.xen_server
-        stop_vm(request, course_id, vm_id)
-    except User_VM_Config.DoesNotExist as e:
-        pass
-    # TODO replace with correct xen server - server where rest of vms are there or best vm
-    XenClient().restore_vm(xen_name, request.user, course_id, vm_id)
-
-    config = User_VM_Config()
-    try:
-        with transaction.atomic():
-            vm = Virtual_Machine.objects.get(pk=vm_id)
-            config.vm = vm
-            config.user_id = request.user.id
-            # list vm with xen api which returns handle to the vm
-            started_vm = XenClient().list_vm(xen_name, request.user, course_id, vm_id)
-            config.vnc_port = started_vm['vnc_port']
-            config.xen_server = started_vm['xen_server']
-
-            # run novnc launch script
-            # TODO replace vlab-dev-xen1 with configured values <based on LB & already existing vms>
-            start_novnc(config, started_vm)
-            config.save()
-            return redirect('/vital/courses/' + course_id + '/vms?message=VM state restored and restarted..')
-    except Virtual_Machine.DoesNotExist as e:
-        logger.error(str(e))
-        return redirect('/vital/courses/' + course_id + '/vms?message=Unable to restore VM - ' + vm.name)
-    except Exception as e:
-        logger.error(str(e))
-        if 'Connection refused' not in str(e).rstrip():
-            XenClient().stop_vm(config.xen_server, request.user, course_id, vm_id)
-            released_conf = Available_Config()
-            released_conf.category = 'TERM_PORT'
-            released_conf.value = config.terminal_port
-            released_conf.save()
-        return redirect('/vital/courses/' + course_id + '/vms?message=Unable to restore VM - ' + vm.name)
-
-
-@login_required(login_url='/vital/login/')
 def register_for_course(request):
     logger.debug("in register for course")
     error_message = ''
