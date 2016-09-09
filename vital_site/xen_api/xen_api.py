@@ -234,7 +234,7 @@ class VirtualMachine:
         """
         saves the current state of vms to restore to in future
         """
-        cmd = 'xl save -c ' + config.get("VMConfig", "VM_DSK_LOCATION") + '/' + self.name + '.saved'
+        cmd = 'xl save -c ' + self.name + ' ' + config.get("VMConfig", "VM_DSK_LOCATION") + '/' + self.name + '.saved'
         p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:
