@@ -145,12 +145,14 @@ def save_vm(request, course_id, vm_id):
 @login_required(login_url='/vital/login/')
 def restore_vm(request, course_id, vm_id):
     logger.debug("In save vm")
+    xen_name = 'xen-server-dev-1'
     try:
         vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
+        xen_name = vm.xen_server
     except User_VM_Config.DoesNotExist as e:
-        stop_vm(request, course_id, vm_id)
+        pass
     # TODO replace with correct xen server - server where rest of vms are there or best vm
-    XenClient().restore_vm('xen-server-dev-1', request.user, course_id, vm_id)
+    XenClient().restore_vm(xen_name, request.user, course_id, vm_id)
     return redirect('/vital/courses/' + course_id + '/vms?message=VM state restored..')
 
 
