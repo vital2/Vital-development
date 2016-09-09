@@ -149,6 +149,7 @@ def restore_vm(request, course_id, vm_id):
     try:
         vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
         xen_name = vm.xen_server
+        stop_vm(request, course_id, vm_id)
     except User_VM_Config.DoesNotExist as e:
         pass
     # TODO replace with correct xen server - server where rest of vms are there or best vm
