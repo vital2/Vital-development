@@ -125,9 +125,12 @@ def stop_vm(request, course_id, vm_id):
 @login_required(login_url='/vital/login/')
 def rebase_vm(request, course_id, vm_id):
     logger.debug("In rebase vm")
-    vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
-    stop_vm(request, course_id, vm_id)
-    XenClient().rebase_vm(vm.xen_server, request.user, course_id, vm_id)
+    try:
+        vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
+        stop_vm(request, course_id, vm_id)
+    except User_VM_Config.DoesNotExist as e:
+        pass
+    XenClient().rebase_vm(request.user, course_id, vm_id)
     return redirect('/vital/courses/' + course_id + '/vms?message=VM rebased to initial state..')
 
 

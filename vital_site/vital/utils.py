@@ -46,6 +46,7 @@ class XenClient:
             xen.cleanup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
 
     def start_vm(self, user, course_id, vm_id):
+        logger.debug('XenClient - in start_vm')
         xen = LoadBalancer().get_best_server()
         vm = xen.start_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
         vm['xen_server'] = xen.name
@@ -55,8 +56,8 @@ class XenClient:
         xen = LoadBalancer().get_server(server)
         xen.stop_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
 
-    def rebase_vm(self, server, user, course_id, vm_id):
-        xen = LoadBalancer().get_server(server)
+    def rebase_vm(self, user, course_id, vm_id):
+        xen = LoadBalancer().get_best_server()
         # xen.stop_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
         xen.setup_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id), str(course_id) + '_' + str(vm_id))
 

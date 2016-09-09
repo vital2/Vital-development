@@ -171,7 +171,6 @@ class VirtualMachine:
             raise Exception('ERROR : cannot find zombie vms. \n Reason : %s' % err.rstrip())
 
         output = out.split("\n")
-        print '>>>>>>' + str(len(output))
         if len(output) > 2:
             line = output[0]
             line = " ".join(line.split())
