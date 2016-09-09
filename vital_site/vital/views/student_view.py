@@ -170,10 +170,10 @@ def restore_vm(request, course_id, vm_id):
             # TODO replace vlab-dev-xen1 with configured values <based on LB & already existing vms>
             start_novnc(config, started_vm)
             config.save()
-            return redirect('/vital/courses/' + course_id + '/vms?message=' + vm.name + ' VM started')
+            return redirect('/vital/courses/' + course_id + '/vms?message=VM state restored and restarted..')
     except Virtual_Machine.DoesNotExist as e:
         logger.error(str(e))
-        return redirect('/vital/courses/' + course_id + '/vms?message=Unable to start VM - ' + vm.name)
+        return redirect('/vital/courses/' + course_id + '/vms?message=Unable to restore VM - ' + vm.name)
     except Exception as e:
         logger.error(str(e))
         if 'Connection refused' not in str(e).rstrip():
@@ -182,7 +182,7 @@ def restore_vm(request, course_id, vm_id):
             released_conf.category = 'TERM_PORT'
             released_conf.value = config.terminal_port
             released_conf.save()
-    return redirect('/vital/courses/' + course_id + '/vms?message=VM state restored and restarted..')
+        return redirect('/vital/courses/' + course_id + '/vms?message=Unable to restore VM - ' + vm.name)
 
 
 @login_required(login_url='/vital/login/')
