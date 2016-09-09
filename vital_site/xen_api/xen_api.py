@@ -171,14 +171,15 @@ class VirtualMachine:
             raise Exception('ERROR : cannot find zombie vms. \n Reason : %s' % err.rstrip())
 
         output = out.split("\n")
-        line = output[0]
-        line = " ".join(line.split())
-        val = line.strip().split(" ")
-        cmd = 'kill ' + val[1]
-        p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
-        out, err = p.communicate()
-        if not p.returncode == 0:
-            raise Exception('ERROR : cannot kill zombie vms. [%s] \n Reason : %s' % (cmd, err.rstrip()))
+        if len(output) > 1:
+            line = output[0]
+            line = " ".join(line.split())
+            val = line.strip().split(" ")
+            cmd = 'kill ' + val[1]
+            p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
+            out, err = p.communicate()
+            if not p.returncode == 0:
+                raise Exception('ERROR : cannot kill zombie vms.\n Reason : %s' % (err.rstrip()))
 
     def setup(self, base_vm):
         """
