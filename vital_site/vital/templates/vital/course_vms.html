@@ -50,18 +50,29 @@ $(window).load(function(){
 	}
     </style>
     <style>
+    .inProgress{
+        background:rgba(0, 0, 0, .5);
+	    text-align:center;
+	    opacity:0;
+	    width:100%;height:100%;
+	    -webkit-transition: all 0.3s ease-in-out;
+	    -moz-transition: all 0.3s ease-in-out;
+	    -o-transition: all 0.3s ease-in-out;
+	    -ms-transition: all 0.3s ease-in-out;
+	    transition: all 0.3s ease-in-out;
+    }
 .loader {
     position: absolute;
-    border: 2px solid #f3f3f3;
+    border: 5px solid #f3f3f3;
     border-radius: 50%;
-    border-top: 2px solid #3498db;
-    width: 10px;
-    height: 10px;
+    border-top: 5px solid #3498db;
+    width: 20px;
+    height: 20px;
     -webkit-animation: spin 2s linear infinite;
     animation: spin 2s linear infinite;
     z-index: 100;
-    top: 100px;
-    left:100px;
+    top: 75px;
+    left:75px;
 }
 
 @-webkit-keyframes spin {
