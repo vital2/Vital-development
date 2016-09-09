@@ -165,7 +165,7 @@ class VirtualMachine:
     # this is a work around to deal with zombie
     def kill_zombie_vms(self):
         cmd = 'ps -ef | grep qemu-dm | grep ' + self.name
-        p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:
             raise Exception('ERROR : cannot find zombie vms. \n Reason : %s' % err.rstrip())
