@@ -172,7 +172,7 @@ class VirtualMachine:
 
         output = out.split("\n")
         print '>>>>>>' + str(len(output))
-        if len(output) > 1:
+        if len(output) > 2:
             line = output[0]
             line = " ".join(line.split())
             val = line.strip().split(" ")
