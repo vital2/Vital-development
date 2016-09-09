@@ -51,14 +51,16 @@ $(window).load(function(){
     </style>
     <style>
 .loader {
-  border: 2px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 2px solid #3498db;
-  width: 10px;
-  height: 10px;
-  -webkit-animation: spin 2s linear infinite;
-  animation: spin 2s linear infinite;
-    z-index: 100;top: -50px;
+    position: absolute;
+    border: 2px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 2px solid #3498db;
+    width: 10px;
+    height: 10px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    z-index: 100;
+    top: 50px;
 }
 
 @-webkit-keyframes spin {
@@ -78,9 +80,9 @@ $(window).load(function(){
     {% if virtual_machines %}
 
     <div id="center" align="center" style="width: 800px">
-        <div width="500px">
+        <div width="500px" style="position: relative">
             {% for vm in virtual_machines %}
-                <div class="loader">
+                <div class="loader"></div>
                 <div class="box" width="25%" style='background:url({% static  vm.type.icon_location %}) no-repeat 50% 50%;background-size: contain;'
                      title={{ vm.name }}>
 		            <div class="overlay" style="width:100%;height:100%">
@@ -122,7 +124,6 @@ $(window).load(function(){
                     {% endif %}
 		            <div style="width:100%; margin-top:-5px; font-weight:bold" align="center">{{ vm.name }}</div>
 		        </div>
-                </div>
             {% endfor %}
         </div>
      </div>
