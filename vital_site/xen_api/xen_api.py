@@ -2,6 +2,7 @@ from subprocess import Popen, PIPE
 from shutil import copyfile
 from glob import glob
 import os, errno
+import signal
 import ConfigParser
 
 
@@ -152,12 +153,24 @@ class VirtualMachine:
         # xl shutdown gracefully shuts down the vm but does not guarantee the shutdown
         cmd = 'xl destroy '+self.name
         p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
+        self.kill_child_processes(p.pid)
         out, err = p.communicate()
         if not p.returncode == 0:
             # silently ignore if vm is already destroyed
             if 'invalid domain identifier' not in err.rstrip():
                 raise Exception('ERROR : cannot stop the vm '
                                 '\n Reason : %s' % err.rstrip())
+
+        # This is an additional step which probably could be removed when a native interface to xl is ready
+        # this is a work around to deal with zombie
+    def kill_child_processes(self, parent_pid, sig=signal.SIGTERM):
+        ps_command = Popen("ps -o pid --ppid %d --noheaders" % parent_pid, shell=True,
+                                      stdout=PIPE)
+        ps_output = ps_command.stdout.read()
+        retcode = ps_command.wait()
+        assert retcode == 0, "ps command returned %d" % retcode
+        for pid_str in ps_output.split("\n")[:-1]:
+            os.kill(int(pid_str), sig)
 
     def setup(self, base_vm):
         """
