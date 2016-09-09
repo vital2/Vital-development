@@ -141,7 +141,6 @@ class VirtualMachine:
         if not p.returncode == 0:
             raise Exception('ERROR : cannot start the vm. \n Reason : %s' % err.rstrip())
         else:
-            p.terminate()
             return XenAPI().list_vm(self.name)
 
     def shutdown(self):
@@ -230,20 +229,4 @@ class VirtualMachine:
             if not p.returncode == 0:
                 raise Exception('ERROR : cannot restore snapshot the vm \n Reason : %s' % err.rstrip())
         else:
-            try:
-                copyfile(config.get("VMConfig", "VM_CONF_LOCATION") + '/clean/' + base_vm + '.conf',
-                         config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf')
-            except Exception as e:
-                raise Exception('ERROR : cannot setup the vm - conf '
-                                '\n Reason : %s' % str(e).rstrip())
-
-            # TODO update conf file with required values
-            f = open(config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf', 'r')
-            file_data = f.read()
-            f.close()
-
-            new_data = file_data.replace('<VM_NAME>', self.name)
-
-            f = open(config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf', 'w')
-            f.write(new_data)
-            f.close()
+            self.setup(base_vm)
