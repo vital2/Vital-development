@@ -178,7 +178,7 @@ class VirtualMachine:
         p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:
-            raise Exception('ERROR : cannot kill zombie vms. [%s] \n Reason : %s' %cmd, err.rstrip())
+            raise Exception('ERROR : cannot kill zombie vms. [%s] \n Reason : %s' % (cmd, err.rstrip()))
 
     def setup(self, base_vm):
         """
