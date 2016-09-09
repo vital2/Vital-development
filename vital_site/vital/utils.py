@@ -30,7 +30,8 @@ class XenClient:
 
     def list_vm(self, server,  user, course_id, vm_id):
         logger.debug('>>>>>>>>IN LIST VM>>>>>>')
-        return LoadBalancer().get_server(server).list_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
+        vm = LoadBalancer().get_server(server).list_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
+        vm['xen_server'] = server
 
     def register_student_vms(self, user, course):
         xen = LoadBalancer().get_best_server()
