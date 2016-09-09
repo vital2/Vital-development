@@ -154,7 +154,35 @@ def restore_vm(request, course_id, vm_id):
         pass
     # TODO replace with correct xen server - server where rest of vms are there or best vm
     XenClient().restore_vm(xen_name, request.user, course_id, vm_id)
-    return redirect('/vital/courses/' + course_id + '/vms?message=VM state restored..')
+
+    config = User_VM_Config()
+    try:
+        with transaction.atomic():
+            vm = Virtual_Machine.objects.get(pk=vm_id)
+            config.vm = vm
+            config.user_id = request.user.id
+            # list vm with xen api which returns handle to the vm
+            started_vm = XenClient().list_vm(xen_name, request.user, course_id, vm_id)
+            config.vnc_port = started_vm['vnc_port']
+            config.xen_server = started_vm['xen_server']
+
+            # run novnc launch script
+            # TODO replace vlab-dev-xen1 with configured values <based on LB & already existing vms>
+            start_novnc(config, started_vm)
+            config.save()
+            return redirect('/vital/courses/' + course_id + '/vms?message=' + vm.name + ' VM started')
+    except Virtual_Machine.DoesNotExist as e:
+        logger.error(str(e))
+        return redirect('/vital/courses/' + course_id + '/vms?message=Unable to start VM - ' + vm.name)
+    except Exception as e:
+        logger.error(str(e))
+        if 'Connection refused' not in str(e).rstrip():
+            XenClient().stop_vm(config.xen_server, request.user, course_id, vm_id)
+            released_conf = Available_Config()
+            released_conf.category = 'TERM_PORT'
+            released_conf.value = config.terminal_port
+            released_conf.save()
+    return redirect('/vital/courses/' + course_id + '/vms?message=VM state restored and restarted..')
 
 
 @login_required(login_url='/vital/login/')

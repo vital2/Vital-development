@@ -30,8 +30,8 @@ class XenClient:
         logger.debug(vms)
         return [vm for vm in vms if vm['name'].startswith(prefix)]
 
-    def list_vm(self, server,  user, vm_name):
-        return LoadBalancer().get_server(server).list_vm(vm_name)
+    def list_vm(self, server,  user, course_id, vm_id):
+        return LoadBalancer().get_server(server).list_vm(str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
 
     def register_student_vms(self, user, course):
         xen = LoadBalancer().get_best_server()
