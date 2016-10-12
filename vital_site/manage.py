@@ -2,7 +2,6 @@
 import os
 import sys
 
-# main module
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vital_site.settings")
 
