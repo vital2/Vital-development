@@ -110,7 +110,7 @@ class LoadBalancer:
         # servers = []
         # for key, server_url in server_configs:
         #    servers.append(XenServer(key, server_url))
-        return XenServer('xen-server-dev-1', 'http://128.238.77.10:8000')
+        return XenServer('xen-server-dev-1', 'http://192.168.35.33:8000')
 
     def get_server(self, name):
         return XenServer(name, config.get("Servers", name))
