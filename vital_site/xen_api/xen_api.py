@@ -122,6 +122,8 @@ class XenAPI:
     def restore_vm(self, vm_name, base_vm):
         VirtualMachine(vm_name).restore(base_vm)
 
+    def setup_course_nets(self):
+        pass
 
 class VirtualMachine:
     """

@@ -1,0 +1,2 @@
+# unmount gluster
+# reset iptables
