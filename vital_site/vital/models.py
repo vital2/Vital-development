@@ -92,13 +92,6 @@ class Virtual_Machine_Type(models.Model):
     icon_location = models.CharField(max_length=500)
 
 
-class Base_Image(models.Model):
-    name = models.CharField(max_length=200)
-    backing_file = models.CharField(max_length=500)
-    reimage_file = models.CharField(max_length=500, null=True)
-    memory = models.IntegerField(default=0)
-
-
 class Virtual_Machine(models.Model):
     course = models.ForeignKey(Course)
     name = models.CharField(max_length=200)
@@ -123,7 +116,14 @@ class Available_Config(models.Model):
 
 class Network_Configuration(models.Model):
     name = models.CharField(max_length=200)
+    course = models.ForeignKey(Course)
     virtual_machine = models.ForeignKey(Virtual_Machine)
+
+class User_Network_Configuration(models.Model):
+    vm = models.ForeignKey(Virtual_Machine)
+    user_id = models.IntegerField(default=0)
+    bridge_name = models.CharField(max_length=50)
+    mac_id = models.CharField(max_length=50)
 
 
 class Faculty(models.Model):
