@@ -67,7 +67,7 @@ class XenAPIExposer:
     def cleanup_vm(self, user, passwd, vm_name):
         XenAPI().cleanup_vm(vm_name)
 
-server = SimpleXMLRPCServer(('128.238.77.10', 8000), logRequests=True, allow_none=True)
+server = SimpleXMLRPCServer(('192.168.35.33', 8000), logRequests=True, allow_none=True)
 server.register_instance(XenAPIExposer())
 
 try:
