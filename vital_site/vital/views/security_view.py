@@ -76,13 +76,14 @@ def activate(request):
                         user.save()
                         logger.debug('activated..'+user.email)
                         form = Authentication_Form()
-                        return render(request, 'vital/login.html', {'form': form })
+                        #return render(request, 'vital/login.html', {'form': form })
+                        return redirect('/vital')
                     else:
                         message = 'Please check your activation code'
                 else:
                     message = 'User is already active'
                     form = Authentication_Form()
-                    return render(request, '/vital', {'form': form })
+                    return render(request, 'vital/login.html', {'form': form })
             except VLAB_User.DoesNotExist as e:
                 message = 'Please check your activation code'
                 logger.debug('cannot be activated..'+form.cleaned_data['user_email'])
