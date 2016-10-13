@@ -43,11 +43,10 @@ class XenClient:
 
             # TODO change this to accept other private networks
             # Done just to accept class nets
-            class_net = vm.network_configuration_set.filter(is_course_net=True)[0]
+            class_net = vm.network_configuration_set.filter(is_course_net=True)[0
+            vif = None
             if class_net is not None:
                 vif = '\'mac=' + locked_conf.value + ', bridge=' + class_net.name + '\''
-                xen.setup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id),
-                             str(course.id) + '_' + str(vm.id), vif)
                 user_net_config = User_Network_Configuration()
                 user_net_config.bridge_name = class_net.name
                 user_net_config.user_id = user.id
@@ -55,6 +54,8 @@ class XenClient:
                 user_net_config.vm = vm
                 user_net_config.save()
                 locked_conf.delete()
+            xen.setup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id),
+                         str(course.id) + '_' + str(vm.id), vif)
 
 
     def unregister_student_vms(self, server, user, course):
