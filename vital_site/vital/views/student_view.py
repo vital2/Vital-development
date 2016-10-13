@@ -53,7 +53,7 @@ def start_novnc(config, started_vm):
     flag = True
     while flag:
         available_config = Available_Config.objects.filter(category='TERM_PORT').order_by('id')[0]
-        locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
+        locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)[0]
         # locked changed from available
         cmd = 'sh /var/www/clone.com/interim/noVNC/utils/launch.sh --listen '+locked_conf.value + \
               ' --vnc vlab-dev-xen1:' + started_vm['vnc_port']
