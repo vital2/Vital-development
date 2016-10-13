@@ -101,13 +101,14 @@ class XenAPI:
     def server_stats(self):
         pass
 
-    def setup_vm(self, vm_name, base_vm):
+    def setup_vm(self, vm_name, base_vm, vif=None):
         """
         registers a new vm
         :param vm_name name of the new VM
         :param base_vm name of base vm qcow and conf
+        :param vif virtual interface string for vm
         """
-        VirtualMachine(vm_name).setup(base_vm)
+        VirtualMachine(vm_name).setup(base_vm, vif)
 
     def cleanup_vm(self, vm_name):
         """
@@ -122,8 +123,6 @@ class XenAPI:
     def restore_vm(self, vm_name, base_vm):
         VirtualMachine(vm_name).restore(base_vm)
 
-    def setup_course_nets(self):
-        pass
 
 class VirtualMachine:
     """
@@ -183,10 +182,11 @@ class VirtualMachine:
             if not p.returncode == 0:
                 raise Exception('ERROR : cannot kill zombie vms.\n Reason : %s' % (err.rstrip()))
 
-    def setup(self, base_vm):
+    def setup(self, base_vm, vif):
         """
         registers a new vm for the student - creates qcow and required conf files
         :param base_vm: name of the base vm which is replicated
+        :param vif : vif to be assigned to the vm
         """
         try:
             copyfile(config.get("VMConfig", "VM_DSK_LOCATION") + '/clean/' + base_vm + '.qcow',
@@ -208,6 +208,8 @@ class VirtualMachine:
         f.close()
 
         new_data = file_data.replace('<VM_NAME>', self.name)
+        if vif is not None:
+            new_data = new_data + '\nvif=[' + vif + ']'
 
         f = open(config.get("VMConfig", "VM_CONF_LOCATION") + '/' + self.name + '.conf', 'w')
         f.write(new_data)

@@ -27,6 +27,8 @@ class XenAPIExposer:
 
         return func(*params)
 
+    # TODO - add functionality to check if a user has access to the VM specified
+    # TODO - TBD on all functions
     @expose
     @requires_authentication_only
     def start_vm(self, user, passwd, vm_name):
@@ -59,8 +61,8 @@ class XenAPIExposer:
 
     @expose
     @requires_authentication_only
-    def setup_vm(self, user, passwd, vm_name, base_vm):
-        XenAPI().setup_vm(vm_name, base_vm)
+    def setup_vm(self, user, passwd, vm_name, base_vm, vif=None):
+        XenAPI().setup_vm(vm_name, base_vm, vif)
 
     @expose
     @requires_authentication_only

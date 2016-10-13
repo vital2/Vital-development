@@ -54,8 +54,8 @@ def start_novnc(config, started_vm):
     while flag:
         available_config = Available_Config.objects.filter(category='TERM_PORT').order_by('id')[0]
         locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
-
-        cmd = 'sh /var/www/clone.com/interim/noVNC/utils/launch.sh --listen '+available_config.value + \
+        # locked changed from available
+        cmd = 'sh /var/www/clone.com/interim/noVNC/utils/launch.sh --listen '+locked_conf.value + \
               ' --vnc vlab-dev-xen1:' + started_vm['vnc_port']
         locked_conf.delete()
         p = Popen(cmd.split(),  stdout=PIPE, stderr=PIPE)
@@ -144,20 +144,22 @@ def register_for_course(request):
             logger.debug(form.cleaned_data['course_registration_code']+"<>"+str(request.user.id)+"<>"+
                          str(request.user.is_faculty))
             try:
-                course = Course.objects.get(registration_code=form.cleaned_data['course_registration_code'])
-                user = request.user
-                if len(Registered_Course.objects.filter(course_id=course.id, user_id=user.id)) > 0:
+                with transaction.atomic:
+                    course = Course.objects.get(registration_code=form.cleaned_data['course_registration_code'])
+                    user = request.user
+                    if len(Registered_Course.objects.filter(course_id=course.id, user_id=user.id)) > 0:
                         error_message = 'You have already registered for this course'
-                else:
-                    if course.capacity > len(Registered_Course.objects.filter(course_id=course.id)) \
-                            and course.status == 'ACTIVE':
-                        XenClient().register_student_vms(request.user, course)
-                        registered_course = Registered_Course(course_id=course.id, user_id=user.id)
-                        registered_course.save()
-                        audit(request, registered_course, 'User '+str(user.id)+' registered for new course -'+str(course.id))
-                        return redirect('/vital/courses/registered/')
                     else:
-                        error_message = 'The course is either inactive or has reached its maximum student capacity.'
+                        if course.capacity > len(Registered_Course.objects.filter(course_id=course.id)) \
+                                and course.status == 'ACTIVE':
+                            XenClient().register_student_vms(request.user, course)
+                            registered_course = Registered_Course(course_id=course.id, user_id=user.id)
+                            registered_course.save()
+                            audit(request, registered_course,
+                                  'User ' + str(user.id) + ' registered for new course -' + str(course.id))
+                            return redirect('/vital/courses/registered/')
+                        else:
+                            error_message = 'The course is either inactive or has reached its maximum student capacity.'
             except Course.DoesNotExist:
                 error_message = 'Invalid registration code. Check again.'
     else:

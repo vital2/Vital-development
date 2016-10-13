@@ -119,7 +119,7 @@ class Network_Configuration(models.Model):
     course = models.ForeignKey(Course)
     virtual_machine = models.ForeignKey(Virtual_Machine)
     is_course_net = models.BooleanField(default=False)
-    
+
 
 class User_Network_Configuration(models.Model):
     vm = models.ForeignKey(Virtual_Machine)

@@ -1,6 +1,6 @@
 import logging
 import xmlrpclib
-from models import Audit
+from models import Audit, Available_Config, User_Network_Configuration
 import ConfigParser
 
 logger = logging.getLogger(__name__)
@@ -38,13 +38,37 @@ class XenClient:
         xen = LoadBalancer().get_best_server()
         logger.debug(len(course.virtual_machine_set.all()))
         for vm in course.virtual_machine_set.all():
-            xen.setup_vm(user, str(user.id)+'_'+str(course.id)+'_'+str(vm.id), str(course.id)+'_'+str(vm.id))
+            available_config = Available_Config.objects.filter(category='MAC_ADDR').order_by('id')[0]
+            locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
+
+            # TODO change this to accept other private networks
+            # Done just to accept class nets
+            class_net = vm.network_configuration_set.filter(is_course_net=True)[0]
+            vif = '\'mac='+locked_conf.value+', bridge='+class_net.name+'\''
+            xen.setup_vm(user, str(user.id)+'_'+str(course.id)+'_'+str(vm.id), str(course.id)+'_'+str(vm.id), vif)
+            user_net_config = User_Network_Configuration()
+            user_net_config.bridge_name=class_net.name
+            user_net_config.user_id = user.id
+            user_net_config.mac_id = locked_conf.value
+            user_net_config.vm = vm
+            user_net_config.save()
+            locked_conf.delete()
+
 
     def unregister_student_vms(self, server, user, course):
         xen = LoadBalancer().get_server(server)
-        for vm in course.virtual_machine_set.all():
+        for virtualMachine in course.virtual_machine_set.all():
             # xen.stop_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
-            xen.cleanup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
+            xen.cleanup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(virtualMachine.id))
+            net_confs_to_delete = User_Network_Configuration.objects.filter(user_id=user.id, vm=virtualMachine)
+            if len(net_confs_to_delete) > 0:
+                for conf in net_confs_to_delete:
+                    available_conf = Available_Config()
+                    available_conf.category('MAC_ADDR')
+                    available_conf.value(net_confs_to_delete.mac_id)
+                    available_conf.save()
+                    conf.delete()
+
 
     def start_vm(self, user, course_id, vm_id):
         logger.debug('XenClient - in start_vm')
@@ -83,8 +107,8 @@ class XenServer:
     def list_vm(self, user, vm_name):
         return self.proxy.xenapi.list_vm(user.email, user.password, vm_name)
 
-    def setup_vm(self, user, vm_name, base_name):
-        self.proxy.xenapi.setup_vm(user.email, user.password, vm_name, base_name)
+    def setup_vm(self, user, vm_name, base_name, vif=None):
+        self.proxy.xenapi.setup_vm(user.email, user.password, vm_name, base_name, vif)
 
     def cleanup_vm(self, user, vm_name):
         self.proxy.xenapi.cleanup_vm(user.email, user.password, vm_name)
