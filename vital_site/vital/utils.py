@@ -43,7 +43,7 @@ class XenClient:
 
             # TODO change this to accept other private networks
             # Done just to accept class nets
-            class_net = vm.network_configuration_set.all().filter(is_course_net=True)[0]
+            class_net = vm.network_configuration_set.all().get(is_course_net=True)
             vif = '\'mac='+locked_conf.value+', bridge='+class_net.name+'\''
             xen.setup_vm(user, str(user.id)+'_'+str(course.id)+'_'+str(vm.id), str(course.id)+'_'+str(vm.id), vif)
             user_net_config = User_Network_Configuration()
