@@ -144,7 +144,7 @@ def register_for_course(request):
             logger.debug(form.cleaned_data['course_registration_code']+"<>"+str(request.user.id)+"<>"+
                          str(request.user.is_faculty))
             try:
-                with transaction.atomic:
+                with transaction.atomic():
                     course = Course.objects.get(registration_code=form.cleaned_data['course_registration_code'])
                     user = request.user
                     if len(Registered_Course.objects.filter(course_id=course.id, user_id=user.id)) > 0:
