@@ -105,7 +105,7 @@ class XenServer:
 class LoadBalancer:
 
     def get_best_server(self):
-        server_configs = config.items('Servers')
+        # server_configs = config.items('Servers')
         #  TODO find best server
         # servers = []
         # for key, server_url in server_configs:
