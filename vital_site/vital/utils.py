@@ -64,8 +64,8 @@ class XenClient:
             if len(net_confs_to_delete) > 0:
                 for conf in net_confs_to_delete:
                     available_conf = Available_Config()
-                    available_conf.category('MAC_ADDR')
-                    available_conf.value(net_confs_to_delete.mac_id)
+                    available_conf.category = 'MAC_ADDR'
+                    available_conf.value = net_confs_to_delete.mac_id
                     available_conf.save()
                     conf.delete()
 
