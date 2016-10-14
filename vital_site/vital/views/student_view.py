@@ -51,20 +51,25 @@ def course_vms(request, course_id):
 
 def start_novnc(config, started_vm):
     flag = True
+    cnt = 0
+    # hack to handle concurrent requests
     while flag:
         available_config = Available_Config.objects.filter(category='TERM_PORT').order_by('id')[0]
         locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)[0]
-        # locked changed from available
-        cmd = 'sh /var/www/clone.com/interim/noVNC/utils/launch.sh --listen '+locked_conf.value + \
-              ' --vnc vlab-dev-xen1:' + started_vm['vnc_port']
-        locked_conf.delete()
-        p = Popen(cmd.split(),  stdout=PIPE, stderr=PIPE)
-        config.no_vnc_pid = p.pid
-        line = p.stdout.readline()
-        if 'on port' in line:
-            port = line[line.index('on port')+7:].strip()
-            config.terminal_port = port
-            flag = False
+        cnt += 1
+        if locked_conf is not None:
+            cmd = 'sh /var/www/clone.com/interim/noVNC/utils/launch.sh --listen ' + locked_conf.value + \
+                  ' --vnc vlab-dev-xen1:' + started_vm['vnc_port']
+            locked_conf.delete()
+            p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
+            config.no_vnc_pid = p.pid
+            line = p.stdout.readline()
+            if 'on port' in line:
+                port = line[line.index('on port') + 7:].strip()
+                config.terminal_port = port
+                flag = False
+        if cnt >= 100:
+            raise Exception('Server busy : cannot start VM')
 
 
 def dummy_console(request):
