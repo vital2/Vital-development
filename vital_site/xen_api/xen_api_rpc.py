@@ -2,6 +2,7 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer
 from security_util import expose, requires_user_privilege, requires_authentication_only, \
     requires_admin_privilege, is_exposed, is_authorized
 from xen_api import XenAPI
+import SocketServer
 
 
 class XenAPIExposer:
@@ -69,9 +70,13 @@ class XenAPIExposer:
     def cleanup_vm(self, user, passwd, vm_name):
         XenAPI().cleanup_vm(vm_name)
 
-server = SimpleXMLRPCServer(('192.168.35.33', 8000), logRequests=True, allow_none=True)
-server.register_instance(XenAPIExposer())
+# allows RPC module to handle concurrent requests
+class SimpleThreadedXMLRPCServer(SocketServer.ThreadingMixIn, SimpleXMLRPCServer):
+    pass
 
+
+server = SimpleThreadedXMLRPCServer(('192.168.35.33', 8000), logRequests=True, allow_none=True)
+server.register_instance(XenAPIExposer())
 try:
     print 'Use Control-C to exit'
     server.serve_forever()
