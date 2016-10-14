@@ -45,7 +45,7 @@ class XenClient:
                 available_config = Available_Config.objects.filter(category='MAC_ADDR').order_by('id')[0]
                 locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
                 cnt += 1
-                if locked_conf is not None:
+                if locked_conf is not None and len(locked_conf) > 0:
                     val = locked_conf[0].value
                     locked_conf.delete()
                     # TODO change this to accept other private networks
