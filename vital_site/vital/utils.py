@@ -1,6 +1,6 @@
 import logging
 import xmlrpclib
-from models import Audit, Available_Config, User_Network_Configuration
+from models import Audit, Available_Config, User_Network_Configuration, Virtual_Machine
 import ConfigParser
 
 logger = logging.getLogger(__name__)
@@ -95,8 +95,14 @@ class XenClient:
 
     def rebase_vm(self, user, course_id, vm_id):
         xen = LoadBalancer().get_best_server()
-        # xen.stop_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
-        xen.setup_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id), str(course_id) + '_' + str(vm_id))
+        virtual_machine = Virtual_Machine.objects.get(id=vm_id)
+        net_confs = User_Network_Configuration.objects.filter(user_id=user.id, vm=virtual_machine)
+        vif = ''
+        for conf in net_confs:
+            vif = vif + '\'mac=' + conf.mac_id + ', bridge=' + conf.bridge_name + '\','
+        vif = vif[:len(vif)-1]
+        xen.setup_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id), str(course_id) + '_' + str(vm_id),
+                     vif)
 
     def save_vm(self, server, user, course_id, vm_id):
         xen = LoadBalancer().get_server(server)
