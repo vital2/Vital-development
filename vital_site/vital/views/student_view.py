@@ -55,12 +55,13 @@ def start_novnc(config, started_vm):
     # hack to handle concurrent requests
     while flag:
         available_config = Available_Config.objects.filter(category='TERM_PORT').order_by('id')[0]
-        locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)[0]
+        locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
         cnt += 1
         if locked_conf is not None:
-            cmd = 'sh /var/www/clone.com/interim/noVNC/utils/launch.sh --listen ' + locked_conf.value + \
-                  ' --vnc vlab-dev-xen1:' + started_vm['vnc_port']
+            val = locked_conf[0].value
             locked_conf.delete()
+            cmd = 'sh /var/www/clone.com/interim/noVNC/utils/launch.sh --listen ' + val + \
+                  ' --vnc vlab-dev-xen1:' + started_vm['vnc_port']
             p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
             config.no_vnc_pid = p.pid
             line = p.stdout.readline()

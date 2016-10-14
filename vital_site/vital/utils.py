@@ -43,10 +43,10 @@ class XenClient:
             # hack to handle concurrent requests
             while flag:
                 available_config = Available_Config.objects.filter(category='MAC_ADDR').order_by('id')[0]
-                locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)[0]
+                locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
                 cnt += 1
                 if locked_conf is not None:
-                    val = locked_conf.value
+                    val = locked_conf[0].value
                     locked_conf.delete()
                     # TODO change this to accept other private networks
                     # Done just to accept class nets
