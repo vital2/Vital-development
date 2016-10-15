@@ -27,7 +27,7 @@ config.read("/home/rdj259/config.ini")
 SECRET_KEY = config.get("Security", "SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
