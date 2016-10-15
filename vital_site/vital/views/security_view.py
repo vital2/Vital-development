@@ -74,6 +74,7 @@ def activate(request):
                         user.is_active = True
                         user.activation_code = None
                         user.save()
+                        user.backend = 'django.contrib.auth.backends.ModelBackend'
                         django_login(request, user)
                         logger.debug('activated..'+user.email)
                         form = Authentication_Form()
