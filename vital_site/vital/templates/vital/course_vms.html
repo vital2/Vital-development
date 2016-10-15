@@ -16,7 +16,7 @@
         console.log('save vm'+vm_id);
     sessionStorage.setItem('window_'+vm_id, window_child);
         return false;
-    }
+    };
 
     function stopvm(vm_id){
         child = sessionStorage.getItem('window_'+vm_id);
@@ -26,8 +26,9 @@
             console.log('closing');
             child.close();
         }
-       // window.location.href = url;
-    }
+       // window.location.href =
+        return false;
+    };
 
 $(window).load(function(){
     $("#message").delay(4000).fadeOut();
