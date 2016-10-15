@@ -13,13 +13,17 @@
             "status=no,height=" + height + ",width=" + width + ",resizable=yes,left=" + leftPosition
             + ",top=" + topPosition + ",screenX=" + leftPosition + ",screenY=" + topPosition
             + ",toolbar=no,menubar=no,scrollbars=no,location=no,directories=no");
+        console.log('save vm'+vm_id);
     sessionStorage.setItem('window_'+vm_id, window_child);
         return false;
     }
 
     function stopvm(vm_id){
         child = sessionStorage.getItem('window_'+vm_id);
+        console.log('stop vm'+vm_id);
+        console.log(child);
         if(!child.close()){
+            console.log('closing');
             child.close();
         }
        // window.location.href = url;
