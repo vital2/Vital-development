@@ -93,7 +93,7 @@ $(window).load(function(){
                         </div>
                         <div style="float:left;width:33%;height:33%;" align="center">
                             {% if vm.state == 'R'%}
-                            <a href="http://vital-dev2.poly.edu:{{ vm.terminal_port }}/vnc_auto.html" onclick="return windowpop(this.href, 'Terminal2', 825, 680,{{ vm.id }} )">
+                            <a href="http://vital-dev2.poly.edu:{{ vm.terminal_port }}/vnc_auto.html" onclick="return windowpop(this.href, 'Terminal2', 825, 680, {{ vm.id }})">
                                 <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console"/>
                             </a>&nbsp;
                             {% endif %}
@@ -105,11 +105,11 @@ $(window).load(function(){
                             <a href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/rebase'>
                                 <img src="{% static  'vital/reimage.png' %}" width="30px" height="30px" title="Reimage VM"/>
                             </a>
+                        </div>
 		            </div>
 
                     {% if vm.state == 'R'%}
                         <div style="width:100%; margin-top:-5px; background-color: green; height: 7px">&nbsp;</div>
-                        </div>
                     {% else %}
                         <div style="width:100%; margin-top:-5px; background-color: red; height: 7px">&nbsp;</div>
                     {% endif %}
