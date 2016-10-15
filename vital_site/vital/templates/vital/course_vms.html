@@ -22,7 +22,7 @@
         child = sessionStorage.getItem('window_'+vm_id);
         console.log('stop vm'+vm_id);
         console.log(child);
-        if(!child.close()){
+        if(!child.closed){
             console.log('closing');
             child.close();
         }
