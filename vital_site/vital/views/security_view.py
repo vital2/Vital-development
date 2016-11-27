@@ -210,7 +210,7 @@ def stop_vms_during_logout(user):
         config.category = 'TERM_PORT'
         config.value = user_vm.terminal_port
         config.save()
-        vm.delete()
+        user_vm.delete()
 
 
 @login_required(login_url='/vital/login/')
