@@ -198,14 +198,14 @@ def stop_vms_during_logout(user):
     user_vms = User_VM_Config.objects.filter(user_id=user.id)
     for user_vm in user_vms:
         vm = user_vm.vm
-        cmd = 'kill ' + vm.no_vnc_pid
+        cmd = 'kill ' + user_vm.no_vnc_pid
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:
             if 'No such process' not in err.rstrip():
                 raise Exception('ERROR : cannot stop the vm '
                                 '\n Reason : %s' % err.rstrip())
-        XenClient().stop_vm(vm.xen_server, user, vm.course.id, vm.id)
+        XenClient().stop_vm(user_vm.xen_server, user, vm.course.id, vm.id)
         config = Available_Config()
         config.category = 'TERM_PORT'
         config.value = vm.terminal_port
