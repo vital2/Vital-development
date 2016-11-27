@@ -52,6 +52,7 @@ class XenClient:
                     # Done just to accept class nets
                     class_net = vm.network_configuration_set.filter(is_course_net=True)[0]
                     vif = '\'mac=' + val + ', bridge=' + class_net.name + '\''
+                    logger.debug('Registering with vif:'+vif+' for user '+user.email)
                     xen.setup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id),
                                  str(course.id) + '_' + str(vm.id), vif)
                     user_net_config = User_Network_Configuration()
@@ -60,6 +61,7 @@ class XenClient:
                     user_net_config.mac_id = val
                     user_net_config.vm = vm
                     user_net_config.save()
+                    logger.debug('Registered user ' + user.email)
                     flag = False
                 if cnt >= 100:
                     raise Exception('Server Busy : Registration incomplete')
