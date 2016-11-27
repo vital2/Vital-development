@@ -187,11 +187,14 @@ def login(request):
 
 def logout(request):
     logger.debug("in logout")
+    logger.debug(">>>>>>>>>>>>>>>>>>" + str(request.user))
     stop_vms_during_logout(request.user)
     django_logout(request)
     return redirect('/vital/login')
 
+
 def stop_vms_during_logout(user):
+    logger.debug(">>>>>>>>>>>>>>>>>>" + user)
     vms = User_VM_Config.objects.get(user_id=user)
     for vm in vms:
         cmd = 'kill ' + vm.no_vnc_pid
