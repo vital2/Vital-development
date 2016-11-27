@@ -194,8 +194,8 @@ def logout(request):
 
 
 def stop_vms_during_logout(user):
-    logger.debug(">>>>>>>>>>>>>>>>>>" + str(user))
-    vms = User_VM_Config.objects.get(user_id=user.id)
+    logger.debug(">>>>>>>>>>>>>>>>>>" + str(user.id))
+    vms = User_VM_Config.objects.filter(user_id=user.id)
     for vm in vms:
         cmd = 'kill ' + vm.no_vnc_pid
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
