@@ -191,3 +191,13 @@ def unregister_from_course(request, course_id):
     audit(request, course_to_remove, 'User '+str(user.id)+' unregistered from course -'+str(course_id))
     course_to_remove.delete()
     return redirect('/vital/courses/registered/')
+
+# TODO remove after mccoy course clean up
+# RDJ was lazy to manually fix the database and xl onf entries
+@login_required(login_url='/vital/login/')
+def fix_mccoy_user_vms(request):
+    if request.user.id == 2:
+        course = Course.objects.get(id=3)
+        registered = Registered_Course.objects.filter(course=course)
+        for val in registered:
+            logger.debug('fixing ' + str(val.user_id) + '_3_2')

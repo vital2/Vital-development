@@ -42,7 +42,7 @@ class XenClient:
             cnt = 0
             # hack to handle concurrent requests
             while flag:
-                available_config = Available_Config.objects.filter(category='MAC_ADDR').order_by('id')[0]
+                available_config = Available_Config.objects.filter(category='MAC_ADDR').order_by('id').first()
                 locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
                 cnt += 1
                 if locked_conf is not None and len(locked_conf) > 0:
@@ -50,7 +50,7 @@ class XenClient:
                     locked_conf.delete()
                     # TODO change this to accept other private networks
                     # Done just to accept class nets
-                    class_net = vm.network_configuration_set.filter(is_course_net=True)[0]
+                    class_net = vm.network_configuration_set.filter(is_course_net=True).first()
                     vif = '\'mac=' + val + ', bridge=' + class_net.name + '\''
                     logger.debug('Registering with vif:'+vif+' for user '+user.email)
                     xen.setup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id),
