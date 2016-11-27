@@ -2,7 +2,7 @@ from subprocess import Popen, PIPE
 from shutil import copyfile
 from glob import glob
 import os, errno
-import signal
+from django.core.mail import send_mail
 import ConfigParser
 
 
@@ -180,7 +180,11 @@ class VirtualMachine:
             p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
             out, err = p.communicate()
             if not p.returncode == 0:
-                raise Exception('ERROR : cannot kill zombie vms.\n Reason : %s' % (err.rstrip()))
+                # raise Exception('ERROR : cannot kill zombie vms.\n Reason : %s' % (err.rstrip()))
+                send_mail('Error log - Vital',
+                          'cmd: '+cmd+'\n Error:'+err.rstrip(),
+                          'no-reply-vital@nyu.edu', ['rdj259@nyu.edu'], fail_silently=False)
+                # TODO this is to be fixed or a new solution found to fix this problem
 
     def setup(self, base_vm, vif):
         """

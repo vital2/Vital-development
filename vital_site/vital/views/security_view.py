@@ -5,11 +5,13 @@ from django.http import HttpResponseNotAllowed
 from django.template import RequestContext
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from ..utils import XenClient
+from subprocess import Popen, PIPE
 
 from ..forms import Registration_Form, User_Activation_Form, Authentication_Form, Reset_Password_Form, \
     Forgot_Password_Form
-from ..models import VLAB_User
-from ..models import Allowed_Organization
+from ..models import VLAB_User, Allowed_Organization, User_VM_Config, Available_Config
+
 
 import logging
 import re
@@ -186,7 +188,25 @@ def login(request):
 def logout(request):
     logger.debug("in logout")
     django_logout(request)
+    stop_vms_during_logout(request.user)
     return redirect('/vital/login')
+
+def stop_vms_during_logout(user):
+    vms = User_VM_Config.objects.get(user_id=user)
+    for vm in vms:
+        cmd = 'kill ' + vm.no_vnc_pid
+        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        out, err = p.communicate()
+        if not p.returncode == 0:
+            if 'No such process' not in err.rstrip():
+                raise Exception('ERROR : cannot stop the vm '
+                                '\n Reason : %s' % err.rstrip())
+        XenClient().stop_vm(vm.xen_server, user, vm.course.id, vm.id)
+        config = Available_Config()
+        config.category = 'TERM_PORT'
+        config.value = vm.terminal_port
+        config.save()
+        vm.delete()
 
 
 @login_required(login_url='/vital/login/')
