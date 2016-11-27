@@ -208,7 +208,7 @@ def stop_vms_during_logout(user):
         XenClient().stop_vm(user_vm.xen_server, user, vm.course.id, vm.id)
         config = Available_Config()
         config.category = 'TERM_PORT'
-        config.value = vm.terminal_port
+        config.value = user_vms.terminal_port
         config.save()
         vm.delete()
 
