@@ -106,6 +106,16 @@ class XenClient:
         xen.setup_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id), str(course_id) + '_' + str(vm_id),
                      vif)
 
+    def fixVMs(self, user, user_id):
+        xen = LoadBalancer().get_best_server()
+        virtual_machine = Virtual_Machine.objects.get(id=2)
+        net_confs = User_Network_Configuration.objects.filter(user_id=user_id, vm=virtual_machine)
+        vif = ''
+        for conf in net_confs:
+            vif = vif + '\'mac=' + conf.mac_id + ', bridge=' + conf.bridge_name + '\','
+        vif = vif[:len(vif) - 1]
+        xen.setup_vm(user, str(user_id) + '_3_2', '3_2', vif)
+
     def save_vm(self, server, user, course_id, vm_id):
         xen = LoadBalancer().get_server(server)
         xen.save_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))

@@ -200,21 +200,6 @@ def fix_mccoy_user_vms(request):
     if request.user.id == 2:
         course = Course.objects.get(id=3)
         registered = Registered_Course.objects.filter(course=course)
-        vm = Virtual_Machine.objects.get(id=2)
         for value in registered:
             logger.debug('fixing ' + str(value.user_id) + '_3_2')
-            available_config = Available_Config.objects.filter(category='MAC_ADDR').order_by('id').last()
-            with transaction.atomic():
-                locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
-                if locked_conf is not None and len(locked_conf) > 0:
-                    val = locked_conf[0].value
-                    locked_conf.delete()
-                    vif = '\'mac=' + val + ', bridge=Net-CS6823\''
-                    logger.debug('Updating with vif:' + vif + ' for user ' + str(value.user_id))
-                    user_net_config = User_Network_Configuration()
-                    user_net_config.bridge_name = 'Net-CS6823'
-                    user_net_config.user_id = value.user_id
-                    user_net_config.mac_id = val
-                    user_net_config.vm = vm
-                    user_net_config.save()
-                    logger.debug('Updating user ' + str(value.user_id))
+            XenClient().fixVMs(request.user, value.user_id)
