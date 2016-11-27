@@ -187,8 +187,8 @@ def login(request):
 
 def logout(request):
     logger.debug("in logout")
-    django_logout(request)
     stop_vms_during_logout(request.user)
+    django_logout(request)
     return redirect('/vital/login')
 
 def stop_vms_during_logout(user):
