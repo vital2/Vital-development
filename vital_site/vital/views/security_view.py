@@ -188,7 +188,7 @@ def login(request):
 def logout(request):
     logger.debug("in logout")
     logger.debug(">>>>>>>>>>>>>>>>>>" + str(request.user))
-    stop_vms_during_logout(request.user)
+#    stop_vms_during_logout(request.user)
     django_logout(request)
     return redirect('/vital/login')
 
@@ -208,7 +208,7 @@ def stop_vms_during_logout(user):
         XenClient().stop_vm(user_vm.xen_server, user, vm.course.id, vm.id)
         config = Available_Config()
         config.category = 'TERM_PORT'
-        config.value = user_vms.terminal_port
+        config.value = user_vm.terminal_port
         config.save()
         vm.delete()
 
