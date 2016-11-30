@@ -2,7 +2,6 @@ from subprocess import Popen, PIPE
 from shutil import copyfile
 from glob import glob
 import os, errno
-from django.core.mail import send_mail
 import ConfigParser
 
 
@@ -181,9 +180,11 @@ class VirtualMachine:
             out, err = p.communicate()
             if not p.returncode == 0:
                 # raise Exception('ERROR : cannot kill zombie vms.\n Reason : %s' % (err.rstrip()))
-                send_mail('Error log - Vital',
-                          'cmd: '+cmd+'\n Error:'+err.rstrip(),
-                          'no-reply-vital@nyu.edu', ['rdj259@nyu.edu'], fail_silently=False)
+                # send mail will not work coz module is not available
+                # send_mail('Error log - Vital',
+                #          'cmd: '+cmd+'\n Error:'+err.rstrip(),
+                #          'no-reply-vital@nyu.edu', ['rdj259@nyu.edu'], fail_silently=False)
+                pass
                 # TODO this is to be fixed or a new solution found to fix this problem
 
     def setup(self, base_vm, vif):
