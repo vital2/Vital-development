@@ -122,6 +122,9 @@ class XenAPI:
     def restore_vm(self, vm_name, base_vm):
         VirtualMachine(vm_name).restore(base_vm)
 
+    def kill_zombie_vm(self, vm_id):
+        VirtualMachine('zombie').kill_zombie_vms(vm_id)
+
 
 class VirtualMachine:
     """
@@ -163,8 +166,11 @@ class VirtualMachine:
 
     # This is an additional step which probably could be removed when a native interface to xl is ready
     # this is a work around to deal with zombie
-    def kill_zombie_vms(self):
-        cmd = 'ps -ef | grep qemu-dm | grep ' + self.name
+    def kill_zombie_vms(self, vm_id=-1):
+        if pid == -1:
+            cmd = 'ps -ef | grep qemu-dm | grep ' + self.name
+        else:
+            cmd = 'ps -ef | grep qemu-dm | grep "d ' + vm_id+'"'
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:

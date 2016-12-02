@@ -7,6 +7,7 @@ from ..utils import audit, XenClient
 import logging
 from subprocess import Popen, PIPE
 from django.db import transaction
+from ..cron import clean_zombie_vms
 
 logger = logging.getLogger(__name__)
 
@@ -192,3 +193,11 @@ def unregister_from_course(request, course_id):
     audit(request, course_to_remove, 'User '+str(user.id)+' unregistered from course -'+str(course_id))
     course_to_remove.delete()
     return redirect('/vital/courses/registered/')
+
+
+# Remove after problem is fixed - or start the cron
+@login_required(login_url='/vital/login/')
+def fix_zombies(request):
+    logger.debug('In fix zombie')
+    if request.user.id == 2:
+        clean_zombie_vms()

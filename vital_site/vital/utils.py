@@ -28,6 +28,10 @@ class XenClient:
         prefix = str(user.id) + '_' + str(course_id)
         return [vm for vm in vms if vm['name'].startswith(prefix)]
 
+    def list_all_vms(self, server, user):
+        return LoadBalancer().get_server(server).list_vms(user)
+
+
     def list_vm(self, server,  user, course_id, vm_id):
         logger.debug('>>>>>>>>IN LIST VM>>>>>>')
         vm = LoadBalancer().get_server(server).list_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
@@ -114,11 +118,16 @@ class XenClient:
         xen = LoadBalancer().get_server(server)
         xen.restore_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id), str(course_id) + '_' + str(vm_id))
 
+    # Probably could be removed once the zombie issue is solved
+    def kill_zombie_vm(self, server, user, vm_id):
+        xen = LoadBalancer().get_server(server)
+        xen.kill_zombie_vm(user, vm_id)
+
 
 class XenServer:
 
     def __init__(self, name, url):
-        self.name = name
+        self.name = nameserver
         self.proxy = xmlrpclib.ServerProxy(url)
 
     def list_vms(self, user):
@@ -144,6 +153,9 @@ class XenServer:
 
     def restore_vm(self, user, vm_name, base_vm):
         return self.proxy.xenapi.restore_vm(user.email, user.password, vm_name, base_vm)
+
+    def kill_zombie_vm(self, user, vm_id):
+        return self.proxy.xenapi.kill_zombie_vm(user.email, user.password, vm_id)
 
 
 class LoadBalancer:

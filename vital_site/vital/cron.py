@@ -2,8 +2,17 @@ from django.contrib.sessions.models import Session
 from django.conf import settings
 import datetime
 import logging
+from utils import XenClient
+from models import VLAB_User
 
 logger = logging.getLogger(__name__)  # check and add a handler for this.
+
+# use this file to add all cron jobs - house keeping jobs etc
+
+# do not forget to run
+# python manage.py crontab add - to add jobs
+# python manage.py crontab remove -  to remove jobs
+# python manage.py crontab show - to view active jobs
 
 def force_logout_inactive_users():
     print Session.objects.all()
@@ -15,9 +24,12 @@ def force_logout_inactive_users():
         session.delete()
         # do machine shut down and other cleanup activities here
 
-# use this file to add all cron jobs - house keeping jobs etc
 
-# do not forget to run
-# python manage.py crontab add - to add jobs
-# python manage.py crontab remove -  to remove jobs
-# python manage.py crontab show - to view active jobs
+def clean_zombie_vms():
+    # Might not even need this in future
+    # TODO this needs to be fixed to check for all Xen machines
+    user = VLAB_User.objects.get(email='rdj259@nyu.edu')
+    vms = XenClient().list_all_vms('xen-server-dev-1', user)
+    for vm in vms:
+        if vm.name.strip() == '(null)':
+            XenClient().kill_zombie_vm('xen-server-dev-1', user, vm.id)

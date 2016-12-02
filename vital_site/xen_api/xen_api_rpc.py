@@ -70,10 +70,15 @@ class XenAPIExposer:
     def cleanup_vm(self, user, passwd, vm_name):
         XenAPI().cleanup_vm(vm_name)
 
+    @expose
+    @requires_authentication_only
+    def kill_zombie_vm(self, user, passwd, vm_id):
+        XenAPI().kill_zombie_vm(vm_id)
+
+
 # allows RPC module to handle concurrent requests
 class SimpleThreadedXMLRPCServer(SocketServer.ThreadingMixIn, SimpleXMLRPCServer):
     pass
-
 
 server = SimpleThreadedXMLRPCServer(('192.168.35.33', 8000), logRequests=True, allow_none=True)
 server.register_instance(XenAPIExposer())
