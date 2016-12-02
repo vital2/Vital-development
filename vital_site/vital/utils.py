@@ -127,7 +127,7 @@ class XenClient:
 class XenServer:
 
     def __init__(self, name, url):
-        self.name = nameserver
+        self.name = name
         self.proxy = xmlrpclib.ServerProxy(url)
 
     def list_vms(self, user):
