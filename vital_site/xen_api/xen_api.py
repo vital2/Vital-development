@@ -167,14 +167,17 @@ class VirtualMachine:
     # This is an additional step which probably could be removed when a native interface to xl is ready
     # this is a work around to deal with zombie
     def kill_zombie_vms(self, vm_id=-1):
+        log_message = ""
         if vm_id == -1:
             cmd = 'ps -ef | grep qemu-dm | grep ' + self.name
         else:
             cmd = 'ps -ef | grep qemu-dm | grep "d ' + vm_id+'"'
+        log_message += cmd
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:
             raise Exception('ERROR : cannot find zombie vms. \n Reason : %s' % err.rstrip())
+        log_message += out
 
         output = out.split("\n")
         if len(output) > 2:
@@ -182,16 +185,21 @@ class VirtualMachine:
             line = " ".join(line.split())
             val = line.strip().split(" ")
             cmd = 'kill ' + val[1]
+            log_message += cmd + "<>"
             p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
             out, err = p.communicate()
+            log_message += out
             if not p.returncode == 0:
                 # raise Exception('ERROR : cannot kill zombie vms.\n Reason : %s' % (err.rstrip()))
                 # send mail will not work coz module is not available
                 # send_mail('Error log - Vital',
                 #          'cmd: '+cmd+'\n Error:'+err.rstrip(),
                 #          'no-reply-vital@nyu.edu', ['rdj259@nyu.edu'], fail_silently=False)
+                log_message += "Error code 0"
                 pass
                 # TODO this is to be fixed or a new solution found to fix this problem
+        with open('/home/vlab/debug.log','a+') as f:
+            f.write(log_message)
 
     def setup(self, base_vm, vif):
         """
