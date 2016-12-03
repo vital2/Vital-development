@@ -32,7 +32,8 @@ class XenAPI:
         # TODO domain name screwed up  - 2_3_2 and 12_3_2 similar causes problems
         # TODO find a better approach
         vm = self.list_vm(vm_name)
-        VirtualMachine(vm_name).shutdown(vm['id'])
+        # VirtualMachine(vm_name).shutdown(vm.id)
+        vm.shutdown()
 
     def list_all_vms(self):
         """
@@ -150,7 +151,7 @@ class VirtualMachine:
         else:
             return XenAPI().list_vm(self.name)
 
-    def shutdown(self, vm_id):
+    def shutdown(self):
         """
         this forcefully shuts down the virtual machine
         :param vm_name name of the vm to be shutdown
@@ -168,7 +169,7 @@ class VirtualMachine:
 
         # TODO domain name screwed up  - 2_3_2 and 12_3_2 similar causes problems
         # TODO find a better approach
-        self.kill_zombie_vms(vm_id)
+        self.kill_zombie_vms(self.id)
 
     # This is an additional step which probably could be removed when a native interface to xl is ready
     # this is a work around to deal with zombie
