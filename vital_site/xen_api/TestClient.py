@@ -6,11 +6,11 @@ proxy = xmlrpclib.ServerProxy('http://192.168.35.11:8000')
 print "Listing all VMs..."
 print proxy.xenapi.list_all_vms('rdj259@nyu.edu', 'pbkdf2_sha256$24000$rvI8ja8A8EVx$vvBZNpvNr72fBsmcNOJqIsKqrf9uyUM5PoLuivxbcoo=')
 
-#print "Registering new VM..."
-#proxy.xenapi.register_vm('rdj259@nyu.edu', 'pbkdf2_sha256$24000$rvI8ja8A8EVx$vvBZNpvNr72fBsmcNOJqIsKqrf9uyUM5PoLuivxbcoo=', '1_2_1', "2_1")  # <<studentid_courseid_vmid>>
+print "Registering new VM..."
+proxy.xenapi.register_vm('rdj259@nyu.edu', 'pbkdf2_sha256$24000$rvI8ja8A8EVx$vvBZNpvNr72fBsmcNOJqIsKqrf9uyUM5PoLuivxbcoo=', '2_3_2', "3_2")  # <<studentid_courseid_vmid>>
 
-#print "Stopping vm if exists..."
-#proxy.xenapi.stop_vm('rdj259@nyu.edu', 'pbkdf2_sha256$24000$rvI8ja8A8EVx$vvBZNpvNr72fBsmcNOJqIsKqrf9uyUM5PoLuivxbcoo=', '1_2_1')
+print "Stopping vm if exists..."
+proxy.xenapi.stop_vm('rdj259@nyu.edu', 'pbkdf2_sha256$24000$rvI8ja8A8EVx$vvBZNpvNr72fBsmcNOJqIsKqrf9uyUM5PoLuivxbcoo=', '2_3_2')
 
 print "Starting VM..."
 vm = proxy.xenapi.start_vm('rdj259@nyu.edu', 'pbkdf2_sha256$24000$rvI8ja8A8EVx$vvBZNpvNr72fBsmcNOJqIsKqrf9uyUM5PoLuivxbcoo=', '2_3_2')
@@ -25,8 +25,8 @@ proxy.xenapi.stop_vm('rdj259@nyu.edu', 'pbkdf2_sha256$24000$rvI8ja8A8EVx$vvBZNpv
 print "Listing all VMs..."
 print proxy.xenapi.list_all_vms('rdj259@nyu.edu', 'pbkdf2_sha256$24000$rvI8ja8A8EVx$vvBZNpvNr72fBsmcNOJqIsKqrf9uyUM5PoLuivxbcoo=')
 
-#print "Unregistering VM"
-#proxy.xenapi.unregister_vm('rdj259@nyu.edu', 'pbkdf2_sha256$24000$rvI8ja8A8EVx$vvBZNpvNr72fBsmcNOJqIsKqrf9uyUM5PoLuivxbcoo=', '1_2_1')
+print "Unregistering VM"
+proxy.xenapi.unregister_vm('rdj259@nyu.edu', 'pbkdf2_sha256$24000$rvI8ja8A8EVx$vvBZNpvNr72fBsmcNOJqIsKqrf9uyUM5PoLuivxbcoo=', '2_3_2')
 
-#print "Listing all VMs..."
-#print proxy.xenapi.list_all_vms('rdj259@nyu.edu', 'pbkdf2_sha256$24000$rvI8ja8A8EVx$vvBZNpvNr72fBsmcNOJqIsKqrf9uyUM5PoLuivxbcoo=')
+print "Listing all VMs..."
+print proxy.xenapi.list_all_vms('rdj259@nyu.edu', 'pbkdf2_sha256$24000$rvI8ja8A8EVx$vvBZNpvNr72fBsmcNOJqIsKqrf9uyUM5PoLuivxbcoo=')
