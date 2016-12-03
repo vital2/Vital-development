@@ -31,5 +31,5 @@ def clean_zombie_vms():
     user = VLAB_User.objects.get(email='rdj259@nyu.edu')
     vms = XenClient().list_all_vms('xen-server-dev-1', user)
     for vm in vms:
-        if vm.name.strip() == '(null)':
+        if vm['name'].strip() == '(null)':
             XenClient().kill_zombie_vm('xen-server-dev-1', user, vm.id)

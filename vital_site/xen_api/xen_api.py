@@ -162,7 +162,7 @@ class VirtualMachine:
             if 'invalid domain identifier' not in err.rstrip():
                 raise Exception('ERROR : cannot stop the vm '
                                 '\n Reason : %s' % err.rstrip())
-        self.kill_zombie_vms()
+        self.kill_zombie_vms(-1)
 
     # This is an additional step which probably could be removed when a native interface to xl is ready
     # this is a work around to deal with zombie
