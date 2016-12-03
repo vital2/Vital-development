@@ -31,9 +31,12 @@ class XenAPI:
         """
         # TODO domain name screwed up  - 2_3_2 and 12_3_2 similar causes problems
         # TODO find a better approach
-        vm = self.list_vm(vm_name)
-        # VirtualMachine(vm_name).shutdown(vm.id)
-        vm.shutdown()
+        try:
+            vm = self.list_vm(vm_name)
+            # VirtualMachine(vm_name).shutdown(vm.id)
+            vm.shutdown()
+        except Exception:
+            pass
 
     def list_all_vms(self):
         """
@@ -167,29 +170,27 @@ class VirtualMachine:
                 raise Exception('ERROR : cannot stop the vm '
                                 '\n Reason : %s' % err.rstrip())
 
-        # TODO domain name screwed up  - 2_3_2 and 12_3_2 similar causes problems
+        # TODO domain name screwed up  - 2_3_2 and x2_3_2 or similar causes problems
         # TODO find a better approach
         self.kill_zombie_vms(self.id)
 
     # This is an additional step which probably could be removed when a native interface to xl is ready
     # this is a work around to deal with zombie
     def kill_zombie_vms(self, vm_id=-1):
-        log_message = ""
         if vm_id == -1:
             cmd = 'ps -ef | grep qemu-dm | grep ' + self.name
         else:
             cmd = 'ps -ef | grep qemu-dm | grep "d ' + vm_id+'"'
-        log_message += cmd + '\n'
+
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:
             raise Exception('ERROR : cannot find zombie vms. \n Reason : %s' % err.rstrip())
-        log_message += out + '\n'
 
         output = out.split("\n")
         if len(output) > 2:
             cnt = 0
-            
+
             line = output[0]
             # fix for when process id of grep is small than actual pid
             for out_line in output:
@@ -201,21 +202,17 @@ class VirtualMachine:
             line = " ".join(line.split())
             val = line.strip().split(" ")
             cmd = 'kill ' + val[1]
-            log_message += cmd + "<>" + '\n'
             p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
             out, err = p.communicate()
-            log_message += out+ '\n'
+
             if not p.returncode == 0:
                 # raise Exception('ERROR : cannot kill zombie vms.\n Reason : %s' % (err.rstrip()))
                 # send mail will not work coz module is not available
                 # send_mail('Error log - Vital',
                 #          'cmd: '+cmd+'\n Error:'+err.rstrip(),
                 #          'no-reply-vital@nyu.edu', ['rdj259@nyu.edu'], fail_silently=False)
-                log_message += "Error code 0"
                 pass
                 # TODO this is to be fixed or a new solution found to fix this problem
-        with open('/home/vlab/debug.log','a+') as f:
-            f.write(log_message)
 
     def setup(self, base_vm, vif):
         """

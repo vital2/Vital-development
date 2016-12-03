@@ -201,3 +201,4 @@ def fix_zombies(request):
     logger.debug('In fix zombie')
     if request.user.id == 2:
         clean_zombie_vms()
+        return redirect('/vital/courses/registered/')
