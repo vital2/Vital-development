@@ -165,7 +165,7 @@ class VirtualMachine:
             if 'invalid domain identifier' not in err.rstrip():
                 raise Exception('ERROR : cannot stop the vm '
                                 '\n Reason : %s' % err.rstrip())
-            
+
         # TODO domain name screwed up  - 2_3_2 and 12_3_2 similar causes problems
         # TODO find a better approach
         self.kill_zombie_vms(vm_id)
@@ -178,12 +178,12 @@ class VirtualMachine:
             cmd = 'ps -ef | grep qemu-dm | grep ' + self.name
         else:
             cmd = 'ps -ef | grep qemu-dm | grep "d ' + vm_id+'"'
-        log_message += cmd
+        log_message += cmd + '\n'
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
         out, err = p.communicate()
         if not p.returncode == 0:
             raise Exception('ERROR : cannot find zombie vms. \n Reason : %s' % err.rstrip())
-        log_message += out
+        log_message += out + '\n'
 
         output = out.split("\n")
         if len(output) > 2:
@@ -191,10 +191,10 @@ class VirtualMachine:
             line = " ".join(line.split())
             val = line.strip().split(" ")
             cmd = 'kill ' + val[1]
-            log_message += cmd + "<>"
+            log_message += cmd + "<>" + '\n'
             p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
             out, err = p.communicate()
-            log_message += out
+            log_message += out+ '\n'
             if not p.returncode == 0:
                 # raise Exception('ERROR : cannot kill zombie vms.\n Reason : %s' % (err.rstrip()))
                 # send mail will not work coz module is not available
