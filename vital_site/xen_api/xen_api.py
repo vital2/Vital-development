@@ -188,7 +188,16 @@ class VirtualMachine:
 
         output = out.split("\n")
         if len(output) > 2:
+            cnt = 0
+            
             line = output[0]
+            # fix for when process id of grep is small than actual pid
+            for out_line in output:
+                if cmd not in out_line:
+                    line = output[cnt]
+                    break
+                cnt += 1
+
             line = " ".join(line.split())
             val = line.strip().split(" ")
             cmd = 'kill ' + val[1]
