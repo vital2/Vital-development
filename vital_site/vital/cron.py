@@ -32,4 +32,4 @@ def clean_zombie_vms():
     vms = XenClient().list_all_vms('xen-server-dev-1', user)
     for vm in vms:
         if vm['name'].strip() == '(null)':
-            XenClient().kill_zombie_vm('xen-server-dev-1', user, vm.id)
+            XenClient().kill_zombie_vm('xen-server-dev-1', user, vm['id'])
