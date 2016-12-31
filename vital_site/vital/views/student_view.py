@@ -12,11 +12,13 @@ from ..cron import clean_zombie_vms
 logger = logging.getLogger(__name__)
 
 
-# Create your views here.
-
-
 @login_required(login_url='/vital/login/')
 def registered_courses(request):
+    """
+    lists all registered courses for logged in user
+    :param request: http request
+    :return: registered courses page
+    """
     logger.debug("In registered courses")
     #  reg_courses = Registered_Courses.objects.filter(user_id=request.user.id, course__status='ACTIVE')
     reg_courses = Registered_Course.objects.filter(user_id=request.user.id)
@@ -28,6 +30,12 @@ def registered_courses(request):
 
 @login_required(login_url='/vital/login/')
 def course_vms(request, course_id):
+    """
+    lists all VMs of the selected course
+    :param request: http request
+    :param course_id: id of the selected course
+    :return: course VMs page
+    """
     logger.debug("in course vms")
     params = dict()
     virtual_machines = Virtual_Machine.objects.filter(course_id=course_id)
@@ -52,6 +60,12 @@ def course_vms(request, course_id):
 
 
 def start_novnc(config, started_vm):
+    """
+    starts the novnc server for client to connect to
+    :param config: AvailableConfig object to save vnc pid
+    :param started_vm: object refering to the started VM
+    :return: None
+    """
     flag = True
     cnt = 0
     # hack to handle concurrent requests
@@ -62,8 +76,8 @@ def start_novnc(config, started_vm):
         if locked_conf is not None and len(locked_conf) > 0:
             val = locked_conf[0].value
             locked_conf.delete()
-            cmd = 'sh /var/www/clone.com/interim/noVNC/utils/launch.sh --listen ' + val + \
-                  ' --vnc vlab-dev-xen2:' + started_vm['vnc_port']
+            cmd = 'sh /var/www/clone.com/interim/noVNC/utils/launch.sh --listen {} ' \
+                  '--vnc {}:{}'.format(val, started_vm['xen_server'], started_vm['vnc_port'])
             p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
             config.no_vnc_pid = p.pid
             line = p.stdout.readline()
@@ -75,12 +89,15 @@ def start_novnc(config, started_vm):
             raise Exception('Server busy : cannot start VM')
 
 
-def dummy_console(request):
-    return render(request, 'vital/dummy.html')
-
-
 @login_required(login_url='/vital/login/')
 def start_vm(request, course_id, vm_id):
+    """
+    starts the specified VM
+    :param request: http request
+    :param course_id: id of the selected course
+    :param vm_id: id of the virtual machine
+    :return: starts the VM and redirects ti Course VM page
+    """
     config = User_VM_Config()
     try:
         with transaction.atomic():
@@ -93,7 +110,6 @@ def start_vm(request, course_id, vm_id):
             config.xen_server = started_vm['xen_server']
 
             # run novnc launch script
-            # TODO replace vlab-dev-xen1 with configured values <based on LB & already existing vms>
             start_novnc(config, started_vm)
             config.save()
             return redirect('/vital/courses/' + course_id + '/vms?message=' + vm.name + ' VM started')
@@ -112,6 +128,13 @@ def start_vm(request, course_id, vm_id):
 
 
 def stop_vm(request, course_id, vm_id):
+    """
+    stops the specified VM
+    :param request: http request
+    :param course_id: id of the selected course
+    :param vm_id: id of the virtual machine to stop
+    :return: stops the VM and returns to Course VM page
+    """
     vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
 
     cmd = 'kill ' + vm.no_vnc_pid
@@ -132,6 +155,13 @@ def stop_vm(request, course_id, vm_id):
 
 @login_required(login_url='/vital/login/')
 def rebase_vm(request, course_id, vm_id):
+    """
+    rebase the specified VM to initial state
+    :param request: http request
+    :param course_id: id of the selected course
+    :param vm_id: if od the VM to be rebased
+    :return: rebases VM and redirects to Course VMs page
+    """
     logger.debug("In rebase vm")
     try:
         vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
@@ -144,6 +174,11 @@ def rebase_vm(request, course_id, vm_id):
 
 @login_required(login_url='/vital/login/')
 def register_for_course(request):
+    """
+    creates necessary VMs for the specified course
+    :param request: http request
+    :return: creates the VM and redirects to Course VMs page
+    """
     logger.debug("in register for course")
     error_message = ''
     if request.method == 'POST':
@@ -177,6 +212,12 @@ def register_for_course(request):
 
 @login_required(login_url='/vital/login/')
 def unregister_from_course(request, course_id):
+    """
+    removes all VMs attached to a selected course and removes course finally from the users profile
+    :param request: http request
+    :param course_id: id of the course to be removed from user profile
+    :return: removes the course and redirects to Course listing page
+    """
     logger.debug("in course unregister")
     user = request.user
     course_to_remove = Registered_Course.objects.get(course_id=course_id, user_id=user.id)

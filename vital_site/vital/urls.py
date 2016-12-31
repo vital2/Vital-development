@@ -20,6 +20,5 @@ urlpatterns = [
     url(r'^courses/(?P<course_id>[0-9]+)/vms/(?P<vm_id>[0-9]+)/start', views.start_vm, name='start_vm'),
     url(r'^courses/(?P<course_id>[0-9]+)/vms/(?P<vm_id>[0-9]+)/stop', views.stop_vm, name='stop_vm'),
     url(r'^courses/(?P<course_id>[0-9]+)/vms/(?P<vm_id>[0-9]+)/rebase', views.rebase_vm, name='rebase_vm'),
-    url(r'^console/dummy', views.dummy_console, name='dummy_console'),
     url(r'^fix', views.fix_zombies, name='fix_zombies'),
 ]
