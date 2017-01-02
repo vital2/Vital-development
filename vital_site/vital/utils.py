@@ -166,7 +166,7 @@ class LoadBalancer:
         # servers = []
         # for key, server_url in server_configs:
         #    servers.append(XenServer(key, server_url))
-        name = 'xen-server-dev-1'
+        name = 'vlab-dev-xen2'
         return XenServer(name, config.get("Servers", name))
 
     def get_server(self, name):
