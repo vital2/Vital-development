@@ -225,13 +225,11 @@ def unregister_from_course(request, course_id):
     vms = User_VM_Config.objects.filter(user_id=request.user.id,
                                         vm_id__id=course_to_remove.course.virtual_machine_set.all())
 
-    xen = 'xen-server-dev-1'  # TODO find a way to default this value
     if len(vms) > 0:
-        xen = vms[0].xen_server
         for vm_conf in vms:
             stop_vm(request,course_id, vm_conf.vm.id)
 
-    XenClient().unregister_student_vms(xen, request.user, course_to_remove.course)
+    XenClient().unregister_student_vms(request.user, course_to_remove.course)
     audit(request, course_to_remove, 'User '+str(user.id)+' unregistered from course -'+str(course_id))
     course_to_remove.delete()
     return redirect('/vital/courses/registered/')

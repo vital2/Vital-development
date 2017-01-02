@@ -73,10 +73,9 @@ class XenClient:
 
 
 
-    def unregister_student_vms(self, server, user, course):
-        xen = LoadBalancer().get_server(server)
+    def unregister_student_vms(self, user, course):
+        xen = LoadBalancer().get_best_server()
         for virtualMachine in course.virtual_machine_set.all():
-            # xen.stop_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id))
             xen.cleanup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(virtualMachine.id))
             net_confs_to_delete = User_Network_Configuration.objects.filter(user_id=user.id, vm=virtualMachine)
             if len(net_confs_to_delete) > 0:
