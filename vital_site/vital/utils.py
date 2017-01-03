@@ -38,7 +38,7 @@ class XenClient:
         return vm
 
     def register_student_vms(self, user, course):
-        xen = SneakyXenLoadBalancer().get_best_server()
+        xen = SneakyXenLoadBalancer().get_best_server(user.id, course.id)
         logger.debug(len(course.virtual_machine_set.all()))
         for vm in course.virtual_machine_set.all():
             flag = True
@@ -73,7 +73,7 @@ class XenClient:
 
 
     def unregister_student_vms(self, user, course):
-        xen = SneakyXenLoadBalancer().get_best_server()
+        xen = SneakyXenLoadBalancer().get_best_server(user.id, course.id)
         for virtualMachine in course.virtual_machine_set.all():
             xen.cleanup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(virtualMachine.id))
             net_confs_to_delete = User_Network_Configuration.objects.filter(user_id=user.id, vm=virtualMachine)
@@ -88,7 +88,7 @@ class XenClient:
 
     def start_vm(self, user, course_id, vm_id):
         logger.debug('XenClient - in start_vm')
-        xen = SneakyXenLoadBalancer().get_best_server()
+        xen = SneakyXenLoadBalancer().get_best_server(user.id, course_id)
         vm = xen.start_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
         vm['xen_server'] = xen.name
         return vm
@@ -98,7 +98,7 @@ class XenClient:
         xen.stop_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
 
     def rebase_vm(self, user, course_id, vm_id):
-        xen = SneakyXenLoadBalancer().get_best_server()
+        xen = SneakyXenLoadBalancer().get_best_server(user.id, course_id)
         virtual_machine = Virtual_Machine.objects.get(id=vm_id)
         net_confs = User_Network_Configuration.objects.filter(user_id=user.id, vm=virtual_machine)
         vif = ''
