@@ -1,6 +1,6 @@
 import logging
 import xmlrpclib
-from models import Audit, Available_Config, User_Network_Configuration, Virtual_Machine
+from models import Audit, Available_Config, User_Network_Configuration, Virtual_Machine, User_VM_Config, Course
 import ConfigParser
 
 logger = logging.getLogger(__name__)
@@ -158,10 +158,23 @@ class XenServer:
 
 class SneakyXenLoadBalancer:
 
-    def get_best_server(self):
+    def get_best_server(self, user_id, course_id):
+        """
+        Retrieves best server for user and course
+        - checks if user has a VM for the specified course already started
+            - if yes returns same server
+            - if not, then checks server with best stats
+                - if more than 1 servers have same stat then pick the first
+        :param user_id: id of user
+        :param course_id: id of course
+        :return: best XenServer instance
+        """
+        # course = Course.objects.get(id=course_id)
+        # User_VM_Config.objects.filter(user_id=user, vm=)
         server_configs = config.items('Servers')
-        #  TODO find best server
         servers = []
+        best_stat = 0
+        best_server = 0
         for key, server_url in server_configs:
             servers.append(XenServer(key, server_url))
         logger.debug(servers)
@@ -170,3 +183,10 @@ class SneakyXenLoadBalancer:
 
     def get_server(self, name):
         return XenServer(name, config.get("Servers", name))
+
+    def sneak_in_status(self):
+        server_configs = config.items('Servers')
+        servers = []
+        for key, server_url in server_configs:
+            servers.append(XenServer(key, server_url))
+        logger.debug(servers)

@@ -251,7 +251,7 @@ def unregister_from_course(request, course_id):
         user = request.user
         course_to_remove = Registered_Course.objects.get(course_id=course_id, user_id=user.id)
         vms = User_VM_Config.objects.filter(user_id=request.user.id,
-                                            vm_id__id=course_to_remove.course.virtual_machine_set.all())
+                                            vm_id__in=course_to_remove.course.virtual_machine_set.all())
 
         if len(vms) > 0:
             for vm_conf in vms:
