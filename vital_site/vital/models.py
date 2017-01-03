@@ -4,8 +4,6 @@ from django.db import models
 from datetime import datetime
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
-# Create your models here.
-
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email,
@@ -96,8 +94,6 @@ class Virtual_Machine(models.Model):
     course = models.ForeignKey(Course)
     name = models.CharField(max_length=200)
     type = models.ForeignKey(Virtual_Machine_Type, null=True)
-    clean_img = models.CharField(max_length=200)
-    clean_conf = models.CharField(max_length=200)
 
 
 class User_VM_Config(models.Model):
@@ -145,12 +141,10 @@ class Faculty(models.Model):
 class Registered_Course(models.Model):
     user_id = models.IntegerField(default=0)
     course = models.ForeignKey(Course)
-    registered_date = models.DateTimeField(default=datetime.now, blank=True)
+    registered_date = models.DateTimeField(default=datetime.now)
 
 
 class Audit(models.Model):
     done_by = models.IntegerField()
-    done_at = models.DateTimeField(default=datetime.now, blank=True)
-    category = models.CharField(max_length=100)
-    item_id = models.IntegerField()
+    done_at = models.DateTimeField(default=datetime.now)
     action = models.CharField(max_length=500)

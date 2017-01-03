@@ -101,8 +101,9 @@ def start_vm(request, course_id, vm_id):
     """
     config = User_VM_Config()
     try:
+        vm = Virtual_Machine.objects.get(pk=vm_id)
+        audit(request, 'Starting Virtual machine ' + str(vm.name))
         with transaction.atomic():
-            vm = Virtual_Machine.objects.get(pk=vm_id)
             config.vm = vm
             config.user_id = request.user.id
             # start vm with xen api which returns handle to the vm
@@ -113,12 +114,15 @@ def start_vm(request, course_id, vm_id):
             # run novnc launch script
             start_novnc(config, started_vm)
             config.save()
+            audit(request, 'Started Virtual machine ' + str(vm.name))
             return redirect('/vital/courses/' + course_id + '/vms?message=' + vm.name + ' VM started')
     except Virtual_Machine.DoesNotExist as e:
         logger.error(str(e))
+        audit(request, 'Error starting Virtual machine ' + str(vm.name) + '( Does not exist )')
         return redirect('/vital/courses/' + course_id + '/vms?message=Unable to start VM - ' + vm.name)
     except Exception as e:
         logger.error(str(e))
+        audit(request, 'Error starting Virtual machine ' + str(vm.name) + '( ' + e.message + ' )')
         if 'Connection refused' not in str(e).rstrip():
             XenClient().stop_vm(config.xen_server, request.user, course_id, vm_id)
             released_conf = Available_Config()
@@ -136,6 +140,8 @@ def stop_vm(request, course_id, vm_id):
     :param vm_id: id of the virtual machine to stop
     :return: stops the VM and returns to Course VM page
     """
+    virtual_machine = Virtual_Machine.objects.get(pk=vm_id)
+    audit(request, 'Stopping Virtual machine ' + str(virtual_machine.name))
     vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
 
     cmd = 'kill ' + vm.no_vnc_pid
@@ -143,15 +149,22 @@ def stop_vm(request, course_id, vm_id):
     out, err = p.communicate()
     if not p.returncode == 0:
         if 'No such process' not in err.rstrip():
+            audit(request, 'Error stopping Virtual machine ' + str(virtual_machine.name) +
+                  '(' + err.rstrip() + ')')
             raise Exception('ERROR : cannot stop the vm '
                             '\n Reason : %s' % err.rstrip())
-    XenClient().stop_vm(vm.xen_server, request.user, course_id, vm_id)
-    config = Available_Config()
-    config.category = 'TERM_PORT'
-    config.value = vm.terminal_port
-    config.save()
-    vm.delete()
-    return redirect('/vital/courses/' + course_id + '/vms?message=VM stopped...')
+    try:
+        XenClient().stop_vm(vm.xen_server, request.user, course_id, vm_id)
+        config = Available_Config()
+        config.category = 'TERM_PORT'
+        config.value = vm.terminal_port
+        config.save()
+        vm.delete()
+        audit(request, 'Stopped Virtual machine ' + str(virtual_machine.name))
+        return redirect('/vital/courses/' + course_id + '/vms?message=VM stopped...')
+    except Exception as e:
+        audit(request, 'Error stopping Virtual machine ' + str(virtual_machine.name)+'('+e.message+')')
+        raise e
 
 
 @login_required(login_url='/vital/login/')
@@ -164,12 +177,18 @@ def rebase_vm(request, course_id, vm_id):
     :return: rebases VM and redirects to Course VMs page
     """
     logger.debug("In rebase vm")
+    virtual_machine = Virtual_Machine.objects.get(pk=vm_id)
+    audit(request, 'Re-imaging Virtual machine ' + str(virtual_machine.name))
     try:
         vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
         stop_vm(request, course_id, vm_id)
+        XenClient().rebase_vm(request.user, course_id, vm_id)
+        audit(request, 'Re-imaged Virtual machine ' + str(virtual_machine.name))
     except User_VM_Config.DoesNotExist as e:
         pass
-    XenClient().rebase_vm(request.user, course_id, vm_id)
+    except Exception as e:
+        audit(request, 'Error re-imaging Virtual machine ' + str(virtual_machine.name)+'('+e.message+')')
+        raise e
     return redirect('/vital/courses/' + course_id + '/vms?message=VM rebased to initial state..')
 
 
@@ -188,9 +207,10 @@ def register_for_course(request):
             logger.debug(form.cleaned_data['course_registration_code']+"<>"+str(request.user.id)+"<>"+
                          str(request.user.is_faculty))
             try:
+                course = Course.objects.get(registration_code=form.cleaned_data['course_registration_code'])
+                user = request.user
+                audit(request, 'Registering for course ' + str(course.name))
                 with transaction.atomic():
-                    course = Course.objects.get(registration_code=form.cleaned_data['course_registration_code'])
-                    user = request.user
                     if len(Registered_Course.objects.filter(course_id=course.id, user_id=user.id)) > 0:
                         error_message = 'You have already registered for this course'
                     else:
@@ -199,13 +219,16 @@ def register_for_course(request):
                             XenClient().register_student_vms(request.user, course)
                             registered_course = Registered_Course(course_id=course.id, user_id=user.id)
                             registered_course.save()
-                            audit(request, registered_course,
-                                  'User ' + str(user.id) + ' registered for new course -' + str(course.id))
+                            audit(request, 'Registered for course ' + str(course.name))
                             return redirect('/vital/courses/registered/')
                         else:
+                            audit(request, 'Error registering for course ' + str(course.name)) \
+                                        + ' (Inactive/Capacity Full)'
                             error_message = 'The course is either inactive or has reached its maximum student capacity.'
             except Course.DoesNotExist:
                 error_message = 'Invalid registration code. Check again.'
+                audit(request, 'Error registering for course ' + str(course.name)) \
+                    + ' (Invalid course registration code)'
     else:
         form = Course_Registration_Form()
     return render(request, 'vital/course_register.html', {'form': form, 'error_message': error_message})
@@ -220,19 +243,26 @@ def unregister_from_course(request, course_id):
     :return: removes the course and redirects to Course listing page
     """
     logger.debug("in course unregister")
-    user = request.user
-    course_to_remove = Registered_Course.objects.get(course_id=course_id, user_id=user.id)
-    vms = User_VM_Config.objects.filter(user_id=request.user.id,
-                                        vm_id__id=course_to_remove.course.virtual_machine_set.all())
+    course = Course.objects.get(id=course_id)
+    audit(request, 'Un-registering from course ' + str(course.name))
 
-    if len(vms) > 0:
-        for vm_conf in vms:
-            stop_vm(request,course_id, vm_conf.vm.id)
+    try:
+        user = request.user
+        course_to_remove = Registered_Course.objects.get(course_id=course_id, user_id=user.id)
+        vms = User_VM_Config.objects.filter(user_id=request.user.id,
+                                            vm_id__id=course_to_remove.course.virtual_machine_set.all())
 
-    XenClient().unregister_student_vms(request.user, course_to_remove.course)
-    audit(request, course_to_remove, 'User '+str(user.id)+' unregistered from course -'+str(course_id))
-    course_to_remove.delete()
-    return redirect('/vital/courses/registered/')
+        if len(vms) > 0:
+            for vm_conf in vms:
+                stop_vm(request, course_id, vm_conf.vm.id)
+
+        XenClient().unregister_student_vms(request.user, course_to_remove.course)
+        audit(request, 'Un-registered from course ' + str(course.name))
+        course_to_remove.delete()
+        return redirect('/vital/courses/registered/')
+    except Exception as e:
+        audit(request, 'Error while Un-registering from course ' + str(course.name)+' ('+e.message+')')
+        raise e
 
 
 # Remove after problem is fixed - or start the cron
