@@ -8,7 +8,7 @@ config = ConfigParser.ConfigParser()
 config.read("/home/rdj259/config.ini")
 
 
-def audit(request, category, action):
+def audit(request, action):
     logger.debug('In audit')
     if request.user.id is not None:
         audit_record = Audit(done_by=request.user.id, action=action)
