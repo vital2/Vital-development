@@ -182,10 +182,11 @@ def rebase_vm(request, course_id, vm_id):
     try:
         vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
         stop_vm(request, course_id, vm_id)
-        XenClient().rebase_vm(request.user, course_id, vm_id)
-        audit(request, 'Re-imaged Virtual machine ' + str(virtual_machine.name))
     except User_VM_Config.DoesNotExist as e:
         pass
+    try:
+        XenClient().rebase_vm(request.user, course_id, vm_id)
+        audit(request, 'Re-imaged Virtual machine ' + str(virtual_machine.name))
     except Exception as e:
         audit(request, 'Error re-imaging Virtual machine ' + str(virtual_machine.name)+'('+e.message+')')
         raise e
