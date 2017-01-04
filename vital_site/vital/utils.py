@@ -176,9 +176,8 @@ class SneakyXenLoadBalancer:
         :return: best XenServer instance
         """
         course = Course.objects.get(id=course_id)
-        logger.debug(str(course))
-        vm_confs = User_VM_Config.objects.filter(user_id=user, vm_id__id=course.virtual_machine_set.all())
-        logger.debug(str(vm_confs))
+        vm_confs = User_VM_Config.objects.filter(user_id=user.id, vm_id__in=course.virtual_machine_set.all())
+
         if len(vm_confs) > 0:
             xen_name = vm_confs[0].xen_server
             return XenServer(xen_name, config.get("Servers", xen_name))
