@@ -208,7 +208,7 @@ logger.debug(servers) '''
                 students = set()
                 courses = set()
                 for vm in vms:
-                    if not vm['id'].contains('Domain'):
+                    if 'Domain' not in vm['id']:
                         students.add(vm['id'][0:vm['id'].find('_')])
                         val = vm['id'][vm['id'].find('_') + 1:]
                         courses.add(val[0:val.find('_')])
