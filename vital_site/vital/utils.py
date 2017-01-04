@@ -211,9 +211,8 @@ logger.debug(servers) '''
                     students.add(vm['id'][0:vm['id'].find('_')])
                     val = vm['id'][vm['id'].find('_') + 1:]
                     courses.add(val[0:val.find('_')])
-                    used_memory += vm['memory']
+                    used_memory += int(vm['memory'])
 
-                logger.debug(">>>>" + str(used_memory))
                 server.used_memory = used_memory
                 server.no_of_students = len(students)
                 server.no_of_courses = len(courses)
