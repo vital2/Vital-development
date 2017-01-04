@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from utils import SneakyXenLoadBalancer
+from ..utils import SneakyXenLoadBalancer
 import time
 import logging
 
