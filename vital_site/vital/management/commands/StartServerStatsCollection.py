@@ -1,9 +1,10 @@
 from django.core.management.base import BaseCommand, CommandError
-from ..utils import SneakyXenLoadBalancer
+from vital.utils import SneakyXenLoadBalancer
 import time
 import logging
 
 logger = logging.getLogger(__name__)
+
 
 class Command(BaseCommand):
 
