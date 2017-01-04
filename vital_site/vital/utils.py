@@ -201,4 +201,4 @@ logger.debug(servers) '''
         for key, server_url in server_configs:
             vms = XenServer(key, server_url).list_vms(user)
             used_memory = sum(list([int(vm['memory']) for vm in vms if vm['name']]))
-            logger.debug(">>>>"+used_memory)
+            logger.debug(">>>>"+str(used_memory))
