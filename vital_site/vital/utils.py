@@ -221,12 +221,12 @@ logger.debug(servers) '''
                 server.utilization = Decimal(server.used_memory)/Decimal(server.total_memory)
                 server.status = 'ACTIVE'
             except Exception as e:
-                print e.message
+                logger.error(e)
                 server.used_memory = 0
                 server.no_of_students = 0
                 server.no_of_courses = 0
                 server.no_of_vms = 0
-                server.utilization = 0
-                server.status = 'UNRESPONSIVE'
+                server.utilization = 0.0
+                server.status = 'INACTIVE'
             finally:
                 server.save()
