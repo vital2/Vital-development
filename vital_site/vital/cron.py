@@ -2,7 +2,7 @@ from django.contrib.sessions.models import Session
 from django.conf import settings
 import datetime
 import logging
-from utils import XenClient
+from utils import XenClient, SneakyXenLoadBalancer
 from models import VLAB_User
 
 logger = logging.getLogger(__name__)  # check and add a handler for this.
@@ -33,3 +33,9 @@ def clean_zombie_vms():
     for vm in vms:
         if vm['name'].strip() == '(null)':
             XenClient().kill_zombie_vm('xen-server-dev-1', user, vm['id'])
+
+
+def run_server_stats():
+    # sneaks in server status every 10s to remove requirement of checking for every xen-api call
+    logger.debug('Running server statistics <>')
+    SneakyXenLoadBalancer.sneak_in_server_stats()

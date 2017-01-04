@@ -1,8 +1,9 @@
 import logging
 import xmlrpclib
 from models import Audit, Available_Config, User_Network_Configuration, Virtual_Machine, \
-    User_VM_Config, Course, VLAB_User
+    User_VM_Config, Course, VLAB_User, Xen_Server
 import ConfigParser
+from decimal import *
 
 logger = logging.getLogger(__name__)
 config = ConfigParser.ConfigParser()
@@ -188,7 +189,6 @@ else:
        server = XenServer(key, server_url)
 logger.debug(servers) '''
         name = 'vlab-dev-xen2'
-        self.sneak_in_server_stats()
         return XenServer(name, config.get("Servers", name))
 
     def get_server(self, name):
@@ -199,6 +199,32 @@ logger.debug(servers) '''
         server_configs = config.items('Servers')
         user = VLAB_User.objects.get(first_name='Cron', last_name='User')
         for key, server_url in server_configs:
-            vms = XenServer(key, server_url).list_vms(user)
-            used_memory = sum(list([int(vm['memory']) for vm in vms if vm['name']]))
-            logger.debug(">>>>"+str(used_memory))
+            server = Xen_Server.objects.get(name=key)
+            try:
+                vms = XenServer(key, server_url).list_vms(user)
+                # used_memory = sum(list([int(vm['memory']) for vm in vms if vm['name']]))
+                used_memory = 0
+                students = set()
+                courses = set()
+                for vm in vms:
+                    students.add(vm['id'][0:vm['id'].find('_')])
+                    val = vm['id'][vm['id'].find('_') + 1:]
+                    courses.add(val[0:val.find('_')])
+                    sum += vm['memory']
+
+                logger.debug(">>>>" + str(used_memory))
+                server.used_memory = used_memory
+                server.no_of_students = len(students)
+                server.no_of_courses = len(courses)
+                server.no_of_vms = len(vm)
+                server.utilization = Decimal(server.used_memory)/Decimal(server.total_memory)
+                server.status = 'ACTIVE'
+            except Exception as e:
+                server.used_memory = 0
+                server.no_of_students = 0
+                server.no_of_courses = 0
+                server.no_of_vms = 0
+                server.utilization = 0
+                server.status = 'UNRESPONSIVE'
+            finally:
+                server.save()
