@@ -177,7 +177,7 @@ class SneakyXenLoadBalancer:
         """
         course = Course.objects.get(id=course_id)
         logger.debug(str(course))
-        vm_confs = User_VM_Config.objects.filter(user_id=user, vm_id__in=course.virtual_machine_set.all())
+        vm_confs = User_VM_Config.objects.filter(user_id=user, vm_id__id=course.virtual_machine_set.all())
         logger.debug(str(vm_confs))
         if len(vm_confs) > 0:
             xen_name = vm_confs[0].xen_server
