@@ -175,28 +175,25 @@ class SneakyXenLoadBalancer:
         :param course_id: id of course
         :return: best XenServer instance
         """
-        ''' course = Course.objects.get(id=course_id)
-vm_confs = User_VM_Config.objects.filter(user_id=user, vm_id__in=course.virtual_machine_set.all())
-if len(vm_confs) > 0:
-   name = vm_confs[0].xen_server
-   return XenServer(name, config.get("Servers", name))
-else:
-   server_configs = config.items('Servers')
-   servers = []
-   best_stat = 0
-   best_server = 0
-   for key, server_url in server_configs:
-       server = XenServer(key, server_url)
-logger.debug(servers) '''
-        name = 'vlab-dev-xen2'
-        return XenServer(name, config.get("Servers", name))
+        course = Course.objects.get(id=course_id)
+        vm_confs = User_VM_Config.objects.filter(user_id=user, vm_id__in=course.virtual_machine_set.all())
+        if len(vm_confs) > 0:
+            xen_name = vm_confs[0].xen_server
+            return XenServer(xen_name, config.get("Servers", xen_name))
+        else:
+            xen_server = Xen_Server.objects.filter(status='ACTIVE').order_by('utilization').first()
+            if xen_server.utilization < 0.96:
+                return XenServer(xen_server.name, config.get("Servers", xen_server.name))
+            else:
+                raise Exception('Server utilization high')
+        # name = 'vlab-dev-xen2'
+        # return XenServer(name, config.get("Servers", name))
 
     def get_server(self, name):
         return XenServer(name, config.get("Servers", name))
 
     def sneak_in_server_stats(self):
-        # heart beat - 10 seconds stats collection
-        print "IN>>>>>>>>>>>>>>>>>"
+        # heart beat - 5 seconds stats collection
         server_configs = config.items('Servers')
         user = VLAB_User.objects.get(first_name='Cron', last_name='User')
         for key, server_url in server_configs:
