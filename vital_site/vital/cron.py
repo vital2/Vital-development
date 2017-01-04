@@ -2,15 +2,12 @@ from django.contrib.sessions.models import Session
 from django.conf import settings
 import datetime
 import logging
-from utils import XenClient, SneakyXenLoadBalancer
+from utils import XenClient
 from models import VLAB_User
-import time
-
 
 logger = logging.getLogger(__name__)  # check and add a handler for this.
 
 # use this file to add all cron jobs - house keeping jobs etc
-
 # do not forget to run
 # python manage.py crontab add - to add jobs
 # python manage.py crontab remove -  to remove jobs
@@ -35,14 +32,3 @@ def clean_zombie_vms():
     for vm in vms:
         if vm['name'].strip() == '(null)':
             XenClient().kill_zombie_vm('xen-server-dev-1', user, vm['id'])
-
-
-def run_server_stats():
-    # sneaks in server status every 10s to remove requirement of checking for every xen-api call
-    # logger.debug('Running server statistics <>')
-    print "Start : %s" % time.ctime()
-    print "------------------>"
-    SneakyXenLoadBalancer.sneak_in_server_stats()
-    print "<<<------------------>"
-    time.sleep(5)
-    print "End : %s" % time.ctime()
