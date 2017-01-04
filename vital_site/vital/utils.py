@@ -197,7 +197,6 @@ logger.debug(servers) '''
     def sneak_in_server_stats(self):
         # heart beat - 10 seconds stats collection
         print "IN>>>>>>>>>>>>>>>>>"
-        print "IN>>>>>>>>>>>>>>>>>"
         server_configs = config.items('Servers')
         user = VLAB_User.objects.get(first_name='Cron', last_name='User')
         for key, server_url in server_configs:

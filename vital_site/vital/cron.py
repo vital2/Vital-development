@@ -39,8 +39,10 @@ def clean_zombie_vms():
 
 def run_server_stats():
     # sneaks in server status every 10s to remove requirement of checking for every xen-api call
-    logger.debug('Running server statistics <>')
+    # logger.debug('Running server statistics <>')
     print "Start : %s" % time.ctime()
+    print "------------------>"
     SneakyXenLoadBalancer.sneak_in_server_stats()
+    print "<<<------------------>"
     time.sleep(5)
     print "End : %s" % time.ctime()
