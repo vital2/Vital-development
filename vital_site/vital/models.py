@@ -148,3 +148,14 @@ class Audit(models.Model):
     done_by = models.IntegerField()
     done_at = models.DateTimeField(default=datetime.now)
     action = models.CharField(max_length=500)
+
+
+class Xen_Server(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    total_memory = models.IntegerField(default=0)
+    used_memory = models.IntegerField(default=0)
+    utilization = models.DecimalField(max_digits=5, decimal_places=4)
+    no_of_vms = models.IntegerField(default=0)
+    no_of_students = models.IntegerField(default=0)
+    no_of_courses = models.IntegerField(default=0)
+    status = models.CharField(max_length=10)

@@ -1,10 +1,13 @@
 import logging
 import xmlrpclib
-from models import Audit, Available_Config, User_Network_Configuration, Virtual_Machine, User_VM_Config, Course
+from models import Audit, Available_Config, User_Network_Configuration, Virtual_Machine, \
+    User_VM_Config, Course, VLAB_User
 import ConfigParser
 
 logger = logging.getLogger(__name__)
 config = ConfigParser.ConfigParser()
+
+# TODO change to common config file in shared location
 config.read("/home/rdj259/config.ini")
 
 
@@ -38,7 +41,8 @@ class XenClient:
         return vm
 
     def register_student_vms(self, user, course):
-        xen = SneakyXenLoadBalancer().get_best_server(user.id, course.id)
+        # choosing best server under assumption that VM conf and dsk will be on gluster
+        xen = SneakyXenLoadBalancer().get_best_server(user, course.id)
         logger.debug(len(course.virtual_machine_set.all()))
         for vm in course.virtual_machine_set.all():
             flag = True
@@ -73,7 +77,8 @@ class XenClient:
 
 
     def unregister_student_vms(self, user, course):
-        xen = SneakyXenLoadBalancer().get_best_server(user.id, course.id)
+        # choosing best server under assumption that VM conf and dsk will be on gluster
+        xen = SneakyXenLoadBalancer().get_best_server(user, course.id)
         for virtualMachine in course.virtual_machine_set.all():
             xen.cleanup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(virtualMachine.id))
             net_confs_to_delete = User_Network_Configuration.objects.filter(user_id=user.id, vm=virtualMachine)
@@ -88,7 +93,7 @@ class XenClient:
 
     def start_vm(self, user, course_id, vm_id):
         logger.debug('XenClient - in start_vm')
-        xen = SneakyXenLoadBalancer().get_best_server(user.id, course_id)
+        xen = SneakyXenLoadBalancer().get_best_server(user, course_id)
         vm = xen.start_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
         vm['xen_server'] = xen.name
         return vm
@@ -98,7 +103,7 @@ class XenClient:
         xen.stop_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
 
     def rebase_vm(self, user, course_id, vm_id):
-        xen = SneakyXenLoadBalancer().get_best_server(user.id, course_id)
+        xen = SneakyXenLoadBalancer().get_best_server(user, course_id)
         virtual_machine = Virtual_Machine.objects.get(id=vm_id)
         net_confs = User_Network_Configuration.objects.filter(user_id=user.id, vm=virtual_machine)
         vif = ''
@@ -158,35 +163,42 @@ class XenServer:
 
 class SneakyXenLoadBalancer:
 
-    def get_best_server(self, user_id, course_id):
+    def get_best_server(self, user, course_id):
         """
         Retrieves best server for user and course
         - checks if user has a VM for the specified course already started
             - if yes returns same server
             - if not, then checks server with best stats
                 - if more than 1 servers have same stat then pick the first
-        :param user_id: id of user
+        :param user: user object
         :param course_id: id of course
         :return: best XenServer instance
         """
-        # course = Course.objects.get(id=course_id)
-        # User_VM_Config.objects.filter(user_id=user, vm=)
-        server_configs = config.items('Servers')
-        servers = []
-        best_stat = 0
-        best_server = 0
-        for key, server_url in server_configs:
-            servers.append(XenServer(key, server_url))
-        logger.debug(servers)
+        ''' course = Course.objects.get(id=course_id)
+vm_confs = User_VM_Config.objects.filter(user_id=user, vm_id__in=course.virtual_machine_set.all())
+if len(vm_confs) > 0:
+   name = vm_confs[0].xen_server
+   return XenServer(name, config.get("Servers", name))
+else:
+   server_configs = config.items('Servers')
+   servers = []
+   best_stat = 0
+   best_server = 0
+   for key, server_url in server_configs:
+       server = XenServer(key, server_url)
+logger.debug(servers) '''
         name = 'vlab-dev-xen2'
+        self.sneak_in_server_stats()
         return XenServer(name, config.get("Servers", name))
 
     def get_server(self, name):
         return XenServer(name, config.get("Servers", name))
 
-    def sneak_in_status(self):
+    def sneak_in_server_stats(self):
+        # heart beat - 10 seconds stats collection
         server_configs = config.items('Servers')
-        servers = []
+        user = VLAB_User.objects.get(first_name='Cron', last_name='User')
         for key, server_url in server_configs:
-            servers.append(XenServer(key, server_url))
-        logger.debug(servers)
+            vms = XenServer(key, server_url).list_vms(user)
+            used_memory = sum(list([vm['memory'] for vm in vms if vm['name']]))
+            logger.debug(">>>>"+used_memory)

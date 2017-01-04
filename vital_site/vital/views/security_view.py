@@ -80,7 +80,7 @@ def activate(request):
                         django_login(request, user)
                         logger.debug('activated..'+user.email)
                         form = Authentication_Form()
-                        #return render(request, 'vital/login.html', {'form': form })
+                        # return render(request, 'vital/login.html', {'form': form })
                         return redirect('/vital')
                     else:
                         message = 'Please check your activation code'
