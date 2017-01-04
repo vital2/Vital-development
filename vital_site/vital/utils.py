@@ -196,6 +196,8 @@ logger.debug(servers) '''
 
     def sneak_in_server_stats(self):
         # heart beat - 10 seconds stats collection
+        print "IN>>>>>>>>>>>>>>>>>"
+        print "IN>>>>>>>>>>>>>>>>>"
         server_configs = config.items('Servers')
         user = VLAB_User.objects.get(first_name='Cron', last_name='User')
         for key, server_url in server_configs:
@@ -220,6 +222,7 @@ logger.debug(servers) '''
                 server.utilization = Decimal(server.used_memory)/Decimal(server.total_memory)
                 server.status = 'ACTIVE'
             except Exception as e:
+                print e.message
                 server.used_memory = 0
                 server.no_of_students = 0
                 server.no_of_courses = 0
