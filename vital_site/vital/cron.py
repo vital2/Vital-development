@@ -4,6 +4,8 @@ import datetime
 import logging
 from utils import XenClient, SneakyXenLoadBalancer
 from models import VLAB_User
+import time
+
 
 logger = logging.getLogger(__name__)  # check and add a handler for this.
 
@@ -38,4 +40,7 @@ def clean_zombie_vms():
 def run_server_stats():
     # sneaks in server status every 10s to remove requirement of checking for every xen-api call
     logger.debug('Running server statistics <>')
+    print "Start : %s" % time.ctime()
     SneakyXenLoadBalancer.sneak_in_server_stats()
+    time.sleep(5)
+    print "End : %s" % time.ctime()
