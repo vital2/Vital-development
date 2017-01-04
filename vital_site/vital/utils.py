@@ -208,9 +208,9 @@ logger.debug(servers) '''
                 students = set()
                 courses = set()
                 for vm in vms:
-                    if 'Domain' not in vm['id']:
-                        students.add(vm['id'][0:vm['id'].find('_')])
-                        val = vm['id'][vm['id'].find('_') + 1:]
+                    if 'Domain' not in vm['name']:
+                        students.add(vm['name'][0:vm['name'].find('_')])
+                        val = vm['name'][vm['name'].find('_') + 1:]
                         courses.add(val[0:val.find('_')])
                         used_memory += int(vm['memory'])
 
