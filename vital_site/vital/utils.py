@@ -211,7 +211,7 @@ logger.debug(servers) '''
                     students.add(vm['id'][0:vm['id'].find('_')])
                     val = vm['id'][vm['id'].find('_') + 1:]
                     courses.add(val[0:val.find('_')])
-                    sum += vm['memory']
+                    used_memory += vm['memory']
 
                 logger.debug(">>>>" + str(used_memory))
                 server.used_memory = used_memory
