@@ -182,7 +182,9 @@ class SneakyXenLoadBalancer:
             return XenServer(xen_name, config.get("Servers", xen_name))
         else:
             xen_server = Xen_Server.objects.filter(status='ACTIVE').order_by('utilization').first()
+            logger.debug(str(xen_server.utilization))
             if xen_server.utilization < 0.96:
+                logger.debug(XenServer(xen_server.name, config.get("Servers", xen_server.name)))
                 return XenServer(xen_server.name, config.get("Servers", xen_server.name))
             else:
                 raise Exception('Server utilization high')
