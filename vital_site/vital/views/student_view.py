@@ -182,13 +182,12 @@ def rebase_vm(request, course_id, vm_id):
     try:
         vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
         stop_vm(request, course_id, vm_id)
-    except User_VM_Config.DoesNotExist as e:
-        pass
-    try:
         XenClient().rebase_vm(request.user, course_id, vm_id)
         audit(request, 'Re-imaged Virtual machine ' + str(virtual_machine.name))
+    except User_VM_Config.DoesNotExist as e:
+        pass
     except Exception as e:
-        audit(request, 'Error re-imaging Virtual machine ' + str(virtual_machine.name)+'('+e.message+')')
+        audit(request, 'Error re-imaged Virtual machine ' + str(virtual_machine.name))
         raise e
     return redirect('/vital/courses/' + course_id + '/vms?message=VM rebased to initial state..')
 
@@ -251,7 +250,7 @@ def unregister_from_course(request, course_id):
         user = request.user
         course_to_remove = Registered_Course.objects.get(course_id=course_id, user_id=user.id)
         vms = User_VM_Config.objects.filter(user_id=request.user.id,
-                                            vm_id__in=course_to_remove.course.virtual_machine_set.all())
+                                            vm_id__id=course_to_remove.course.virtual_machine_set.all())
 
         if len(vms) > 0:
             for vm_conf in vms:

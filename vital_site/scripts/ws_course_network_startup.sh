@@ -7,7 +7,6 @@ then
 fi
 
 vlan=$1
-
 vconfig add bond0 $vlan
 ifconfig bond0.$vlan 10.$vlan.1.1 netmask 255.255.255.0 broadcast 10.$vlan.1.255 up
 
@@ -26,6 +25,5 @@ then
         echo "Internet enabled for vlan $vlan"
 else
         iptables -A FORWARD -i bond0.$vlan -s 10.$vlan.1.0/24 -j REJECT
-        #iptables -A FORWARD -i bond0 -s 192.168.36.0/24 -j REJECT
 fi
 /home/vlab_scp/vmnet_conf/vlab-natdhcp/bin/busybox udhcpd -S /home/vlab_scp/vmnet_conf/vlab-natdhcp/Nat-$vlan.dhcpd

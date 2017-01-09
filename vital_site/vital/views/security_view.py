@@ -2,10 +2,9 @@ from django.shortcuts import render, redirect, render_to_response
 from django.contrib.auth import login as django_login, authenticate, logout as django_logout
 from django.core.mail import send_mail
 from django.http import HttpResponseNotAllowed
-from django.template import RequestContext
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from ..utils import XenClient
+from ..utils import XenClient, audit
 from subprocess import Popen, PIPE
 
 from ..forms import Registration_Form, User_Activation_Form, Authentication_Form, Reset_Password_Form, \
@@ -78,6 +77,7 @@ def activate(request):
                         user.save()
                         user.backend = 'django.contrib.auth.backends.ModelBackend'
                         django_login(request, user)
+                        #audit(request, 'Activated user')
                         logger.debug('activated..'+user.email)
                         form = Authentication_Form()
                         # return render(request, 'vital/login.html', {'form': form })
@@ -168,6 +168,7 @@ def login(request):
             if user is not None:
                 if user.is_active:
                     django_login(request, user)
+                    audit(request, 'User logged in')
                     return redirect('/vital')
                 else:
                     form = User_Activation_Form(initial={'user_email': user.email})
@@ -188,12 +189,13 @@ def login(request):
 def logout(request):
     logger.debug("in logout")
     logger.debug(">>>>>>>>>>>>>>>>>>" + str(request.user))
-#    stop_vms_during_logout(request.user)
+    audit(request, 'User logged out')
     django_logout(request)
     return redirect('/vital/login')
 
 
 def stop_vms_during_logout(user):
+    # this is called from logout signal
     logger.debug(">>>>>>>>>>>>>>>>>>" + str(user.id))
     user_vms = User_VM_Config.objects.filter(user_id=user.id)
     for user_vm in user_vms:

@@ -183,12 +183,7 @@ class SneakyXenLoadBalancer:
             return XenServer(xen_name, config.get("Servers", xen_name))
         else:
             xen_server = Xen_Server.objects.filter(status='ACTIVE').order_by('utilization').first()
-            logger.debug(str(xen_server.utilization))
-            if xen_server.utilization < 0.96:
-                logger.debug(XenServer(xen_server.name, config.get("Servers", xen_server.name)))
-                return XenServer(xen_server.name, config.get("Servers", xen_server.name))
-            else:
-                raise Exception('Server utilization high')
+            return XenServer(xen_server.name, config.get("Servers", xen_server.name))
         # name = 'vlab-dev-xen2'
         # return XenServer(name, config.get("Servers", name))
 
@@ -197,6 +192,8 @@ class SneakyXenLoadBalancer:
 
     def sneak_in_server_stats(self):
         # heart beat - 5 seconds stats collection
+        # this is exposed as a custom django command that will be executed on server start
+        # vital/management/commands
         server_configs = config.items('Servers')
         user = VLAB_User.objects.get(first_name='Cron', last_name='User')
         for key, server_url in server_configs:
