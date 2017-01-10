@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This is called from upstart job /etc/init/on_server_start.conf
+# postgres init script modified for this. similar to http://blog.systemed.net/post/6
+
 # mounts glusterfs
 mount -t glusterfs gusterfs1-dev:volume1 /mnt/vlab-datastore
 

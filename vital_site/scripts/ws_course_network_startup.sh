@@ -1,11 +1,5 @@
 #!/bin/bash
 
-if [ $# -eq 0 ]
-then
-        echo "Usage: $0 <vlan> +internet"
-        exit
-fi
-
 vlan=$1
 vconfig add bond0 $vlan
 ifconfig bond0.$vlan 10.$vlan.1.1 netmask 255.255.255.0 broadcast 10.$vlan.1.255 up
@@ -20,10 +14,13 @@ iptables -A FORWARD -i bond0.$vlan -s 10.$vlan.1.0/24 -d 128.238.66.35 -p tcp --
 
 iptables -A FORWARD -i bond0.$vlan -s 10.$vlan.1.0/24 -d 10.$vlan.1.0/24 -j ACCEPT
 
-if [ $# -eq 2 ] && [ "$2" = '+internet' ]
+requires_internet=$(psql -U postgres -d vital_db -t -c "SELECT n.has_internet_access from vital_course c join vital_network_configuration n on c.id=n.course_id where c.id="+$vlan)
+
+if [ $requires_internet -eq 't' ]
 then
         echo "Internet enabled for vlan $vlan"
 else
+        echo "Internet disabled for vlan $vlan"
         iptables -A FORWARD -i bond0.$vlan -s 10.$vlan.1.0/24 -j REJECT
 fi
 /home/vlab_scp/vmnet_conf/vlab-natdhcp/bin/busybox udhcpd -S /home/vlab_scp/vmnet_conf/vlab-natdhcp/Nat-$vlan.dhcpd
