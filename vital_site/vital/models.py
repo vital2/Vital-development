@@ -123,6 +123,7 @@ class User_Network_Configuration(models.Model):
     user_id = models.IntegerField(default=0)
     bridge_name = models.CharField(max_length=50)
     mac_id = models.CharField(max_length=50)
+    created = models.BooleanField(default=False)
 
 
 class Faculty(models.Model):
