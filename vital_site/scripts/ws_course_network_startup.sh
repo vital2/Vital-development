@@ -16,7 +16,7 @@ iptables -A FORWARD -i bond0.$vlan -s 10.$vlan.1.0/24 -d 10.$vlan.1.0/24 -j ACCE
 
 requires_internet=$(psql -U postgres -d vital_db -t -c "SELECT n.has_internet_access from vital_course c join vital_network_configuration n on c.id=n.course_id where c.id="+$vlan)
 
-if [ $requires_internet -eq 't' ]
+if [ $requires_internet = 't' ]
 then
         echo "Internet enabled for vlan $vlan"
 else
