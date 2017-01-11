@@ -11,6 +11,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         logger.debug("Starting the stats collector")
         while True:
-            logger.debug("Collecting status at "+time.time())
+            logger.debug("Collecting status at "+str(time.time()))
             SneakyXenLoadBalancer().sneak_in_server_stats()
             time.sleep(5)  # 5 second heart beat
