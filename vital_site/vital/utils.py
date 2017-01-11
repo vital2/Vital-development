@@ -4,6 +4,7 @@ from models import Audit, Available_Config, User_Network_Configuration, Virtual_
     User_VM_Config, Course, VLAB_User, Xen_Server
 import ConfigParser
 from decimal import *
+from django.db import transaction
 
 logger = logging.getLogger(__name__)
 config = ConfigParser.ConfigParser()
@@ -56,33 +57,44 @@ class XenClient:
                 if locked_conf is not None and len(locked_conf) > 0:
                     val = locked_conf[0].value
                     locked_conf.delete()
-                    # TODO change this to accept other private networks
-                    # Done just to accept class nets
-                    class_net = vm.network_configuration_set.filter(is_course_net=True).first()
-                    vif = '\'mac=' + val + ', bridge=' + class_net.name + '\''
-                    logger.debug('Registering with vif:'+vif+' for user '+user.email)
-                    xen.setup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id),
-                                 str(course.id) + '_' + str(vm.id), vif)
-                    user_net_config = User_Network_Configuration()
-                    user_net_config.bridge_name = class_net.name
-                    user_net_config.user_id = user.id
-                    user_net_config.mac_id = val
-                    user_net_config.vm = vm
-                    user_net_config.save()
-                    logger.debug('Registered user ' + user.email)
-                    flag = False
+
+                    networks = vm.network_configuration_set.all()
+                    vif = ''
+                    with transaction.atomic():
+                        for network in networks:
+                            user_net_config = User_Network_Configuration()
+                            if network.is_course_net:
+                                vif = vif + '\'mac=' + val + ', bridge=' + network.name + '\'' + ','
+                                user_net_config.bridge_name = network.name
+                            else:
+                                net_name = user.id + '_' + course.id + '_' + network.name
+                                vif = vif + '\'mac=' + val + ', bridge=' + net_name + '\'' + ','
+                                user_net_config.bridge_name = net_name
+
+                            user_net_config.user_id = user.id
+                            user_net_config.mac_id = val
+                            user_net_config.vm = vm
+                            user_net_config.course = course
+                            user_net_config.is_course_net = network.is_course_net
+                            user_net_config.save()
+
+                        vif = vif[:len(vif)-1]
+                        logger.debug('Registering with vif:' + vif + ' for user ' + user.email)
+                        xen.setup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id),
+                                     str(course.id) + '_' + str(vm.id), vif)
+
+                        logger.debug('Registered user ' + user.email)
+                        flag = False
                 if cnt >= 100:
                     raise Exception('Server Busy : Registration incomplete')
-
-
-
 
     def unregister_student_vms(self, user, course):
         # choosing best server under assumption that VM conf and dsk will be on gluster
         xen = SneakyXenLoadBalancer().get_best_server(user, course.id)
         for virtualMachine in course.virtual_machine_set.all():
             xen.cleanup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(virtualMachine.id))
-            net_confs_to_delete = User_Network_Configuration.objects.filter(user_id=user.id, vm=virtualMachine)
+            net_confs_to_delete = User_Network_Configuration.objects.filter(user_id=user.id, vm=virtualMachine,
+                                                                            course=course)
             if len(net_confs_to_delete) > 0:
                 for conf in net_confs_to_delete:
                     available_conf = Available_Config()
@@ -90,7 +102,6 @@ class XenClient:
                     available_conf.value = conf.mac_id
                     available_conf.save()
                     conf.delete()
-
 
     def start_vm(self, user, course_id, vm_id):
         logger.debug('XenClient - in start_vm')
@@ -106,7 +117,9 @@ class XenClient:
     def rebase_vm(self, user, course_id, vm_id):
         xen = SneakyXenLoadBalancer().get_best_server(user, course_id)
         virtual_machine = Virtual_Machine.objects.get(id=vm_id)
-        net_confs = User_Network_Configuration.objects.filter(user_id=user.id, vm=virtual_machine)
+        course = Course.objects.get(id=course_id)
+        net_confs = User_Network_Configuration.objects.filter(user_id=user.id, vm=virtual_machine,
+                                                              course=course)
         vif = ''
         for conf in net_confs:
             vif = vif + '\'mac=' + conf.mac_id + ', bridge=' + conf.bridge_name + '\','
@@ -194,6 +207,7 @@ class SneakyXenLoadBalancer:
         # heart beat - 5 seconds stats collection
         # this is exposed as a custom django command that will be executed on server start
         # vital/management/commands
+        logger.debug("IN sneak_in_server_stats")
         server_configs = config.items('Servers')
         user = VLAB_User.objects.get(first_name='Cron', last_name='User')
         for key, server_url in server_configs:

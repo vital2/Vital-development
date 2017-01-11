@@ -120,9 +120,11 @@ class Network_Configuration(models.Model):
 
 class User_Network_Configuration(models.Model):
     vm = models.ForeignKey(Virtual_Machine)
+    course = models.ForeignKey(Course)
     user_id = models.IntegerField(default=0)
     bridge_name = models.CharField(max_length=50)
     mac_id = models.CharField(max_length=50)
+    is_course_net = models.BooleanField(default=False)
     created = models.BooleanField(default=False)
 
 
