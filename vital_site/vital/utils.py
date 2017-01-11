@@ -67,7 +67,7 @@ class XenClient:
                                 vif = vif + '\'mac=' + val + ', bridge=' + network.name + '\'' + ','
                                 user_net_config.bridge_name = network.name
                             else:
-                                net_name = user.id + '_' + course.id + '_' + network.name
+                                net_name = str(user.id) + '_' + str(course.id) + '_' + network.name
                                 vif = vif + '\'mac=' + val + ', bridge=' + net_name + '\'' + ','
                                 user_net_config.bridge_name = net_name
 
