@@ -91,6 +91,7 @@ class XenClient:
     def unregister_student_vms(self, user, course):
         # choosing best server under assumption that VM conf and dsk will be on gluster
         xen = SneakyXenLoadBalancer().get_best_server(user, course.id)
+        logger.debug("Unregistering course "+ course.name)
         for virtualMachine in course.virtual_machine_set.all():
             xen.cleanup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(virtualMachine.id))
             net_confs_to_delete = User_Network_Configuration.objects.filter(user_id=user.id, vm=virtualMachine,
