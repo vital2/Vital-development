@@ -1,7 +1,6 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth.decorators import login_required
-from ..models import Course, Registered_Course, Virtual_Machine, User_VM_Config, Available_Config, \
-    User_Network_Configuration
+from ..models import Course, Registered_Course, Virtual_Machine, User_VM_Config, Available_Config
 from ..forms import Course_Registration_Form
 from ..utils import audit, XenClient
 import logging
@@ -269,6 +268,6 @@ def unregister_from_course(request, course_id):
 @login_required(login_url='/vital/login/')
 def fix_zombies(request):
     logger.debug('In fix zombie')
-    if request.user.id == 2:
+    if request.user.email == 'rdj259@nyu.edu':
         clean_zombie_vms()
         return redirect('/vital/courses/registered/')

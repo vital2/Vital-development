@@ -117,15 +117,17 @@ class Network_Configuration(models.Model):
     is_course_net = models.BooleanField(default=False)
     has_internet_access = models.BooleanField(default=False)
 
+class User_Bridge(models.Model):
+    name = models.CharField(max_length=100, primary_key=True)
+    created = models.BooleanField(default=False)
 
 class User_Network_Configuration(models.Model):
     vm = models.ForeignKey(Virtual_Machine)
     course = models.ForeignKey(Course)
     user_id = models.IntegerField(default=0)
-    bridge_name = models.CharField(max_length=50)
+    bridge = models.ForeignKey(User_Bridge)
     mac_id = models.CharField(max_length=50)
     is_course_net = models.BooleanField(default=False)
-    created = models.BooleanField(default=False)
 
 
 class Faculty(models.Model):

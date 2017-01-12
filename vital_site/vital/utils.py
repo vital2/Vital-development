@@ -1,7 +1,7 @@
 import logging
 import xmlrpclib
 from models import Audit, Available_Config, User_Network_Configuration, Virtual_Machine, \
-    User_VM_Config, Course, VLAB_User, Xen_Server
+    User_VM_Config, Course, VLAB_User, Xen_Server, User_Bridge
 import ConfigParser
 from decimal import *
 from django.db import transaction
@@ -65,11 +65,12 @@ class XenClient:
                             user_net_config = User_Network_Configuration()
                             if network.is_course_net:
                                 vif = vif + '\'mac=' + val + ', bridge=' + network.name + '\'' + ','
-                                user_net_config.bridge_name = network.name
+                                user_net_config.bridge = User_Bridge.objects.get_or_create(name=network.name,
+                                                                                           created=True)
                             else:
                                 net_name = str(user.id) + '_' + str(course.id) + '_' + network.name
                                 vif = vif + '\'mac=' + val + ', bridge=' + net_name + '\'' + ','
-                                user_net_config.bridge_name = net_name
+                                user_net_config.bridge = User_Bridge.objects.get_or_create(name=net_name)
 
                             user_net_config.user_id = user.id
                             user_net_config.mac_id = val
@@ -102,18 +103,48 @@ class XenClient:
                     available_conf.category = 'MAC_ADDR'
                     available_conf.value = conf.mac_id
                     available_conf.save()
+                    if not conf.is_course_net:
+                        conf.bridge.delete()
                     conf.delete()
 
     def start_vm(self, user, course_id, vm_id):
         logger.debug('XenClient - in start_vm')
         xen = SneakyXenLoadBalancer().get_best_server(user, course_id)
-        vm = xen.start_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
-        vm['xen_server'] = xen.name
-        return vm
+        net_confs = User_Network_Configuration.objects.filter(user_id=user.id, vm__id=vm_id,
+                                                              course__id=course_id, bridge__created=False)
+        with transaction.atomic():
+            for conf in net_confs:
+                xen.create_bridge(conf.bridge.name)
+                conf.bridge.created = True
+                conf.bridge.save()
+
+            vm = xen.start_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
+            vm['xen_server'] = xen.name
+            return vm
 
     def stop_vm(self, server, user, course_id, vm_id):
         xen = SneakyXenLoadBalancer().get_server(server)
-        xen.stop_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
+
+        with transaction.atomic():
+            net_confs = User_Network_Configuration.objects.filter(user_id=user.id, vm__id=vm_id, is_course_net=False,
+                                                                  course__id=course_id, bridge__created=True)
+            for conf in net_confs:
+                bridge = conf.bridge
+                attached_to_bridge = bridge.user_network_configuration_set.filter(user_id=user.id, course__id=course_id)
+                attached = False
+                for net in attached_to_bridge:
+                    if net.vm.id != vm_id:
+                        try:
+                            User_VM_Config.objects.get(vm__id=net.vm.id, user_id=user.id)
+                            attached = True
+                            break
+                        except User_VM_Config.DoesNotExist as e:
+                            pass
+                if not attached:
+                    xen.remove_bridge(user, bridge.name)
+                    bridge.created = False
+                    bridge.save()
+            xen.stop_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
 
     def rebase_vm(self, user, course_id, vm_id):
         xen = SneakyXenLoadBalancer().get_best_server(user, course_id)
@@ -174,6 +205,12 @@ class XenServer:
 
     def kill_zombie_vm(self, user, vm_id):
         return self.proxy.xenapi.kill_zombie_vm(user.email, user.password, vm_id)
+
+    def create_bridge(self, user, name):
+        return self.proxy.xenapi.create_bridge(user.email, user.password, name)
+
+    def remove_bridge(self, user, name):
+        return self.proxy.xenapi.remove_bridge(user.email, user.password, name)
 
 
 class SneakyXenLoadBalancer:
