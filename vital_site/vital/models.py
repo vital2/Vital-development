@@ -118,7 +118,7 @@ class Network_Configuration(models.Model):
     has_internet_access = models.BooleanField(default=False)
 
 class User_Bridge(models.Model):
-    name = models.CharField(max_length=10, primary_key=True)
+    name = models.CharField(max_length=15, primary_key=True)
     created = models.BooleanField(default=False)
 
 class User_Network_Configuration(models.Model):
