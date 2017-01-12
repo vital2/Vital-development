@@ -68,7 +68,7 @@ class XenClient:
                                 user_net_config.bridge, obj_created = User_Bridge.objects.get_or_create(name=network.name,
                                                                                                         created=True)
                             else:
-                                net_name = str(user.id) + '_' + str(course.id) + '_' + network.name
+                                net_name = str(user.id) + '_' + str(course.id) + '_' + str(network.id)
                                 vif = vif + '\'mac=' + val + ', bridge=' + net_name + '\'' + ','
                                 user_net_config.bridge, obj_created = User_Bridge.objects.get_or_create(name=net_name)
 
@@ -130,17 +130,21 @@ class XenClient:
                                                                   course__id=course_id, bridge__created=True)
             for conf in net_confs:
                 bridge = conf.bridge
+                logger.debug('Checking bridge '+bridge)
                 attached_to_bridge = bridge.user_network_configuration_set.filter(user_id=user.id, course__id=course_id)
+                logger.debug('No of nets attached - ' + len(attached_to_bridge))
                 attached = False
                 for net in attached_to_bridge:
                     if net.vm.id != vm_id:
                         try:
-                            User_VM_Config.objects.get(vm__id=net.vm.id, user_id=user.id)
+                            vm = User_VM_Config.objects.get(vm__id=net.vm.id, user_id=user.id)
                             attached = True
+                            logger.debug('VM attached -'+str(vm.id))
                             break
                         except User_VM_Config.DoesNotExist as e:
                             pass
                 if not attached:
+                    logger.debug('Removing bridge -'+ bridge.name)
                     xen.remove_bridge(user, bridge.name)
                     bridge.created = False
                     bridge.save()
