@@ -65,12 +65,12 @@ class XenClient:
                             user_net_config = User_Network_Configuration()
                             if network.is_course_net:
                                 vif = vif + '\'mac=' + val + ', bridge=' + network.name + '\'' + ','
-                                user_net_config.bridge = User_Bridge.objects.get_or_create(name=network.name,
-                                                                                           created=True)
+                                user_net_config.bridge, obj_created = User_Bridge.objects.get_or_create(name=network.name,
+                                                                                                        created=True)
                             else:
                                 net_name = str(user.id) + '_' + str(course.id) + '_' + network.name
                                 vif = vif + '\'mac=' + val + ', bridge=' + net_name + '\'' + ','
-                                user_net_config.bridge = User_Bridge.objects.get_or_create(name=net_name)
+                                user_net_config.bridge, obj_created = User_Bridge.objects.get_or_create(name=net_name)
 
                             user_net_config.user_id = user.id
                             user_net_config.mac_id = val
