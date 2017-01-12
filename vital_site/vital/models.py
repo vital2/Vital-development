@@ -111,14 +111,14 @@ class Available_Config(models.Model):
 
 
 class Network_Configuration(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=10)
     course = models.ForeignKey(Course)
     virtual_machine = models.ForeignKey(Virtual_Machine)
     is_course_net = models.BooleanField(default=False)
     has_internet_access = models.BooleanField(default=False)
 
 class User_Bridge(models.Model):
-    name = models.CharField(max_length=100, primary_key=True)
+    name = models.CharField(max_length=10, primary_key=True)
     created = models.BooleanField(default=False)
 
 class User_Network_Configuration(models.Model):

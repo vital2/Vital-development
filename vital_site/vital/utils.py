@@ -68,7 +68,7 @@ class XenClient:
                                 user_net_config.bridge, obj_created = User_Bridge.objects.get_or_create(name=network.name,
                                                                                                         created=True)
                             else:
-                                net_name = str(user.id) + '_' + str(course.id) + '_' + str(network.id)
+                                net_name = str(user.id) + '_' + str(course.id) + '_' + network.name
                                 vif = vif + '\'mac=' + val + ', bridge=' + net_name + '\'' + ','
                                 user_net_config.bridge, obj_created = User_Bridge.objects.get_or_create(name=net_name)
 
@@ -144,7 +144,7 @@ class XenClient:
                         except User_VM_Config.DoesNotExist as e:
                             pass
                 if not attached:
-                    logger.debug('Removing bridge -'+ bridge.name)
+                    logger.debug('Removing bridge -' + bridge.name)
                     xen.remove_bridge(user, bridge.name)
                     bridge.created = False
                     bridge.save()
