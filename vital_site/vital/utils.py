@@ -132,7 +132,7 @@ class XenClient:
                 bridge = conf.bridge
                 logger.debug('Checking bridge '+bridge.name)
                 attached_to_bridge = bridge.user_network_configuration_set.filter(user_id=user.id, course__id=course_id)
-                logger.debug('No of nets attached - ' + len(attached_to_bridge))
+                logger.debug('No of nets attached - ' + str(len(attached_to_bridge)))
                 attached = False
                 for net in attached_to_bridge:
                     if net.vm.id != vm_id:
