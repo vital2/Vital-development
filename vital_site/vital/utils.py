@@ -136,7 +136,7 @@ class XenClient:
                 attached = False
                 for net in attached_to_bridge:
                     logger.debug(str(net.vm.id)+'<>'+str(vm_id))
-                    if net.vm.id != vm_id:
+                    if net.vm.id != int(vm_id):
                         try:
                             vm = User_VM_Config.objects.get(vm__id=net.vm.id, user_id=user.id)
                             attached = True
