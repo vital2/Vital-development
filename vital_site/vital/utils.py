@@ -135,11 +135,12 @@ class XenClient:
                 logger.debug('No of nets attached - ' + str(len(attached_to_bridge)))
                 attached = False
                 for net in attached_to_bridge:
+                    logger.debug(str(net.vm.id)+'<>'+str(vm_id))
                     if net.vm.id != vm_id:
                         try:
                             vm = User_VM_Config.objects.get(vm__id=net.vm.id, user_id=user.id)
                             attached = True
-                            logger.debug('VM attached -'+str(vm.id))
+                            logger.debug('Active VM attached -'+str(vm.id))
                             break
                         except User_VM_Config.DoesNotExist as e:
                             pass
