@@ -154,7 +154,7 @@ class XenClient:
                                                               course=course)
         vif = ''
         for conf in net_confs:
-            vif = vif + '\'mac=' + conf.mac_id + ', bridge=' + conf.bridge_name + '\','
+            vif = vif + '\'mac=' + conf.mac_id + ', bridge=' + conf.bridge.name + '\','
         vif = vif[:len(vif)-1]
         xen.setup_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id), str(course_id) + '_' + str(vm_id),
                      vif)
@@ -245,7 +245,6 @@ class SneakyXenLoadBalancer:
         # heart beat - 5 seconds stats collection
         # this is exposed as a custom django command that will be executed on server start
         # vital/management/commands
-        logger.debug("IN sneak_in_server_stats")
         server_configs = config.items('Servers')
         user = VLAB_User.objects.get(first_name='Cron', last_name='User')
         for key, server_url in server_configs:
