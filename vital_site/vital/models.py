@@ -52,6 +52,7 @@ class VLAB_User(AbstractBaseUser, PermissionsMixin):
     is_admin = models.BooleanField(default=False)
     is_faculty = models.BooleanField(default=False)
     created_date = models.DateTimeField(default=datetime.now, blank=True)
+    sftp_account = models.CharField(max_length=200, unique=True)
     USERNAME_FIELD = 'email'
 
     objects = CustomUserManager()
