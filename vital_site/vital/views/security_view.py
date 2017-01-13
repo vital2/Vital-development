@@ -41,9 +41,9 @@ def register(request):
                 except Allowed_Organization.DoesNotExist:
                     error_message = 'User organization not registered with Vital!'
                     return render(request, 'vital/user_registration.html', {'form': form, 'error_message':error_message})
-                user.set_password(user.password)  # hashes the password
                 user.sftp_account = user.email[:user.email.find('@')]
                 user.sftp_pass = user.password  # workaround to set sftp account
+                user.set_password(user.password)  # hashes the password
                 activation_code = randint(100000, 999999)
                 user.activation_code = activation_code
                 user.save()
