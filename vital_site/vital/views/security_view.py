@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from ..utils import XenClient, audit
 from subprocess import Popen, PIPE
 
+
 from ..forms import Registration_Form, User_Activation_Form, Authentication_Form, Reset_Password_Form, \
     Forgot_Password_Form
 from ..models import VLAB_User, Allowed_Organization, User_VM_Config, Available_Config
@@ -41,9 +42,19 @@ def register(request):
                     error_message = 'User organization not registered with Vital!'
                     return render(request, 'vital/user_registration.html', {'form': form, 'error_message':error_message})
                 user.set_password(user.password)  # hashes the password
+                user.sftp_account = user.email[:user.email.find('@')]
+                user.sftp_pass = user.password  # workaround to set sftp account
                 activation_code = randint(100000, 999999)
                 user.activation_code = activation_code
                 user.save()
+
+                cmd = 'sudo /home/rdj259/vital2.0/source/virtual_lab/vital_site/scripts/sftp_account.sh create '+ \
+                      user.sftp_account+' '+user.sftp_pass
+                p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
+                out, err = p.communicate()
+                if not p.returncode == 0:
+                    raise Exception('ERROR : cannot register sftp account. \n Reason : %s' % err.rstrip())
+
                 logger.debug("user registered : "+ user.email)
                 send_mail('Activation mail', 'Hi '+user.first_name+',\r\n\n Welcome to Vital. Please use activation '
                                              'code : '+str(activation_code)+' for activating your account.\r\n\nVital',
@@ -78,6 +89,13 @@ def activate(request):
                         user.backend = 'django.contrib.auth.backends.ModelBackend'
                         django_login(request, user)
                         #audit(request, 'Activated user')
+                        send_mail('Welcome to Vital',
+                                  'Hi ' + user.first_name + ',\r\n\n Welcome to Vital. Your account has been activated. '
+                                                            'Please follow instructions '
+                                                            'from your instructor to access the course VMs. '
+                                                            '\r\nYour SFTP account is '+user.sftp_account+' and password'
+                                                            ' is the same as vital\r\n\nVital',
+                                  'no-reply-vital@nyu.edu', [user.email], fail_silently=False)
                         logger.debug('activated..'+user.email)
                         form = Authentication_Form()
                         # return render(request, 'vital/login.html', {'form': form })
@@ -109,6 +127,7 @@ def reset_password(request):
             if not request.user.is_anonymous():
                 user = VLAB_User.objects.get(email=request.user.email)
                 user.set_password(form.cleaned_data['password'])
+                user.sftp_pass = form.cleaned_data['password']
                 user.save()
                 update_session_auth_hash(request, user)
                 return redirect('/vital')  # change here to home page
@@ -117,6 +136,7 @@ def reset_password(request):
                 user = VLAB_User.objects.get(email=form.cleaned_data['user_email'])
                 if user.activation_code == int(form.cleaned_data['activation_code']):
                     user.set_password(form.cleaned_data['password'])
+                    user.sftp_pass = form.cleaned_data['password']
                     user.activation_code=None
                     user.save()
                     update_session_auth_hash(request, user)
