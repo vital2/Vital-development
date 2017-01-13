@@ -16,9 +16,38 @@
     	<link type="text/css" rel="stylesheet" media="all" href="/sites/all/themes/polyframe/css/fix-ie.css" />    <![endif]--> <!--If Less Than or Equal (lte) to IE 6-->
  <script type="text/javascript" src="{% static 'vital/jquery-1.12.0.min.js' %}">
 </script>
+<script type="application/javascript">
+    function openNav() {
+        document.getElementById("myNav").style.width = "100%";
+    }
+</script>
+<style>
+.pageoverlay {
+    /* Height & width depends on how you want to reveal the overlay (see JS below) */
+    height: 100%;
+    width: 0;
+    position: fixed; /* Stay in place */
+    z-index: 1101; /* Sit on top */
+    left: 0;
+    top: 0;
+    background-color: rgb(0,0,0); /* Black fallback color */
+    background-color: rgba(0,0,0, 0.9); /* Black w/opacity */
+    overflow-x: hidden; /* Disable horizontal scroll */
+    transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+}
+.pageoverlay-content {
+    position: relative;
+    top: 25%; /* 25% from the top */
+    width: 100%; /* 100% width */
+    text-align: center; /* Centered text/links */
+    margin-top: 30px; /* 30px top margin to avoid conflict with the close button on smaller screens */
+}
+</style>
+
   </head>
   <body id="background" class="homepage wide-body">
     {% include 'session_security/all.html' %}
+    <div id="myNav" class="pageoverlay"><div class="pageoverlay-content">Processing..</div></div>
     <div id="hug">
     <div id="header-wrapper">
 	<div id="header">

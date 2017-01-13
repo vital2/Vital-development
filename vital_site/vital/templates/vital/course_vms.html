@@ -18,17 +18,6 @@
         return false;
     };
 
-    function stopvm(vm_id){
-        child = sessionStorage.getItem('window_'+vm_id);
-        console.log('stop vm'+vm_id);
-        console.log(child);
-        if(!child.closed){
-            console.log('closing');
-            child.close();
-        }
-       // window.location.href =
-        return false;
-    };
 
 $(window).load(function(){
     $("#message").delay(4000).fadeOut();
@@ -79,11 +68,11 @@ $(window).load(function(){
 		            <div class="overlay" style="width:100%;height:100%">
 	                    <div style="height:33%;padding-top:7px">
                             {% if vm.state == 'R'%}
-                                <a href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/stop' onclick="stopvm({{ vm.id }})">
+                                <a href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/stop' onclick="openNav()">
                                     <img src="{% static  'vital/red-power.png' %}" width="30px" height="30px" title="Stop VM"/>
                                 </a>
                             {% else %}
-                                <a href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/start'>
+                                <a href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/start' onclick="openNav()">
                                 <img src="{% static  'vital/green-power.png' %}" width="30px" height="30px" title="Start VM"/>
                             </a>
                             {% endif %}
