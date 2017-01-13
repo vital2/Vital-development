@@ -114,7 +114,13 @@ class XenClient:
                                                               course__id=course_id, bridge__created=False)
         with transaction.atomic():
             for conf in net_confs:
-                xen.create_bridge(user, conf.bridge.name)
+                try:
+                    xen.create_bridge(user, conf.bridge.name)
+                except Exception as e:
+                    if 'cannot create the bridge' in e.message and 'already exists' in e.message:
+                        pass
+                    else:
+                        raise e
                 conf.bridge.created = True
                 conf.bridge.save()
 
