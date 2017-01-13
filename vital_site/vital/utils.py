@@ -117,8 +117,8 @@ class XenClient:
                 try:
                     xen.create_bridge(user, conf.bridge.name)
                 except Exception as e:
-                    logger.error(e.message)
-                    if 'cannot create the bridge' in e.message and 'already exists' in e.message:
+                    logger.error(str(e))
+                    if 'cannot create the bridge' in str(e) and 'already exists' in str(e):
                         pass
                     else:
                         raise e
