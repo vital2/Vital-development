@@ -46,7 +46,7 @@ def register(request):
                 user.set_password(user.password)  # hashes the password
                 activation_code = randint(100000, 999999)
                 user.activation_code = activation_code
-                user.save()
+
 
                 logger.debug("Creating SFTP account")
                 cmd = 'sudo /home/rdj259/vital2.0/source/virtual_lab/vital_site/scripts/sftp_account.sh create '+ \
@@ -56,6 +56,8 @@ def register(request):
                 if not p.returncode == 0:
                     raise Exception('ERROR : cannot register sftp account. \n Reason : %s' % err.rstrip())
                 logger.debug("SFTP account created")
+
+                user.save()
 
                 logger.debug("user registered : "+ user.email)
                 send_mail('Activation mail', 'Hi '+user.first_name+',\r\n\n Welcome to Vital. Please use activation '
