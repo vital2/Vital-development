@@ -239,6 +239,7 @@ class SneakyXenLoadBalancer:
             xen_name = vm_confs[0].xen_server
             return XenServer(xen_name, config.get("Servers", xen_name))
         else:
+            logger.debug('Using best server')
             xen_server = Xen_Server.objects.filter(status='ACTIVE').order_by('utilization').first()
             return XenServer(xen_server.name, config.get("Servers", xen_server.name))
         # name = 'vlab-dev-xen2'
