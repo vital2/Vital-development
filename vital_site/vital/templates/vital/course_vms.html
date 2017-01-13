@@ -77,7 +77,7 @@ $(window).load(function(){
                             </a>
                             {% endif %}
                         </div>
-                        <div style="float:left;height:33%;" align="center">
+                        <div style="height:33%;">
                             {% if vm.state == 'R'%}
                             <a href="http://vital-dev2.poly.edu:{{ vm.terminal_port }}/vnc_auto.html"
                                onclick="return windowpop(this.href, 'Terminal-{{ vm.id }}', 825, 680, {{ vm.id }})">
@@ -85,7 +85,7 @@ $(window).load(function(){
                             </a>&nbsp;
                             {% endif %}
                         </div>
-                        <div style="height:33%;vertical-align:center">
+                        <div style="height:33%;">
                             <a href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/rebase' onclick="openNav()">
                                 <img src="{% static  'vital/reimage.png' %}" width="30px" height="30px" title="Reimage VM"/>
                             </a>
