@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# this script has been given sudo passwordless previlege in sudoers file
+
 if [ $# -lt 2 ]
 then
         echo "Usage: $0 <action> <user_name> <opt:password>";

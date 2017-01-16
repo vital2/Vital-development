@@ -50,7 +50,7 @@ def register(request):
 
                 logger.debug("Creating SFTP account")
                 cmd = 'sudo /home/rdj259/vital2.0/source/virtual_lab/vital_site/scripts/sftp_account.sh create '+ \
-                      user.sftp_account+' '+user.sftp_pass
+                      user.sftp_account+' '+user.sftp_pass + ' > /home/rdj259/vital2.0/log/sftp.log'
                 p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
                 out, err = p.communicate()
                 if not p.returncode == 0:
