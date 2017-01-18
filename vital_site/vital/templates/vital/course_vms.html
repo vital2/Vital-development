@@ -79,7 +79,7 @@ $(window).load(function(){
                         </div>
                         <div style="height:33%;">
                             {% if vm.state == 'R'%}
-                            <a href="http://vital-dev2.poly.edu:{{ vm.terminal_port }}/vnc_auto.html"
+                            <a href="http://{{ server_name }}:{{ vm.terminal_port }}/vnc_auto.html"
                                onclick="return windowpop(this.href, 'Terminal-{{ vm.id }}', 825, 680, {{ vm.id }})">
                                 <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console"/>
                             </a>&nbsp;
