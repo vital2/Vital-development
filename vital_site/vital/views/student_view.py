@@ -8,8 +8,14 @@ import logging
 from subprocess import Popen, PIPE
 from django.db import transaction
 from ..cron import clean_zombie_vms
+import ConfigParser
 
 logger = logging.getLogger(__name__)
+config = ConfigParser.ConfigParser()
+
+# TODO change to common config file in shared location
+config.read("/home/rdj259/config.ini")
+config.optionxform = str
 
 
 @login_required(login_url='/vital/login/')
@@ -76,7 +82,8 @@ def start_novnc(config, started_vm):
         if locked_conf is not None and len(locked_conf) > 0:
             val = locked_conf[0].value
             locked_conf.delete()
-            cmd = 'sh /var/www/clone.com/interim/noVNC/utils/launch.sh --listen {} ' \
+            launch_script = config.get("VITAL", "NOVNC_LAUNCH_SCRIPT")
+            cmd = 'sh '+launch_script+' --listen {} ' \
                   '--vnc {}:{}'.format(val, started_vm['xen_server'], started_vm['vnc_port'])
             logger.debug("start novnc - "+cmd)
             p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)

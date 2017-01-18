@@ -11,6 +11,7 @@ config = ConfigParser.ConfigParser()
 
 # TODO change to common config file in shared location
 config.read("/home/rdj259/config.ini")
+config.optionxform = str
 
 
 def audit(request, action):
