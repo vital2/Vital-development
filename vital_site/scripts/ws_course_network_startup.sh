@@ -14,7 +14,7 @@ iptables -A FORWARD -i bond0.$vlan -s 10.$vlan.1.0/24 -d 128.238.66.35 -p tcp --
 
 iptables -A FORWARD -i bond0.$vlan -s 10.$vlan.1.0/24 -d 10.$vlan.1.0/24 -j ACCEPT
 
-requires_internet=$(psql -U postgres -d vital_db -t -c "SELECT n.has_internet_access from vital_course c join vital_network_configuration n on c.id=n.course_id where and n.is_course_net=True and c.id="+$vlan)
+requires_internet=$(psql -U postgres -d vital_db -t -c "SELECT n.has_internet_access from vital_course c join vital_network_configuration n on c.id=n.course_id where n.is_course_net=True and c.id="+$vlan)
 
 if [ $requires_internet = 't' ]
 then
