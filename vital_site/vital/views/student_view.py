@@ -12,10 +12,10 @@ import ConfigParser
 
 logger = logging.getLogger(__name__)
 config = ConfigParser.ConfigParser()
+config.optionxform=str
 
 # TODO change to common config file in shared location
 config.read("/home/rdj259/config.ini")
-config.optionxform=str
 
 
 @login_required(login_url='/vital/login/')
