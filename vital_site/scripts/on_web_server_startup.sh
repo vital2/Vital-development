@@ -5,6 +5,7 @@
 
 # mounts glusterfs
 mount -t glusterfs gusterfs1-dev:volume1 /mnt/vlab-datastore
+# mount -t glusterfs Vlab-gluster1:/vlab /mnt/vlab-datastore
 
 # sets up required bridges and bonds for the courses on web server
 nets=$(psql -U postgres -d vital_db -t -c "SELECT c.id from vital_course c join vital_network_configuration n on c.id=n.course_id where c.status='ACTIVE' and n.is_course_net=True")
