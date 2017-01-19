@@ -167,3 +167,9 @@ class Xen_Server(models.Model):
     no_of_students = models.IntegerField(default=0)
     no_of_courses = models.IntegerField(default=0)
     status = models.CharField(max_length=10)
+
+
+class Auto_Start_Resources(models.Model):
+    name = models.CharField(max_length=15, unique=True)
+    type = models.CharField(max_length=10)
+    course = models.ForeignKey(Course)
