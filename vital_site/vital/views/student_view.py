@@ -236,7 +236,7 @@ def register_for_course(request):
                             error_message = 'The course is either inactive or has reached its maximum student capacity.'
             except Course.DoesNotExist:
                 error_message = 'Invalid registration code. Check again.'
-                audit(request, 'Error registering for course ' + str(course.name)) \
+                audit(request, 'Error registering for course ' + str(form.cleaned_data['course_registration_code'])) \
                     + ' (Invalid course registration code)'
     else:
         form = Course_Registration_Form()
