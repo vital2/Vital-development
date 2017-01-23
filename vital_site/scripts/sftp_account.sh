@@ -1,21 +1,25 @@
-#!/bin/bash
+#!/bin/sh
 
 # this script has been given sudo passwordless previlege in sudoers file
 
-if [ $# -lt 2 ]
-then
-        echo "Usage: $0 <action> <user_name> <opt:password>";
-        exit;
-fi
+while getopts a:u:x: opt
+do
+    case "$opt" in
+        a) action=$OPTARG;;
+        u) user=$OPTARG;;
+        x) passwd=$OPTARG;;
+        \?) echo "Usage [action user password]"; exit 1;; #Invalid argument
+    esac
+done
+echo $action
+echo $user
 
-action=$1
-user=$2
 if [ "$action" == "create" ]; then
-  passwd=$3
-  ssh 128.238.66.35 "/usr/home/s905060/create_user.sh $user $passwd"
+  echo $passwd
+  ssh 128.238.66.35 "/root/bin/create_user.sh" -u $user -x $passwd
 elif [ "$action" == "resetpass" ]; then
-  passwd=$3
-  ssh 128.238.66.35 "/usr/home/s905060/mod_user_password.sh $user $passwd"
+  echo $passwd
+  ssh 128.238.66.35 "/root/bin/mod_user_password.sh" -u $user -x $passwd
 elif [ "$action" == "remove" ]; then
-  ssh 128.238.66.35 "/usr/home/s905060/rm_user.sh $user"
+  ssh 128.238.66.35 "/root/bin/rm_user.sh" -u $user
 fi

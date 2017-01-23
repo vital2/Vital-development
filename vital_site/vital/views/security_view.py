@@ -47,6 +47,10 @@ def register(request):
                 activation_code = randint(100000, 999999)
                 user.activation_code = activation_code
 
+                if '!' in user.sftp_pass:
+                    error_message = 'Special character ! cannot be used in password'
+                    return render(request, 'vital/user_registration.html',
+                                  {'form': form, 'error_message': error_message})
 
                 logger.debug("Creating SFTP account")
                 cmd = 'sudo /home/rdj259/vital2.0/source/virtual_lab/vital_site/scripts/sftp_account.sh create '+ \
