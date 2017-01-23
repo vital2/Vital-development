@@ -47,8 +47,9 @@ def register(request):
                 activation_code = randint(100000, 999999)
                 user.activation_code = activation_code
 
-                if '!' in user.sftp_pass:
-                    error_message = 'Special character ! cannot be used in password'
+                #TODO temporary fix until sftp issue solved
+                if set('[~!@#$%^&*()_+{}":;\']+$').intersection(user.sftp_pass):
+                    error_message = 'Special characters cannot be used in password'
                     return render(request, 'vital/user_registration.html',
                                   {'form': form, 'error_message': error_message})
 
@@ -132,6 +133,11 @@ def reset_password(request):
         form = Reset_Password_Form(request.POST)
         if form.is_valid():
             logger.debug(">>>>>>>>>>>>>>>>>>"+str(request.user))
+            # TODO temporary fix until sftp issue solved
+            if set('[~!@#$%^&*()_+{}":;\']+$').intersection(form.cleaned_data['password']):
+                error_message = 'Special characters cannot be used in password'
+                return render(request, 'vital/user_reset_password.html',
+                              {'form': form, 'error_message': error_message})
             if not request.user.is_anonymous():
                 user = VLAB_User.objects.get(email=request.user.email)
                 user.set_password(form.cleaned_data['password'])
