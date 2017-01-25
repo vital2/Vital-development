@@ -6,7 +6,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from ..utils import XenClient, audit
 from subprocess import Popen, PIPE
-
+import ConfigParser
 
 from ..forms import Registration_Form, User_Activation_Form, Authentication_Form, Reset_Password_Form, \
     Forgot_Password_Form
@@ -16,6 +16,11 @@ from ..models import VLAB_User, Allowed_Organization, User_VM_Config, Available_
 import logging
 import re
 from random import randint
+config_ini = ConfigParser.ConfigParser()
+config_ini.optionxform=str
+
+# TODO change to common config file in shared location
+config_ini.read("/home/rdj259/config.ini")
 
 
 logger = logging.getLogger(__name__)
@@ -197,7 +202,7 @@ def forgot_password(request):
                 user.save()
                 send_mail('Password reset mail', 'Hi '+user.first_name+',\r\n\n Please copy the following link to '
                                                                        'reset your password to your browser. '
-                                                                       'http://vital-dev2.poly.edu/'
+                                                                       'http://'+config_ini.get("VITAL", "SERVER_NAME")+'/'
                                                                        'vital/users/reset-password?user_email='
                           + user.email+'&activation_code='+str(activation_code)
                           + '.\r\n\nVital', 'no-reply-vital@nyu.edu',
