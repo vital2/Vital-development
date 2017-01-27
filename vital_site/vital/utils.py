@@ -25,6 +25,13 @@ def audit(request, action):
     audit_record.save()
 
 
+def is_number(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
 class XenClient:
 
     def __init__(self):
@@ -272,10 +279,14 @@ class SneakyXenLoadBalancer:
                 students = set()
                 courses = set()
                 for vm in vms:
-                    if 'Domain' not in vm['name']:
-                        students.add(vm['name'][0:vm['name'].find('_')])
-                        val = vm['name'][vm['name'].find('_') + 1:]
-                        courses.add(val[0:val.find('_')])
+                    if 'Domain' not in vm['name'] and vm['name'].count('_') == 2:
+                        student = vm['name'][0:vm['name'].find('_')]
+                        # logic to identify vms started by students
+                        # coz students vm names are formatted as "studentid_courseid_vmid"
+                        if is_number(student):
+                            students.add(student)
+                            val = vm['name'][vm['name'].find('_') + 1:]
+                            courses.add(val[0:val.find('_')])
                     used_memory += int(vm['memory'])
 
                 server.used_memory = used_memory

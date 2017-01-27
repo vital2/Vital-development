@@ -23,7 +23,7 @@ class Command(BaseCommand):
         for key, server_url in server_configs:
             for vm in vms:
                 try:
-                    XenServer(key, server_url).start_vm(user, vm.name)
+                    XenServer(key, server_url).start_vm(user, vm.name.strip()+'_'+key.strip())
                 except Exception as e:
                     logger.error("Could not autostart vm in "+key+" Reason:"+str(e))
 
