@@ -14,7 +14,6 @@ config.optionxform=str
 config.read("/home/rdj259/config.ini")
 
 
-
 def audit(request, action):
     logger.debug('In audit')
     if request.user.id is not None:
