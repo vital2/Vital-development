@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-
+from vital.models import Available_Config
 
 class Command(BaseCommand):
 
