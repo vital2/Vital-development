@@ -27,7 +27,7 @@ def audit(request, action):
 
 def get_notification_message():
     try:
-        message = Available_Config.objects.get(category='NotificationMessage')
+        message = Available_Config.objects.get(category='NOTIFICATION_MESSAGE')
     except Available_Config.DoesNotExist as e:
         message = None
     return message
