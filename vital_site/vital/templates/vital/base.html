@@ -47,10 +47,10 @@
 
   </head>
   <body id="background" class="homepage wide-body">
-
+    {% if request.session.notification %}
            <div id="notif-message" style="position: absolute; width:100%; height:30px; background-color: rgba(255, 255, 0, 0.9);
-           z-index: 1100; font-size: medium; font-weight: bold; color: red; text-align:center; line-height: 30px">Test message!!!!!</div>
-
+           z-index: 1100; font-size: medium; font-weight: bold; color: red; text-align:center; line-height: 30px">{{ request.session.notification }}</div>
+    {% endif %}
     {% include 'session_security/all.html' %}
     <div id="myNav" class="pageoverlay"><div class="pageoverlay-content">Processing..</div></div>
     <div id="hug">

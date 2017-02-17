@@ -25,6 +25,14 @@ def audit(request, action):
     audit_record.save()
 
 
+def get_notification_message():
+    try:
+        message = Available_Config.objects.get(category='NotificationMessage')
+    except Available_Config.DoesNotExist as e:
+        message = None
+    return message
+
+
 def is_number(s):
     try:
         int(s)

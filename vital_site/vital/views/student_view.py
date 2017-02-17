@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from ..models import Course, Registered_Course, Virtual_Machine, User_VM_Config, Available_Config, \
     User_Network_Configuration
 from ..forms import Course_Registration_Form
-from ..utils import audit, XenClient
+from ..utils import audit, XenClient, get_notification_message
 import logging
 from subprocess import Popen, PIPE
 from django.db import transaction
@@ -26,8 +26,11 @@ def registered_courses(request):
     :return: registered courses page
     """
     logger.debug("In registered courses")
-    #  reg_courses = Registered_Courses.objects.filter(user_id=request.user.id, course__status='ACTIVE')
-    reg_courses = Registered_Course.objects.filter(user_id=request.user.id)
+    reg_courses = Registered_Courses.objects.filter(user_id=request.user.id, course__status='ACTIVE')
+    # reg_courses = Registered_Course.objects.filter(user_id=request.user.id)
+
+    # to display common notification messages like system maintenance plans on all pages
+    request.session['notification'] = get_notification_message()
     message = ''
     if len(reg_courses) == 0:
         message = 'You have no registered courses'
