@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 def register(request):
     logger.debug("in register")
     error_message = ''
-    notification = None
+
     if request.method == 'POST':
         form = Registration_Form(request.POST)
         form.clean()
@@ -83,8 +83,6 @@ def register(request):
                                                                                  'form': form})
     else:
         form = Registration_Form()
-        # to display common notification messages like system maintenance plans on all pages
-        request.session['notification'] = get_notification_message()
     return render(request, 'vital/user_registration.html', {'form': form, 'error_message':error_message})
 
 
@@ -244,7 +242,8 @@ def login(request):
             error_message = 'Login failed! Check your username and password.'
     else:
         form = Authentication_Form()
-        ut
+        # to display common notification messages like system maintenance plans on all pages
+        request.session['notification'] = get_notification_message()
     return render(request, 'vital/login.html', {'form': form, 'error_message': error_message})
 
 
