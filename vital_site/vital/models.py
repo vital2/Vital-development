@@ -108,7 +108,7 @@ class User_VM_Config(models.Model):
 
 
 class Available_Config(models.Model):
-    category = models.CharField(max_length=10)
+    category = models.CharField(max_length=20)
     value = models.CharField(max_length=200)
 
 
