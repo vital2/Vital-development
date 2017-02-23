@@ -1,4 +1,8 @@
 <html>
+<head>
+     <script type="text/javascript" src="{% static 'vital/jquery-1.12.0.min.js' %}">
+</script>
+</head>
 <body bgcolor="black">
 {% include 'session_security/all.html' %}
     <iframe src="http://{{ server_name }}:{{ terminal_port }}/vnc_auto.html" height="100%" width="100%">
