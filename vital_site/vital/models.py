@@ -105,6 +105,7 @@ class User_VM_Config(models.Model):
     vnc_port = models.CharField(max_length=10)
     terminal_port = models.CharField(max_length=10)
     no_vnc_pid = models.CharField(max_length=10)
+    #created_date = models.DateTimeField(default=datetime.now, blank=True)
 
 
 class Available_Config(models.Model):
@@ -119,9 +120,11 @@ class Network_Configuration(models.Model):
     is_course_net = models.BooleanField(default=False)
     has_internet_access = models.BooleanField(default=False)
 
+
 class User_Bridge(models.Model):
     name = models.CharField(max_length=15, primary_key=True)
     created = models.BooleanField(default=False)
+
 
 class User_Network_Configuration(models.Model):
     vm = models.ForeignKey(Virtual_Machine)
