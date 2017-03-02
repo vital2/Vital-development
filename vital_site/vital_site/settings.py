@@ -195,4 +195,5 @@ SESSION_SECURITY_EXPIRE_AFTER = SESSION_COOKIE_AGE
 CRONJOBS = [
     # ('*/1 * * * *', 'vital.cron.force_logout_inactive_users', '>/tmp/stdout.log 2>/tmp/stderr.log'),
     # ('*/1 * * * *', 'vital.cron.clean_zombie_vms', '>/tmp/stdout.log 2>/tmp/stderr.log'),
+    ('*/1 * * * *', 'django.core.management.call_command', ['ForceLogoutInactiveUsers']),
 ]
