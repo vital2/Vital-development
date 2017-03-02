@@ -11,4 +11,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         sessions = Session.objects.filter(expire_date__lt=datetime.now())
         for session in sessions:
-            logger.debug('session user_id:'+session.get_decoded().get('_auth_user_id'))
+            user = session.get_decoded().get('_auth_user_id')
+            if user is not None:
+                logger.debug('session user_id:' +user)
+            else:
+                logger.debug('session user_id:Unknown')
