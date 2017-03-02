@@ -125,7 +125,7 @@ def start_vm(request, course_id, vm_id):
     :param vm_id: id of the virtual machine
     :return: starts the VM and redirects ti Course VM page
     """
-    logger.debug("starting vm - " + request.user.id+'_'+course_id+'_'+vm_id)
+    logger.debug("starting vm - " + str(request.user.id)+'_'+course_id+'_'+vm_id)
     config = User_VM_Config()
     started_vm = None
     vm = None
@@ -165,7 +165,7 @@ def stop_vm(request, course_id, vm_id):
     :param vm_id: id of the virtual machine to stop
     :return: stops the VM and returns to Course VM page
     """
-    logger.debug("stopping vm - " + request.user.id + '_' + course_id + '_' + vm_id)
+    logger.debug("stopping vm - " + str(request.user.id) + '_' + course_id + '_' + vm_id)
     virtual_machine = Virtual_Machine.objects.get(pk=vm_id)
     audit(request, 'Stopping Virtual machine ' + str(virtual_machine.name))
     vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
@@ -202,7 +202,7 @@ def rebase_vm(request, course_id, vm_id):
     :param vm_id: if od the VM to be rebased
     :return: rebases VM and redirects to Course VMs page
     """
-    logger.debug("rebasing vm - " + request.user.id + '_' + course_id + '_' + vm_id)
+    logger.debug("rebasing vm - " + str(request.user.id) + '_' + course_id + '_' + vm_id)
     virtual_machine = Virtual_Machine.objects.get(pk=vm_id)
     audit(request, 'Re-imaging Virtual machine ' + str(virtual_machine.name))
     try:
@@ -226,7 +226,7 @@ def register_for_course(request):
     :param request: http request
     :return: creates the VM and redirects to Course VMs page
     """
-    logger.debug("in register for course - user_id:"+request.user.id)
+    logger.debug("in register for course - user_id:"+str(request.user.id))
     error_message = ''
     if request.method == 'POST':
         form = Course_Registration_Form(request.POST)
@@ -266,7 +266,7 @@ def unregister_from_course(request, course_id):
     :param course_id: id of the course to be removed from user profile
     :return: removes the course and redirects to Course listing page
     """
-    logger.debug("in course unregister- user_id:"+request.user.id)
+    logger.debug("in course unregister- user_id:"+str(request.user.id))
     course = Course.objects.get(id=course_id)
     audit(request, 'Un-registering from course ' + str(course.name))
 
