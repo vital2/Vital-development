@@ -16,6 +16,7 @@ def sig_user_logged_out(sender, user, request, **kwargs):
     logger = logging.getLogger(__name__)
     views.stop_vms_during_logout(user)
     session = Session.objects.get(session_key=request.session.session_key)
+    logger.debug('session key:'+session.session_key)
     session.delete()
     logger.info("user logged out: %s at %s" % (user, request.META['REMOTE_ADDR']))
 
