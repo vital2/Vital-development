@@ -1,5 +1,8 @@
 from django.core.management.base import BaseCommand, CommandError
 from vital.models import Available_Config
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
 
@@ -10,4 +13,4 @@ class Command(BaseCommand):
             config.delete()
         except Available_Config.DoesNotExist as e:
             pass
-        print 'Notification Message removed!'
+        logger.debug('Notification Message removed!')

@@ -1,5 +1,8 @@
 from django.core.management.base import BaseCommand, CommandError
 from vital.models import Available_Config
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -16,4 +19,4 @@ class Command(BaseCommand):
             config.category = 'NOTIFICATION_MESSAGE'
         config.value = options['message']
         config.save()
-        print 'Notification Message set as -' + config.value
+        logger.debug('Notification Message set as -' + config.value)
