@@ -18,7 +18,9 @@
 <p class="error">
         {{ error_message }}
 </p>
-<p style="color: green">
+{% endif %}
+{% if message %}
+    <p style="color: green">
         {{ message }}
 </p>
 {% endif %}
