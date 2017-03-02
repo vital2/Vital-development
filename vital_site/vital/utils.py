@@ -63,7 +63,7 @@ class XenClient:
     def register_student_vms(self, user, course):
         # choosing best server under assumption that VM conf and dsk will be on gluster
         xen = SneakyXenLoadBalancer().get_best_server(user, course.id)
-        logger.debug('Number of VMs in course: '+len(course.virtual_machine_set.all()))
+        logger.debug('Number of VMs in course: '+str(len(course.virtual_machine_set.all())))
         for vm in course.virtual_machine_set.all():
             flag = True
             cnt = 0
