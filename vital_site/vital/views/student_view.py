@@ -75,7 +75,7 @@ def console(request, vm_id):
     """
     fetches terminal port and server name for novnc console
     :param request: http request
-    :param course_id: id of the selected course
+    :param vm_id: id of the selected vm
     :return: port and servername
     """
     server_name = config_ini.get('VITAL', 'SERVER_NAME')
@@ -125,7 +125,10 @@ def start_vm(request, course_id, vm_id):
     :param vm_id: id of the virtual machine
     :return: starts the VM and redirects ti Course VM page
     """
+    logger.debug("starting vm - " + request.user.id+'_'+course_id+'_'+vm_id)
     config = User_VM_Config()
+    started_vm = None
+    vm = None
     try:
         vm = Virtual_Machine.objects.get(pk=vm_id)
         audit(request, 'Starting Virtual machine ' + str(vm.name))
@@ -144,17 +147,13 @@ def start_vm(request, course_id, vm_id):
             return redirect('/vital/courses/' + course_id + '/vms?message=' + vm.name + ' VM started')
     except Virtual_Machine.DoesNotExist as e:
         logger.error(str(e))
-        audit(request, 'Error starting Virtual machine ' + str(vm.name) + '( Does not exist )')
+        audit(request, 'Error starting Virtual machine ' + str(vm_id) + '( Does not exist )')
         return redirect('/vital/courses/' + course_id + '/vms?message=Unable to start VM - ' + vm.name)
     except Exception as e:
         logger.error(str(e))
         audit(request, 'Error starting Virtual machine ' + str(vm.name) + '( ' + e.message + ' )')
-        if 'Connection refused' not in str(e).rstrip():
-            XenClient().stop_vm(config.xen_server, request.user, course_id, vm_id)
-            released_conf = Available_Config()
-            released_conf.category = 'TERM_PORT'
-            released_conf.value = config.terminal_port
-            released_conf.save()
+        if 'Connection refused' not in str(e).rstrip() or started_vm is not None:
+            XenClient().stop_vm(started_vm['xen_server'], request.user, course_id, vm_id)
         return redirect('/vital/courses/' + course_id + '/vms?message=Unable to start VM - ' + vm.name)
 
 
@@ -166,6 +165,7 @@ def stop_vm(request, course_id, vm_id):
     :param vm_id: id of the virtual machine to stop
     :return: stops the VM and returns to Course VM page
     """
+    logger.debug("stopping vm - " + request.user.id + '_' + course_id + '_' + vm_id)
     virtual_machine = Virtual_Machine.objects.get(pk=vm_id)
     audit(request, 'Stopping Virtual machine ' + str(virtual_machine.name))
     vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
@@ -202,16 +202,17 @@ def rebase_vm(request, course_id, vm_id):
     :param vm_id: if od the VM to be rebased
     :return: rebases VM and redirects to Course VMs page
     """
-    logger.debug("In rebase vm")
+    logger.debug("rebasing vm - " + request.user.id + '_' + course_id + '_' + vm_id)
     virtual_machine = Virtual_Machine.objects.get(pk=vm_id)
     audit(request, 'Re-imaging Virtual machine ' + str(virtual_machine.name))
     try:
         vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
         stop_vm(request, course_id, vm_id)
-        XenClient().rebase_vm(request.user, course_id, vm_id)
-        audit(request, 'Re-imaged Virtual machine ' + str(virtual_machine.name))
     except User_VM_Config.DoesNotExist as e:
         pass
+    try:
+        XenClient().rebase_vm(request.user, course_id, vm_id)
+        audit(request, 'Re-imaged Virtual machine ' + str(virtual_machine.name))
     except Exception as e:
         audit(request, 'Error re-imaged Virtual machine ' + str(virtual_machine.name))
         raise e
@@ -225,7 +226,7 @@ def register_for_course(request):
     :param request: http request
     :return: creates the VM and redirects to Course VMs page
     """
-    logger.debug("in register for course")
+    logger.debug("in register for course - user_id:"+request.user.id)
     error_message = ''
     if request.method == 'POST':
         form = Course_Registration_Form(request.POST)
@@ -248,8 +249,7 @@ def register_for_course(request):
                             audit(request, 'Registered for course ' + str(course.name))
                             return redirect('/vital/courses/registered/')
                         else:
-                            audit(request, 'Error registering for course ' + str(course.name)) \
-                                        + ' (Inactive/Capacity Full)'
+                            audit(request, 'Error registering for course ' + str(course.name) + ' (Inactive/Capacity Full)')
                             error_message = 'The course is either inactive or has reached its maximum student capacity.'
             except Course.DoesNotExist:
                 error_message = 'Invalid registration code. Check again.'
@@ -266,7 +266,7 @@ def unregister_from_course(request, course_id):
     :param course_id: id of the course to be removed from user profile
     :return: removes the course and redirects to Course listing page
     """
-    logger.debug("in course unregister")
+    logger.debug("in course unregister- user_id:"+request.user.id)
     course = Course.objects.get(id=course_id)
     audit(request, 'Un-registering from course ' + str(course.name))
 
@@ -287,12 +287,3 @@ def unregister_from_course(request, course_id):
     except Exception as e:
         audit(request, 'Error while Un-registering from course ' + str(course.name)+' ('+e.message+')')
         raise e
-
-
-# Remove after problem is fixed - or start the cron
-@login_required(login_url='/vital/login/')
-def fix_zombies(request):
-    logger.debug('In fix zombie')
-    if request.user.id == 2:
-        clean_zombie_vms()
-        return redirect('/vital/courses/registered/')

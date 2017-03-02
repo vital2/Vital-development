@@ -40,6 +40,7 @@ def is_number(s):
     except ValueError:
         return False
 
+
 class XenClient:
 
     def __init__(self):
@@ -62,7 +63,7 @@ class XenClient:
     def register_student_vms(self, user, course):
         # choosing best server under assumption that VM conf and dsk will be on gluster
         xen = SneakyXenLoadBalancer().get_best_server(user, course.id)
-        logger.debug(len(course.virtual_machine_set.all()))
+        logger.debug('Number of VMs in course: '+len(course.virtual_machine_set.all()))
         for vm in course.virtual_machine_set.all():
             flag = True
             cnt = 0
@@ -159,7 +160,7 @@ class XenClient:
                 logger.debug('No of nets attached - ' + str(len(attached_to_bridge)))
                 attached = False
                 for net in attached_to_bridge:
-                    logger.debug(str(net.vm.id)+'<>'+str(vm_id))
+                    # logger.debug(str(net.vm.id)+'<>'+str(vm_id))
                     if net.vm.id != int(vm_id):
                         try:
                             vm = User_VM_Config.objects.get(vm__id=net.vm.id, user_id=user.id)
@@ -185,6 +186,7 @@ class XenClient:
         for conf in net_confs:
             vif = vif + '\'mac=' + conf.mac_id + ', bridge=' + conf.bridge.name + '\','
         vif = vif[:len(vif)-1]
+        xen.cleanup_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
         xen.setup_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id), str(course_id) + '_' + str(vm_id),
                      vif)
 
@@ -195,11 +197,6 @@ class XenClient:
     def restore_vm(self, server, user, course_id, vm_id):
         xen = SneakyXenLoadBalancer().get_server(server)
         xen.restore_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id), str(course_id) + '_' + str(vm_id))
-
-    # Probably could be removed once the zombie issue is solved
-    def kill_zombie_vm(self, server, user, vm_id):
-        xen = SneakyXenLoadBalancer().get_server(server)
-        xen.kill_zombie_vm(user, vm_id)
 
 
 class XenServer:
