@@ -22,8 +22,8 @@ class Command(BaseCommand):
                 for started_vm in started_vms:
                     logger.debug("Course : "+started_vm.vm.course.name)
                     logger.debug("Course auto shutdown period: " + str(started_vm.vm.course.auto_shutdown_after))
-                    time_difference_in_minutes = (now-session.expire_date) / timedelta(minutes=1)
-                    logger.debug(time_difference_in_minutes)
+                    time_difference_in_minutes = (now-session.expire_date).total_seconds() / 60
+                    logger.debug("VMs up since : "+str(time_difference_in_minutes))
                 user = VLAB_User.objects.get(id=user_id)
                 logger.debug("Force shutting down VMs for user : "+user.email)
                 #stop_vms_during_logout(user)
