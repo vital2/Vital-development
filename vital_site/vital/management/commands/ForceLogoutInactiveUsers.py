@@ -15,16 +15,23 @@ class Command(BaseCommand):
         now = timezone.now()
         sessions = Session.objects.filter(expire_date__lt=now)
         for session in sessions:
+            kill = True
             user_id = session.get_decoded().get('_auth_user_id')
             if user_id is not None:
                 logger.debug('session user_id:' +user_id)
-                started_vms = User_VM_Config.objects.filter(user_id=user_id)
-                for started_vm in started_vms:
+                started_vms = User_VM_Config.objects.filter(user_id=user_id).order_by('vm__course__auto_shutdown_after')
+                if len(started_vms) > 0:
+                    started_vm = started_vms[0]
                     logger.debug("Course : "+started_vm.vm.course.name)
                     logger.debug("Course auto shutdown period: " + str(started_vm.vm.course.auto_shutdown_after))
                     time_difference_in_minutes = (now-session.expire_date).total_seconds() / 60
                     logger.debug("VMs up since : "+str(time_difference_in_minutes))
-                user = VLAB_User.objects.get(id=user_id)
-                logger.debug("Force shutting down VMs for user : "+user.email)
-                #stop_vms_during_logout(user)
-            session.delete()
+                    if int(time_difference_in_minutes) >= started_vm.vm.course.auto_shutdown_after:
+                        user = VLAB_User.objects.get(id=user_id)
+                        logger.debug("Force shutting down VMs for user : "+user.email)
+                        stop_vms_during_logout(user)
+                    else:
+                        kill = False
+
+            if kill:
+                session.delete()
