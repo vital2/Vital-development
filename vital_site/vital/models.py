@@ -82,6 +82,7 @@ class Course(models.Model):
     start_date = models.DateTimeField(default=datetime.now, blank=True)
     created_date = models.DateTimeField(default=datetime.now, blank=True)
     status = models.CharField(max_length=10)
+    auto_shutdown_after = models.IntegerField(default=3)
 
     def __str__(self):
         return self.course_number + ":" + self.name

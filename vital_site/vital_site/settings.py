@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'passwords',
     'session_security',
     'jquery',
-    'django_crontab',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -173,10 +172,6 @@ LOGGING = {
             'handlers': ['file', 'console'],
             'level': 'DEBUG',
         },
-        'django_crontab': {
-            'handlers': ['file', 'console'],
-            'level': 'DEBUG',
-        },
     }
 }
 
@@ -196,8 +191,3 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SECURITY_WARN_AFTER = 50
 SESSION_SECURITY_EXPIRE_AFTER = SESSION_COOKIE_AGE
 
-CRONJOBS = [
-    # ('*/1 * * * *', 'vital.cron.force_logout_inactive_users', '>/tmp/stdout.log 2>/tmp/stderr.log'),
-    # ('*/1 * * * *', 'vital.cron.clean_zombie_vms', '>/tmp/stdout.log 2>/tmp/stderr.log'),
-    ('* * * * *', 'django.core.management.call_command', ['ForceLogoutInactiveUsers']),
-]
