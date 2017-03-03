@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.contrib.sessions.models import Session
 import logging
 from datetime import datetime, timedelta
+from django.utils import timezone
 from vital.models import VLAB_User, Course, User_VM_Config, Registered_Course
 from vital.views import stop_vms_during_logout
 
@@ -11,7 +12,7 @@ logger = logging.getLogger(__name__)
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        now = datetime.now()
+        now = timezone.now()
         sessions = Session.objects.filter(expire_date__lt=now)
         for session in sessions:
             user_id = session.get_decoded().get('_auth_user_id')
