@@ -20,7 +20,7 @@ class Command(BaseCommand):
                 started_vms = User_VM_Config.objects.filter(user_id=user_id)
                 for started_vm in started_vms:
                     logger.debug("Course : "+started_vm.vm.course.name)
-                    logger.debug("Course auto shutdown period: " + started_vm.vm.course.auto_shutdown_after)
+                    logger.debug("Course auto shutdown period: " + str(started_vm.vm.course.auto_shutdown_after))
                     time_difference_in_minutes = (now-session.expire_date) / timedelta(minutes=1)
                     logger.debug("Time since VM started - "+str(time_difference_in_minutes))
                 user = VLAB_User.objects.get(id=user_id)
