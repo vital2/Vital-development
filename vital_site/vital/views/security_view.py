@@ -10,7 +10,7 @@ import ConfigParser
 
 from ..forms import Registration_Form, User_Activation_Form, Authentication_Form, Reset_Password_Form, \
     Forgot_Password_Form
-from ..models import VLAB_User, Allowed_Organization, User_VM_Config, Available_Config
+from ..models import VLAB_User, Allowed_Organization, User_VM_Config, Available_Config, Blocked_User
 
 import logging
 import re
@@ -230,11 +230,21 @@ def login(request):
                     return redirect('/vital')
                 else:
                     form = User_Activation_Form(initial={'user_email': user.email})
-                    return render(request, 'vital/user_registration_validate.html', {'message': 'User is not active. ' +
-                                                                                        'Please check your mail(' +
-                                                                                        user.email+') for ' +
-                                                                                        'activation code',
-                                                                             'form': form})
+                    try:
+                        Blocked_User.objects.get(user_id=user.id)
+                        return render(request, 'vital/user_registration_validate.html',
+                                      {'error_message': 'User account was blocked due to invalid platform usage.'
+                                                        'An email will be generated and sent to your registered '
+                                                        'email id with new activation code after the '
+                                                        'threshold period has been completed.',
+                                       'form': form})
+                    except Blocked_User.DoesNotExist:
+                        return render(request, 'vital/user_registration_validate.html',
+                                      {'message': 'User is not active. ' +
+                                                  'Please check your mail(' +
+                                                  user.email + ') for ' +
+                                                  'activation code',
+                                       'form': form})
             else:
                 error_message = 'Login failed! Check your username and password.'
         else:
