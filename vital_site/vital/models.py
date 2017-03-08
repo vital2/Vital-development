@@ -68,6 +68,14 @@ class VLAB_User(AbstractBaseUser, PermissionsMixin):
     def __unicode__(self):
         return self.email
 
+class Blocked_User(models.Model):
+    user_id = models.IntegerField(default=0)
+    blocked_at = models.DateTimeField(default=datetime.now)
+
+class User_Session(models.Model):
+    user_id = models.IntegerField(default=0, unique=True)
+    session_key = models.CharField(max_length=40)
+
 
 class Allowed_Organization(models.Model):
     name = models.CharField(max_length=200, unique=True)
@@ -83,6 +91,7 @@ class Course(models.Model):
     created_date = models.DateTimeField(default=datetime.now, blank=True)
     status = models.CharField(max_length=10)
     auto_shutdown_after = models.IntegerField(default=3)
+    allow_long_running_vms = models.BooleanField(default=False)
 
     def __str__(self):
         return self.course_number + ":" + self.name
@@ -106,7 +115,6 @@ class User_VM_Config(models.Model):
     vnc_port = models.CharField(max_length=10)
     terminal_port = models.CharField(max_length=10)
     no_vnc_pid = models.CharField(max_length=10)
-    #created_date = models.DateTimeField(default=datetime.now, blank=True)
 
 
 class Available_Config(models.Model):

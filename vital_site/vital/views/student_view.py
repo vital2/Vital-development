@@ -7,7 +7,6 @@ from ..utils import audit, XenClient, get_notification_message
 import logging
 from subprocess import Popen, PIPE
 from django.db import transaction
-from ..cron import clean_zombie_vms
 import ConfigParser
 
 logger = logging.getLogger(__name__)

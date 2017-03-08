@@ -12,7 +12,6 @@ from ..forms import Registration_Form, User_Activation_Form, Authentication_Form
     Forgot_Password_Form
 from ..models import VLAB_User, Allowed_Organization, User_VM_Config, Available_Config
 
-
 import logging
 import re
 from random import randint
@@ -257,23 +256,28 @@ def logout(request):
 
 def stop_vms_during_logout(user):
     # this is called from logout signal
-    logger.debug(">>>>>>>>>>>>>>>>>>" + str(user.id))
+    logger.debug("Checking VMs before logging out for user - " + str(user.id))
     user_vms = User_VM_Config.objects.filter(user_id=user.id)
+    all_vms_shutdown = True
     for user_vm in user_vms:
         vm = user_vm.vm
-        cmd = 'kill ' + user_vm.no_vnc_pid
-        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-        out, err = p.communicate()
-        if not p.returncode == 0:
-            if 'No such process' not in err.rstrip():
-                raise Exception('ERROR : cannot stop the vm '
-                                '\n Reason : %s' % err.rstrip())
-        XenClient().stop_vm(user_vm.xen_server, user, vm.course.id, vm.id)
-        config = Available_Config()
-        config.category = 'TERM_PORT'
-        config.value = user_vm.terminal_port
-        config.save()
-        user_vm.delete()
+        if not vm.course.allow_long_running_vms:
+            cmd = 'kill ' + user_vm.no_vnc_pid
+            p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+            out, err = p.communicate()
+            if not p.returncode == 0:
+                if 'No such process' not in err.rstrip():
+                    raise Exception('ERROR : cannot stop the vm '
+                                    '\n Reason : %s' % err.rstrip())
+            XenClient().stop_vm(user_vm.xen_server, user, vm.course.id, vm.id)
+            config = Available_Config()
+            config.category = 'TERM_PORT'
+            config.value = user_vm.terminal_port
+            config.save()
+            user_vm.delete()
+        else:
+            all_vms_shutdown = False
+    return all_vms_shutdown
 
 
 @login_required(login_url='/vital/login/')
