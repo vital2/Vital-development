@@ -8,14 +8,21 @@ logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
 
+    def add_arguments(self, parser):
+        parser.add_argument('email', type=str)
+
     def handle(self, *args, **options):
-        logger.debug("Unblocking all users")
-        blocked_users = Blocked_User.objects.all()
-        for blocked in blocked_users:
-            user = VLAB_User.objects.get(id=blocked.user_id)
-            logger.debug('Generating re-activation mail for '+user.email)
+        email = options['email']
+        try:
+            user = VLAB_User.objects.get(email=email)
+            blocked = Blocked_User.objects.get(user_id=user.id)
+            logger.debug('Generating re-activation mail for ' + user.email)
             send_mail('Activation mail', 'Hi ' + user.first_name + ',\r\n\n Welcome back to Vital. '
                                                                    'Please use activation code : ' +
                       str(user.activation_code) + ' for re-activating your account.\r\n\nVital',
                       'no-reply-vital@nyu.edu', [user.email], fail_silently=False)
             blocked.delete()
+        except VLAB_User.DoesNotExist:
+            logger.debug('Specified email id not registered')
+        except Blocked_User.DoesNotExist:
+            logger.debug('Specified user is not blocked')

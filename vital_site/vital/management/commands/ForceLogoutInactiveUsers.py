@@ -33,7 +33,7 @@ class Command(BaseCommand):
                     logger.debug("Course auto shutdown period (mins): " + str(started_vm.vm.course.auto_shutdown_after))
                     logger.debug("VM: " + str(started_vm.vm.name))
                     time_difference_in_minutes = (now - session.expire_date).total_seconds() / 60
-                    logger.debug("VM up for (after session expiry): " + str(time_difference_in_minutes))
+                    logger.debug("VM up after session expiry: " + str(time_difference_in_minutes))
                     if int(time_difference_in_minutes) >= started_vm.vm.course.auto_shutdown_after:
                         cmd = 'kill ' + started_vm.no_vnc_pid
                         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
