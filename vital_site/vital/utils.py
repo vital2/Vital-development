@@ -233,10 +233,20 @@ class XenServer:
         return self.proxy.xenapi.kill_zombie_vm(user.email, user.password, vm_id)
 
     def create_bridge(self, user, name):
-        return self.proxy.xenapi.create_bridge(user.email, user.password, name)
+        self.proxy.xenapi.create_bridge(user.email, user.password, name)
 
     def remove_bridge(self, user, name):
-        return self.proxy.xenapi.remove_bridge(user.email, user.password, name)
+        self.proxy.xenapi.remove_bridge(user.email, user.password, name)
+
+    def vm_exists(self, user, vm_name):
+        return self.proxy.xenapi.vm_exists(user.email, user.password, vm_name)
+
+    def bridge_exists(self, user, name):
+        return self.proxy.xenapi.bridge_exists(user.email, user.password, name)
+
+    def is_bridge_up(self, user, name):
+        return self.proxy.xenapi.is_bridge_up(user.email, user.password, name)
+
 
 
 class SneakyXenLoadBalancer:

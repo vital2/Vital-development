@@ -68,9 +68,10 @@ class VLAB_User(AbstractBaseUser, PermissionsMixin):
     def __unicode__(self):
         return self.email
 
-class Blocked_User(models.Model):
-    user_id = models.IntegerField(default=0)
-    blocked_at = models.DateTimeField(default=datetime.now)
+# class Blocked_User(models.Model):
+#    user_id = models.IntegerField(default=0)
+#    blocked_at = models.DateTimeField(default=datetime.now)
+
 
 class User_Session(models.Model):
     user_id = models.IntegerField(default=0, unique=True)

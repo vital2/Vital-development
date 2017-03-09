@@ -24,7 +24,7 @@ class Command(BaseCommand):
             if user_id is not None:
                 logger.debug('session user_id:' +user_id)
                 user = VLAB_User.objects.get(id=user_id)
-                stupid_user = False
+                # stupid_user = False
                 logger.debug("Force shutting down VMs for user : " + user.email)
 
                 started_vms = User_VM_Config.objects.filter(user_id=user_id)
@@ -47,18 +47,18 @@ class Command(BaseCommand):
                         config.category = 'TERM_PORT'
                         config.value = started_vm.terminal_port
                         config.save()
-                        if not started_vm.vm.course.allow_long_running_vms:
-                            stupid_user = True
+                        # if not started_vm.vm.course.allow_long_running_vms:
+                        #    stupid_user = True
                         started_vm.delete()
                     else:
                         kill = False
-                if stupid_user:
-                    user.is_active = False
-                    activation_code = randint(100000, 999999)
-                    user.activation_code = activation_code
-                    user.save()
-                    blocked = Blocked_User()
-                    blocked.user_id = user.id
-                    blocked.save()
+                # if stupid_user:  # Prof Tom was against penalizing students - hence commented. Good man :)
+                #    user.is_active = False
+                #    activation_code = randint(100000, 999999)
+                #    user.activation_code = activation_code
+                #    user.save()
+                #    blocked = Blocked_User()
+                #    blocked.user_id = user.id
+                #    blocked.save()
             if kill:
                 session.delete()
