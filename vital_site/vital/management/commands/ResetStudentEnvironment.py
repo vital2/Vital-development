@@ -23,8 +23,15 @@ class Command(BaseCommand):
             help="specify course id",
             metavar="COURSE"
         ),
+        make_option(
+            "-reset",
+            dest="reset",
+            help="specify soft/hard reset",
+            metavar="COURSE"
+        ),
     )
 
     def handle(self, *args, **options):
         logger.debug('user : '+ options['user'])
         logger.debug('course:'+ options['course'])
+        logger.debug('course:' + options['course'])

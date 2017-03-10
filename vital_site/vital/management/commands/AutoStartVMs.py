@@ -8,12 +8,16 @@ import logging
 logger = logging.getLogger(__name__)
 config = ConfigParser.ConfigParser()
 config.optionxform=str
-ArithmeticError
+
 # TODO change to common config file in shared location
 config.read("/home/rdj259/config.ini")
 
+
 # This is called by upstart job on reboot
 class Command(BaseCommand):
+
+    help = "Command to start VMs that are configured for course to auto start - " \
+           "Scheduled by upstart job that runs on start up"
 
     def handle(self, *args, **options):
         logger.debug("Starting special VMs")

@@ -8,6 +8,8 @@ logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
 
+    help = "DEPRECATED : Command to unblock all blocked users"
+
     def handle(self, *args, **options):
         logger.debug("Unblocking all users")
         blocked_users = Blocked_User.objects.all()

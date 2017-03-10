@@ -14,6 +14,9 @@ logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
 
+    help = "Command to force remove VMs, networks of users who have not logged out properly " \
+           "- Scheduled cron job that runs every 1 hour"
+
     def handle(self, *args, **options):
         now = timezone.now()
         sessions = Session.objects.filter(expire_date__lt=now)
