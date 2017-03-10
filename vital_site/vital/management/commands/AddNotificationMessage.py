@@ -14,7 +14,6 @@ class Command(BaseCommand):
         parser.add_argument(
             '-m', '--message',
             action='store',
-            type='string',
             dest='message',
             help='specify message to be displayed on all page',
         )
