@@ -15,6 +15,7 @@ class Command(BaseCommand):
             action='store',
             dest='user',
             help='specify user email',
+            required=True
         )
         parser.add_argument(
             '-c', '--course',
@@ -31,6 +32,8 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        logger.debug('user : '+ options['user'])
-        logger.debug('course:'+ options['course'])
-        logger.debug('resetmode:' + options['resetmode'])
+        user = options['user']
+        course = options['course']
+        resetmode = options['resetmode']
+
+        if user is None or user.strip() != '':

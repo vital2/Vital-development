@@ -19,7 +19,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        if options['message'] is not None:
+        if options['message'] is not None or options['message'].strip() != '':
             config = None
             try:
                 config = Available_Config.objects.get(category='NOTIFICATION_MESSAGE')
@@ -30,4 +30,4 @@ class Command(BaseCommand):
             config.save()
             logger.debug('Notification Message set as -' + config.value)
         else:
-            logger.info('message cannot be empty!!')
+            logger.info('ERROR : Message cannot be empty!!')
