@@ -9,7 +9,6 @@ class Command(BaseCommand):
     help = "Command to remove notification message for all users from vital website"
 
     def handle(self, *args, **options):
-        config = None
         try:
             config = Available_Config.objects.get(category='NOTIFICATION_MESSAGE')
             config.delete()
