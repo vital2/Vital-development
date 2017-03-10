@@ -40,7 +40,9 @@ class Command(BaseCommand):
         try:
             user = VLAB_User.objects.get(email=email)
             registered_course = Registered_Course.objects.get(user_id=user.id, course__id=course)
-
+            for vm in registered_course.course.vm_set.all():
+                user_vms = vm.user_vm_config_set.filter(user_id=user.id)
+                logger.debug(len(user_vms))
         except VLAB_User.DoesNotExist:
             logger.error('User with specified email not found!')
         except Registered_Course.DoesNotExist:
