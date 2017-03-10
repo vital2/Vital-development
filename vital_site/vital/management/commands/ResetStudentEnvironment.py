@@ -44,7 +44,7 @@ class Command(BaseCommand):
             for vm in registered_course.course.virtual_machine_set.all():
                 try:
                     user_vms = vm.user_vm_config_set.get(user_id=user.id)
-                    logger.debug(len(user_vms))
+                    logger.debug('Started')
                 except User_VM_Config.DoesNotExist:
                     logger.debug('Not started')
 
