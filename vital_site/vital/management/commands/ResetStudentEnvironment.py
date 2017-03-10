@@ -41,7 +41,7 @@ class Command(BaseCommand):
             user = VLAB_User.objects.get(email=email)
             registered_course = Registered_Course.objects.get(user_id=user.id, course__id=course)
             logger.debug(registered_course.course.name)
-            for vm in registered_course.course.vm_set.all():
+            for vm in registered_course.course.virtual_machine_set.all():
                 user_vms = vm.user_vm_config_set.filter(user_id=user.id)
                 logger.debug(len(user_vms))
         except VLAB_User.DoesNotExist:
