@@ -32,6 +32,6 @@ class Command(BaseCommand):
             to_email.append(email)
         try:
             logger.debug('Generating notification mails for users')
-            send_mail(subject, 'Hi, ' + body, to_email, fail_silently=False)
+            send_mail(subject, 'Hi, ' + body, 'no-reply-vital@nyu.edu', to_email, fail_silently=False)
         except Exception as e:
             logger.error(str(e))

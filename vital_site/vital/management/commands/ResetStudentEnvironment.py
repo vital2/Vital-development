@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from vital.models import Available_Config
+from vital.models import Available_Config, Registered_Course, VLAB_User
 import logging
 
 logger = logging.getLogger(__name__)
@@ -22,6 +22,7 @@ class Command(BaseCommand):
             action='store',
             dest='course',
             help='specify course id of user',
+            required=True
         )
         parser.add_argument(
             '-r', '--resetmode',
@@ -32,6 +33,15 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        user = options['user']
+        email = options['user']
         course = options['course']
         resetmode = options['resetmode']
+
+        try:
+            user = VLAB_User.objects.get(email=email)
+            registered_course = Registered_Course.objects.get(user_id=user.id, course__id=course)
+
+        except VLAB_User.DoesNotExist:
+            logger.error('User with specified email not found!')
+        except Registered_Course.DoesNotExist:
+            logger.error('User is not registered for specified course!')

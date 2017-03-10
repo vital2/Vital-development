@@ -16,18 +16,16 @@ class Command(BaseCommand):
             action='store',
             dest='message',
             help='specify message to be displayed on all page',
+            required=True
         )
 
     def handle(self, *args, **options):
-        if options['message'] is not None or options['message'].strip() != '':
-            config = None
-            try:
-                config = Available_Config.objects.get(category='NOTIFICATION_MESSAGE')
-            except Available_Config.DoesNotExist as e:
-                config = Available_Config()
-                config.category = 'NOTIFICATION_MESSAGE'
-            config.value = options['message']
-            config.save()
-            logger.debug('Notification Message set as -' + config.value)
-        else:
-            logger.info('ERROR : Message cannot be empty!!')
+        config = None
+        try:
+            config = Available_Config.objects.get(category='NOTIFICATION_MESSAGE')
+        except Available_Config.DoesNotExist as e:
+            config = Available_Config()
+            config.category = 'NOTIFICATION_MESSAGE'
+        config.value = options['message']
+        config.save()
+        logger.debug('Notification Message set as -' + config.value)
