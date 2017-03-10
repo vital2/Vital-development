@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from vital.models import Available_Config, Registered_Course, VLAB_User
+from vital.models import Available_Config, Registered_Course, VLAB_User, User_VM_Config
 import logging
 
 logger = logging.getLogger(__name__)
@@ -42,8 +42,12 @@ class Command(BaseCommand):
             registered_course = Registered_Course.objects.get(user_id=user.id, course__id=course)
             logger.debug(registered_course.course.name)
             for vm in registered_course.course.virtual_machine_set.all():
-                user_vms = vm.user_vm_config_set.filter(user_id=user.id)
-                logger.debug(len(user_vms))
+                try:
+                    user_vms = vm.user_vm_config_set.get(user_id=user.id)
+                    logger.debug(len(user_vms))
+                except User_VM_Config.DoesNotExist:
+                    logger.debug('Not started')
+
         except VLAB_User.DoesNotExist:
             logger.error('User with specified email not found!')
         except Registered_Course.DoesNotExist:
