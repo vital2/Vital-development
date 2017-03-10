@@ -19,7 +19,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        if options['message'].strip() != '':
+        if options['message'] is not None:
             config = None
             try:
                 config = Available_Config.objects.get(category='NOTIFICATION_MESSAGE')
