@@ -35,5 +35,3 @@ class Command(BaseCommand):
         user = options['user']
         course = options['course']
         resetmode = options['resetmode']
-
-        if user is None or user.strip() != '':
