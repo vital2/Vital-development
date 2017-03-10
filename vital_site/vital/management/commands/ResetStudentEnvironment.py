@@ -26,6 +26,7 @@ class Command(BaseCommand):
             '-r', '--resetmode',
             action='store',
             dest='resetmode',
+            default='soft',
             help='specify reset mode - (hard/soft)',
         )
 
