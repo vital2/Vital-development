@@ -54,7 +54,7 @@ class Command(BaseCommand):
             self.registered_courses = Registered_Course.objects.get(user_id=self.user.id, course__id=course_id)
 
             logger.debug('Checking VMs..')
-            for vm in self.registered_course.course.virtual_machine_set.all():
+            for vm in self.registered_courses.course.virtual_machine_set.all():
                 self.scan_and_kill_vm_on_xen(str(self.user.id)+'_'+str(course_id)+'_'+str(vm.id))
 
             logger.debug('Checking networks..')
