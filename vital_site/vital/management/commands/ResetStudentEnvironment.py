@@ -59,7 +59,7 @@ class Command(BaseCommand):
                 self.scan_and_kill_vm_on_xen(str(self.user.id)+'_'+str(course_id)+'_'+str(vm.id))
 
             logger.debug('Checking networks..')
-            for network in self.registered_courses.course.network_configuration_set.filter(is_course_net=False):
+            for network in self.registered_courses.course.network_configuration_set.filter(is_course_net=False).distinct():
                 self.scan_and_kill_bridges(str(self.user.id)+'_'+str(course_id)+'_'+network.name)
 
             logger.debug('Resetting bridges..')
