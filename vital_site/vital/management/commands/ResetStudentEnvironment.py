@@ -59,7 +59,7 @@ class Command(BaseCommand):
                 self.scan_and_kill_vm_on_xen(str(self.user.id)+'_'+str(course_id)+'_'+str(vm.id))
 
             logger.debug('Checking networks..')
-            for network in self.registered_courses.course.network_configuration_set.filter(is_course_net=False).distinct():
+            for network in self.registered_courses.course.network_configuration_set.filter(is_course_net=False).distinct('name'):
                 self.scan_and_kill_bridges(str(self.user.id)+'_'+str(course_id)+'_'+network.name)
 
             logger.debug('Resetting bridges..')
@@ -69,9 +69,12 @@ class Command(BaseCommand):
             self.kill_vnc(self.user)
 
             logger.debug('Killing user session..')
-            user_session = User_Session.objects.get(user_id=self.user.id)
-            Session.objects.get(session_key=user_session.session_key).delete()
-            user_session.delete()
+            try:
+                user_session = User_Session.objects.get(user_id=self.user.id)
+                Session.objects.get(session_key=user_session.session_key).delete()
+                user_session.delete()
+            except User_Session.DoesNotExist:
+                pass
 
         except VLAB_User.DoesNotExist:
             logger.error('User with specified email not found!')
