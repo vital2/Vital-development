@@ -1,8 +1,9 @@
 from django.core.management.base import BaseCommand, CommandError
-from vital.models import Available_Config, Registered_Course, VLAB_User, User_VM_Config, User_Bridge
-from vital.utils import XenClient, XenServer
+from vital.models import Available_Config, Registered_Course, VLAB_User, User_VM_Config, User_Bridge, User_Session
+from vital.utils import XenServer
 import logging
 from subprocess import Popen, PIPE
+from django.contrib.sessions.models import Session
 import ConfigParser
 
 logger = logging.getLogger(__name__)
@@ -66,6 +67,11 @@ class Command(BaseCommand):
 
             logger.debug('Killing VNC and collecting resources back to pool..')
             self.kill_vnc(self.user)
+
+            logger.debug('Killing user session..')
+            user_session = User_Session.objects.get(user_id=self.user.id)
+            Session.objects.get(session_key=user_session.session_key).delete()
+            user_session.delete()
 
         except VLAB_User.DoesNotExist:
             logger.error('User with specified email not found!')
