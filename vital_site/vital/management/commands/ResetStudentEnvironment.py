@@ -91,7 +91,7 @@ class Command(BaseCommand):
                 xen.remove_bridge(self.user, bridge_name)
 
     def reset_bridge_state(self, course_id):
-        User_Bridge.objects.filter(name__startswith=self.user.id+'_'+course_id).update(created=False)
+        User_Bridge.objects.filter(name__startswith=str(self.user.id)+'_'+str(course_id)).update(created=False)
 
     def kill_vnc(self, user):
         for vm in self.registered_course.course.virtual_machine_set.all():
