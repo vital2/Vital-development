@@ -156,6 +156,7 @@ def start_vm(request, course_id, vm_id):
         return redirect('/vital/courses/' + course_id + '/vms?message=Unable to start VM - ' + vm.name)
 
 
+@login_required(login_url='/vital/login/')
 def stop_vm(request, course_id, vm_id):
     """
     stops the specified VM
