@@ -94,7 +94,7 @@ class Command(BaseCommand):
         User_Bridge.objects.filter(name__startswith=str(self.user.id)+'_'+str(course_id)).update(created=False)
 
     def kill_vnc(self, user):
-        for vm in self.registered_course.course.virtual_machine_set.all():
+        for vm in self.registered_courses.course.virtual_machine_set.all():
             try:
                 user_vm = vm.user_vm_config_set.get(user_id=user.id)
                 logger.debug('Killing VNC for ' + vm.name)
