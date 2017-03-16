@@ -79,14 +79,14 @@ $(window).load(function(){
                         </div>
                         <div style="height:33%;">
                             {% if vm.state == 'R'%}
-                            <!--<a href="http://{{ server_name }}:{{ vm.terminal_port }}/vnc_auto.html"
-                               onclick="return windowpop(this.href, 'Terminal-{{ vm.id }}', 825, 680, {{ vm.id }})">
-                                <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console"/>
-                            </a>&nbsp;-->
-                                <a href="/vital/console/{{ vm.id }}"
+                            <a href="http://{{ server_name }}:{{ vm.terminal_port }}/vnc_auto.html"
                                onclick="return windowpop(this.href, 'Terminal-{{ vm.id }}', 825, 680, {{ vm.id }})">
                                 <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console"/>
                             </a>
+                                <!--<a href="/vital/console/{{ vm.id }}"
+                               onclick="return windowpop(this.href, 'Terminal-{{ vm.id }}', 825, 680, {{ vm.id }})">
+                                <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console"/>
+                            </a>-->
                             {% endif %}
                         </div>
                         <div style="height:33%;">
