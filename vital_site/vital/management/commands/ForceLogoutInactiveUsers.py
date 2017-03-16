@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.contrib.sessions.models import Session
 import logging
 from django.utils import timezone
-from vital.models import VLAB_User, Course, User_VM_Config, Available_Config, Blocked_User
+from vital.models import VLAB_User, Course, User_VM_Config, Available_Config
 from vital.views import stop_vms_during_logout
 from vital.utils import XenClient, audit
 from subprocess import Popen, PIPE
