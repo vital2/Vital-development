@@ -7,6 +7,7 @@ from vital.views import stop_vms_during_logout
 from vital.utils import XenClient, audit
 from subprocess import Popen, PIPE
 from random import randint
+from django.core.mail import send_mail
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ class Command(BaseCommand):
             if user_id is not None:
                 logger.debug('session user_id:' +user_id)
                 user = VLAB_User.objects.get(id=user_id)
-                # stupid_user = False
+                stupid_user = False
                 logger.debug("Force shutting down VMs for user : " + user.email)
 
                 started_vms = User_VM_Config.objects.filter(user_id=user_id)
@@ -49,12 +50,21 @@ class Command(BaseCommand):
                         config.category = 'TERM_PORT'
                         config.value = started_vm.terminal_port
                         config.save()
-                        # if not started_vm.vm.course.allow_long_running_vms:
-                        #    stupid_user = True
+                        if not started_vm.vm.course.allow_long_running_vms:
+                            stupid_user = True
                         started_vm.delete()
                     else:
                         kill = False
-                # if stupid_user:  # Prof Tom was against penalizing students - hence commented. Good man :)
+                if stupid_user:
+                    send_mail("Vital : Illegal usage", 'Hi ' + user.first_name+', \r\n\r\n You did not log off VMs the '
+                                                                               'last time you used the vital platform. '
+                                                                               'Please read the user manual [wiki] to '
+                                                                               'understand how to use the platform. '
+                                                                               'Not shutting down VMs will lead to the '
+                                                                               'VMs to being corrupted and user being '
+                                                                               'blocked/ \r\n\r\nVital Admin team',
+                              'no-reply-vital@nyu.edu', [user.email], fail_silently=False)
+                #    Prof Tom was against penalizing students - hence commented. Good man :)
                 #    user.is_active = False
                 #    activation_code = randint(100000, 999999)
                 #    user.activation_code = activation_code
