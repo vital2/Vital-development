@@ -71,17 +71,17 @@ class Command(BaseCommand):
             logger.debug('Killing VNC and collecting resources back to pool..')
             self.kill_vnc(self.user)
 
-            logger.debug('Killing user session..')
-            user_session = User_Session.objects.get(user_id=self.user.id)
-            Session.objects.get(session_key=user_session.session_key).delete()
-            user_session.delete()
-
             logger.debug('<><><><>' + resetmode)
             if resetmode == 'hard':
                 logger.debug('Removing VM conf and VM dsks..')
                 XenClient().unregister_student_vms(self.user, self.course)
                 logger.debug('Recreating VM conf and VM dsks..')
                 XenClient().register_student_vms(self.user, self.course)
+
+            logger.debug('Killing user session..')
+            user_session = User_Session.objects.get(user_id=self.user.id)
+            Session.objects.get(session_key=user_session.session_key).delete()
+            user_session.delete()
 
         except VLAB_User.DoesNotExist:
             logger.error('User with specified email not found!')
