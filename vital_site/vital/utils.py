@@ -122,8 +122,6 @@ class XenClient:
             available_conf.category = 'MAC_ADDR'
             available_conf.value = conf.mac_id
             available_conf.save()
-            if not conf.is_course_net:
-                conf.bridge.delete()
             conf.delete()
 
         logger.debug("Removing User bridges..")
