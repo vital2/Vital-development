@@ -75,6 +75,7 @@ class Command(BaseCommand):
             Session.objects.get(session_key=user_session.session_key).delete()
             user_session.delete()
 
+            logger.debug(resetmode)
             if resetmode == 'hard':
                 logger.debug('Removing VM conf and VM dsks..')
                 XenClient().unregister_student_vms(self.user, self.course)
