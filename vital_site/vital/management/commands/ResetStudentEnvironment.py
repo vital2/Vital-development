@@ -5,6 +5,7 @@ import logging
 from subprocess import Popen, PIPE
 from django.contrib.sessions.models import Session
 import ConfigParser
+from django.db import transaction
 
 logger = logging.getLogger(__name__)
 config = ConfigParser.ConfigParser()
@@ -73,10 +74,11 @@ class Command(BaseCommand):
 
             logger.debug('<><><><>' + resetmode)
             if resetmode == 'hard':
-                logger.debug('Removing VM conf and VM dsks..')
-                XenClient().unregister_student_vms(self.user, self.course)
-                logger.debug('Recreating VM conf and VM dsks..')
-                XenClient().register_student_vms(self.user, self.course)
+                with transaction.atomic():
+                    logger.debug('Removing VM conf and VM dsks..')
+                    XenClient().unregister_student_vms(self.user, self.course)
+                    logger.debug('Recreating VM conf and VM dsks..')
+                    XenClient().register_student_vms(self.user, self.course)
 
             logger.debug('Killing user session..')
             user_session = User_Session.objects.get(user_id=self.user.id)
