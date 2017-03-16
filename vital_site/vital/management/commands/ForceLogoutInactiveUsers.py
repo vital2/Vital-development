@@ -62,7 +62,7 @@ class Command(BaseCommand):
                                                                                'understand how to use the platform. '
                                                                                'Not shutting down VMs will lead to the '
                                                                                'VMs to being corrupted and user being '
-                                                                               'blocked/ \r\n\r\nVital Admin team',
+                                                                               'blocked. \r\n\r\nVital Admin team',
                               'no-reply-vital@nyu.edu', [user.email], fail_silently=False)
                 #    Prof Tom was against penalizing students - hence commented. Good man :)
                 #    user.is_active = False
