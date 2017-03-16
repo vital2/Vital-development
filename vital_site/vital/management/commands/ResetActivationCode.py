@@ -21,7 +21,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         email = options['email']
-        user = VLAB_User.objects.filter(email)
+        user = VLAB_User.objects.get(email=email)
         user.is_active = False
         activation_code = randint(100000, 999999)
         user.activation_code = activation_code
