@@ -50,6 +50,7 @@ class Command(BaseCommand):
         email = options['user']
         course_id = options['course']
         resetmode = options['resetmode']
+        logger.debug('<><><><>'+resetmode)
 
         try:
             self.user = VLAB_User.objects.get(email=email)
