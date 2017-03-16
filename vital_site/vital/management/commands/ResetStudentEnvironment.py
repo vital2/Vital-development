@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
-from vital.models import Available_Config, Registered_Course, VLAB_User, User_VM_Config, User_Bridge, User_Session
-from vital.utils import XenServer
+from vital.models import Available_Config, Registered_Course, VLAB_User, User_VM_Config, User_Bridge, User_Session, Course
+from vital.utils import XenServer, XenClient
 import logging
 from subprocess import Popen, PIPE
 from django.contrib.sessions.models import Session
@@ -21,6 +21,7 @@ class Command(BaseCommand):
     def __init__(self):
         self.registered_courses = None
         self.user = None
+        self.course = None
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -52,6 +53,7 @@ class Command(BaseCommand):
 
         try:
             self.user = VLAB_User.objects.get(email=email)
+            self.course = Course.objects.get(id=course_id)
             self.registered_courses = Registered_Course.objects.get(user_id=self.user.id, course__id=course_id)
 
             logger.debug('Checking VMs..')
@@ -69,17 +71,24 @@ class Command(BaseCommand):
             self.kill_vnc(self.user)
 
             logger.debug('Killing user session..')
-            try:
-                user_session = User_Session.objects.get(user_id=self.user.id)
-                Session.objects.get(session_key=user_session.session_key).delete()
-                user_session.delete()
-            except User_Session.DoesNotExist:
-                pass
+            user_session = User_Session.objects.get(user_id=self.user.id)
+            Session.objects.get(session_key=user_session.session_key).delete()
+            user_session.delete()
+
+            if resetmode == 'hard':
+                logger.debug('Removing VM conf and VM dsks..')
+                XenClient().unregister_student_vms(self.user, self.course)
+                logger.debug('Recreating VM conf and VM dsks..')
+                XenClient().register_student_vms(self.user, self.course)
 
         except VLAB_User.DoesNotExist:
             logger.error('User with specified email not found!')
         except Registered_Course.DoesNotExist:
             logger.error('User is not registered for specified course!')
+        except Registered_Course.DoesNotExist:
+            logger.error('Course not recognized!')
+        except User_Session.DoesNotExist:
+            pass
 
     def scan_and_kill_vm_on_xen(self, vm_name):
         server_configs = config.items('Servers')

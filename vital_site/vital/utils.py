@@ -111,19 +111,25 @@ class XenClient:
         # choosing best server under assumption that VM conf and dsk will be on gluster
         xen = SneakyXenLoadBalancer().get_best_server(user, course.id)
         logger.debug("Unregistering course "+ course.name)
+        logger.debug("Removing VMs..")
         for virtualMachine in course.virtual_machine_set.all():
             xen.cleanup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(virtualMachine.id))
-            net_confs_to_delete = User_Network_Configuration.objects.filter(user_id=user.id, vm=virtualMachine,
-                                                                            course=course)
-            if len(net_confs_to_delete) > 0:
-                for conf in net_confs_to_delete:
-                    available_conf = Available_Config()
-                    available_conf.category = 'MAC_ADDR'
-                    available_conf.value = conf.mac_id
-                    available_conf.save()
-                    if not conf.is_course_net:
-                        conf.bridge.delete()
-                    conf.delete()
+
+        logger.debug("Removing User Network configs..")
+        net_confs_to_delete = User_Network_Configuration.objects.filter(user_id=user.id, course=course)
+        for conf in net_confs_to_delete:
+            available_conf = Available_Config()
+            available_conf.category = 'MAC_ADDR'
+            available_conf.value = conf.mac_id
+            available_conf.save()
+            if not conf.is_course_net:
+                conf.bridge.delete()
+            conf.delete()
+
+        logger.debug("Removing User bridges..")
+        bridges_to_delete = User_Bridge.objects.filter(name__startswith=str(user.id)+'_')
+        for bridge in bridges_to_delete:
+            bridge.delete()
 
     def start_vm(self, user, course_id, vm_id):
         logger.debug('XenClient - in start_vm')
