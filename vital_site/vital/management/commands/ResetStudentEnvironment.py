@@ -100,11 +100,15 @@ class Command(BaseCommand):
     def scan_and_kill_vm_on_xen(self, vm_name):
         server_configs = config.items('Servers')
         for key, server_url in server_configs:
-            xen = XenServer(key, server_url)
-            logger.debug('Scanning '+key+' for vm '+vm_name)
-            if xen.vm_exists(self.user, vm_name):
-                logger.debug('FOUND VM ' + vm_name + ' on ' + key + '..Stopping!!')
-                xen.stop_vm(self.user, vm_name)
+            try:
+                xen = XenServer(key, server_url)
+                logger.debug('Scanning ' + key + ' for vm ' + vm_name)
+                if xen.vm_exists(self.user, vm_name):
+                    logger.debug('FOUND VM ' + vm_name + ' on ' + key + '..Stopping!!')
+                    xen.stop_vm(self.user, vm_name)
+            except Exception as e:
+                logger.error(str(e))
+                pass
 
     def scan_and_kill_bridges(self, bridge_name):
         server_configs = config.items('Servers')
