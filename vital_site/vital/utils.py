@@ -315,7 +315,7 @@ class SneakyXenLoadBalancer:
                 server.utilization = Decimal(server.used_memory)/Decimal(server.total_memory)
                 server.status = 'ACTIVE'
             except Exception as e:
-                logger.error(e)
+                logger.error(key+str(e))
                 server.used_memory = 0
                 server.no_of_students = 0
                 server.no_of_courses = 0
