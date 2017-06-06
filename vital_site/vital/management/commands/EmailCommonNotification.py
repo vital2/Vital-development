@@ -5,6 +5,7 @@ from vital.models import VLAB_User
 
 logger = logging.getLogger(__name__)
 
+
 class Command(BaseCommand):
 
     help = "Command to email common notifications to all relevant users"
