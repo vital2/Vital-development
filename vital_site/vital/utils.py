@@ -63,23 +63,22 @@ class XenClient:
     def register_student_vms(self, user, course):
         # choosing best server under assumption that VM conf and dsk will be on gluster
         xen = SneakyXenLoadBalancer().get_best_server(user, course.id)
-        logger.debug('Number of VMs in course: '+str(len(course.virtual_machine_set.all())))
+        logger.debug('Number of VMs in course: ' + str(len(course.virtual_machine_set.all())))
         for vm in course.virtual_machine_set.all():
-            flag = True
-            cnt = 0
-            # hack to handle concurrent requests
-            while flag:
-                available_config = Available_Config.objects.filter(category='MAC_ADDR').order_by('id').first()
-                locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
-                cnt += 1
-                if locked_conf is not None and len(locked_conf) > 0:
-                    val = locked_conf[0].value
-                    locked_conf.delete()
-
-                    networks = vm.network_configuration_set.all()
-                    vif = ''
-                    with transaction.atomic():
-                        for network in networks:
+            networks = vm.network_configuration_set.all()
+            vif = ''
+            with transaction.atomic():
+                for network in networks:
+                    flag = True
+                    cnt = 0
+                    # hack to handle concurrent requests
+                    while flag:
+                        available_config = Available_Config.objects.filter(category='MAC_ADDR').order_by('id').first()
+                        locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
+                        cnt += 1
+                        if locked_conf is not None and len(locked_conf) > 0:
+                            val = locked_conf[0].value
+                            locked_conf.delete()
                             user_net_config = User_Network_Configuration()
                             if network.is_course_net:
                                 vif = vif + '\'mac=' + val + ', bridge=' + network.name + '\'' + ','
@@ -96,16 +95,62 @@ class XenClient:
                             user_net_config.course = course
                             user_net_config.is_course_net = network.is_course_net
                             user_net_config.save()
+                            flag = False
+                        if cnt >= 100:
+                            raise Exception('Server Busy : Registration incomplete')
+                vif = vif[:len(vif) - 1]
+                logger.debug('Registering with vif:' + vif + ' for user ' + user.email)
+                xen.setup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id),
+                             str(course.id) + '_' + str(vm.id), vif)
+                logger.debug('Registered user ' + user.email)
 
-                        vif = vif[:len(vif)-1]
-                        logger.debug('Registering with vif:' + vif + ' for user ' + user.email)
-                        xen.setup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id),
-                                     str(course.id) + '_' + str(vm.id), vif)
 
-                        logger.debug('Registered user ' + user.email)
-                        flag = False
-                if cnt >= 100:
-                    raise Exception('Server Busy : Registration incomplete')
+    # def register_student_vms(self, user, course):
+    #     # choosing best server under assumption that VM conf and dsk will be on gluster
+    #     xen = SneakyXenLoadBalancer().get_best_server(user, course.id)
+    #     logger.debug('Number of VMs in course: '+str(len(course.virtual_machine_set.all())))
+    #     for vm in course.virtual_machine_set.all():
+    #         flag = True
+    #         cnt = 0
+    #         # hack to handle concurrent requests
+    #         while flag:
+    #             available_config = Available_Config.objects.filter(category='MAC_ADDR').order_by('id').first()
+    #             locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
+    #             cnt += 1
+    #             if locked_conf is not None and len(locked_conf) > 0:
+    #                 val = locked_conf[0].value
+    #                 locked_conf.delete()
+    #
+    #                 networks = vm.network_configuration_set.all()
+    #                 vif = ''
+    #                 with transaction.atomic():
+    #                     for network in networks:
+    #                         user_net_config = User_Network_Configuration()
+    #                         if network.is_course_net:
+    #                             vif = vif + '\'mac=' + val + ', bridge=' + network.name + '\'' + ','
+    #                             user_net_config.bridge, obj_created = User_Bridge.objects.get_or_create(name=network.name,
+    #                                                                                                     created=True)
+    #                         else:
+    #                             net_name = str(user.id) + '_' + str(course.id) + '_' + network.name
+    #                             vif = vif + '\'mac=' + val + ', bridge=' + net_name + '\'' + ','
+    #                             user_net_config.bridge, obj_created = User_Bridge.objects.get_or_create(name=net_name)
+    #
+    #                         user_net_config.user_id = user.id
+    #                         user_net_config.mac_id = val
+    #                         user_net_config.vm = vm
+    #                         user_net_config.course = course
+    #                         user_net_config.is_course_net = network.is_course_net
+    #                         user_net_config.save()
+    #
+    #                     vif = vif[:len(vif)-1]
+    #                     logger.debug('Registering with vif:' + vif + ' for user ' + user.email)
+    #                     xen.setup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id),
+    #                                  str(course.id) + '_' + str(vm.id), vif)
+    #
+    #                     logger.debug('Registered user ' + user.email)
+    #                     flag = False
+    #             if cnt >= 100:
+    #                 raise Exception('Server Busy : Registration incomplete')
 
     def unregister_student_vms(self, user, course):
         # choosing best server under assumption that VM conf and dsk will be on gluster
