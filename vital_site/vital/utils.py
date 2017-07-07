@@ -89,9 +89,7 @@ class XenClient:
                         else:
                             #local_network_physical_address = network.local_network_mac_address_set.all()
                             #val = local_network_physical_address.mac_id.value
-                            local_network_physical_address = network.local_network_mac_address.mac_id.value
-                            val = local_network_physical_address
-                            net_name = str(user.id) + '_' + str(course.id) + '_' + network.name
+                            val = Local_Network_MAC_Address.objects.filter( network_configuration = network.id).vlaues_list('mac_id', flat=True)                            net_name = str(user.id) + '_' + str(course.id) + '_' + network.name
                             vif = vif + '\'mac=' + val + ', bridge=' + net_name + '\'' + ','
                             user_net_config.bridge, obj_created = User_Bridge.objects.get_or_create(name=net_name)
 
