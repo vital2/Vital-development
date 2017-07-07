@@ -68,40 +68,41 @@ class XenClient:
             networks = vm.network_configuration_set.all()
             vif = ''
             with transaction.atomic():
-            for network in networks:
-                flag = True
-                cnt = 0
-                # hack to handle concurrent requests
-                while flag:
-                    # EDIT : Across all student local networks, each VM VIFs will have has same MAC#
-                    val = "00"
-                    cnt += 1
-                    user_net_config = User_Network_Configuration()
-                    if network.is_course_net:
-                        available_config = Available_Config.objects.filter(category='MAC_ADDR').order_by('id').first()
-                        locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
-                        if locked_conf is not None and len(locked_conf) > 0:
-                            val = locked_conf[0].value
-                        locked_conf.delete()
-                        vif = vif + '\'mac=' + val + ', bridge=' + network.name + '\'' + ','
-                        user_net_config.bridge, obj_created = User_Bridge.objects.get_or                        name=network.name, created=True)
-                    else:
-                        local_network_physical_address = network_configuration.local_network_mac_address_set.all()
-                        val = local_network_physical_address.mac_id
-                        net_name = str(user.id) + '_' + str(course.id) + '_' + network.name
-                        vif = vif + '\'mac=' + val + ', bridge=' + net_name + '\'' + ','
-                        user_net_config.bridge, obj_created = User_Bridge.objects.get_or_create(name=net_name)
+            #ap4414 EDIT : MAC address allotment to be identical across student NW's
+                for network in networks:
+                    flag = True
+                    cnt = 0
+                    # hack to handle concurrent requests
+                    while flag:
+                        # EDIT : Across all student local networks, each VM VIFs will have has same MAC#
+                        val = "00"
+                        cnt += 1
+                        user_net_config = User_Network_Configuration()
+                        if network.is_course_net:
+                            available_config = Available_Config.objects.filter(category='MAC_ADDR').order_by('id').first()
+                            locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
+                            if locked_conf is not None and len(locked_conf) > 0:
+                                val = locked_conf[0].value
+                            locked_conf.delete()
+                            vif = vif + '\'mac=' + val + ', bridge=' + network.name + '\'' + ','
+                            user_net_config.bridge, obj_created = User_Bridge.objects.get_or                        name=network.name, created=True)
+                        else:
+                            local_network_physical_address = network_configuration.local_network_mac_address_set.all()
+                            val = local_network_physical_address.mac_id
+                            net_name = str(user.id) + '_' + str(course.id) + '_' + network.name
+                            vif = vif + '\'mac=' + val + ', bridge=' + net_name + '\'' + ','
+                            user_net_config.bridge, obj_created = User_Bridge.objects.get_or_create(name=net_name)
 
-                    user_net_config.user_id = user.id
-                    user_net_config.mac_id = val
-                    user_net_config.vm = vm
-                    user_net_config.course = course
-                    user_net_config.is_course_net = network.is_course_net
-                    user_net_config.save()
-                    flag = False
+                        user_net_config.user_id = user.id
+                        user_net_config.mac_id = val
+                        user_net_config.vm = vm
+                        user_net_config.course = course
+                        user_net_config.is_course_net = network.is_course_net
+                        user_net_config.save()
+                        flag = False
 
-                    if cnt >= 100:
-                        raise Exception('Server Busy : Registration incomplete')
+                        if cnt >= 100:
+                            raise Exception('Server Busy : Registration incomplete')
 
             vif = vif[:len(vif) - 1]
             logger.debug('Registering with vif:' + vif + ' for user ' + user.email)
@@ -210,7 +211,7 @@ class XenClient:
             xen.cleanup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(virtualMachine.id))
 
         logger.debug("Removing User Network configs..")
-        # AMITH EDIT : releasing only the MAC assigned to course_net vif#
+        # ap4414 EDIT : releasing only the MAC assigned to course_net vif#
         net_confs_to_delete = User_Network_Configuration.objects.filter(user_id=user.id, course=course, is_course_net=True)
         for conf in net_confs_to_delete:
             available_conf = Available_Config()
