@@ -191,4 +191,4 @@ class Auto_Start_Resources(models.Model):
 #adding new tables for maintaing student local network MAC id's
 class Local_Network_MAC_Address(models.Model):
     network_configuration = models.ForeignKey(Network_Configuration)
-    mac_id = models.CharField(max_length=200)
+    mac_id = models.CharField(max_length=200, unique=True)

@@ -88,7 +88,7 @@ class XenClient:
                             user_net_config.bridge, obj_created = User_Bridge.objects.get_or_or_create(name=network.name, created=True)
                         else:
                             local_network_physical_address = network.local_network_mac_address_set.all()
-                            val = local_network_physical_address.mac_id
+                            val = local_network_physical_address.mac_id.value
                             net_name = str(user.id) + '_' + str(course.id) + '_' + network.name
                             vif = vif + '\'mac=' + val + ', bridge=' + net_name + '\'' + ','
                             user_net_config.bridge, obj_created = User_Bridge.objects.get_or_create(name=net_name)
