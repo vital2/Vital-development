@@ -186,3 +186,8 @@ class Auto_Start_Resources(models.Model):
     name = models.CharField(max_length=15, unique=True)
     type = models.CharField(max_length=10)
     course = models.ForeignKey(Course)
+
+
+class Local_Network_MAC_Address(models.Model):
+    network_configuration_id = models.ForeignKey(Network_Configuration)
+    mac_id = models.CharField(max_length=200)
