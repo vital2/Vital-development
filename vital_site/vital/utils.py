@@ -85,7 +85,7 @@ class XenClient:
                                 val = locked_conf[0].value
                             locked_conf.delete()
                             vif = vif + '\'mac=' + val + ', bridge=' + network.name + '\'' + ','
-                            user_net_config.bridge, obj_created = User_Bridge.objects.get_or name=network.name, created=True)
+                            user_net_config.bridge, obj_created = User_Bridge.objects.get_or_or_create(name=network.name, created=True)
                         else:
                             local_network_physical_address = network_configuration.local_network_mac_address_set.all()
                             val = local_network_physical_address.mac_id
