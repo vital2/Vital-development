@@ -189,5 +189,5 @@ class Auto_Start_Resources(models.Model):
 
 
 class Local_Network_MAC_Address(models.Model):
-    network_configuration_id = models.ForeignKey(Network_Configuration)
+    network_configuration = models.ForeignKey(Network_Configuration)
     mac_id = models.CharField(max_length=200)
