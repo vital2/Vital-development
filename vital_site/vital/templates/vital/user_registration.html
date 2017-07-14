@@ -25,6 +25,11 @@
             <tr>
             <td>{{ field.label_tag }}</td>
             <td>{{ field }}</td>
+            {% if field.captcha %}
+                <td align="right">
+                   <a class= "btn btn-mini" onclick="refresh_captcha()">Refresh</a>
+                </td>
+            {% endif %}
             {% if field.errors %}
 		          <td colspan="2" align="right">
 		          {% for error in field.errors %}
@@ -34,7 +39,7 @@
 		        {% endif %}
             </tr>
         {% endfor %}
-    <tr><td><a class= "btn btn-mini" onclick="refresh_captcha()"><div align="right">Refresh</div></a></td></tr>
+<!--<tr><td>"><a class= "btn btn-mini" onclick="refresh_captcha()"><div align="right>Refresh</div></a></td></tr> -->
     <tr><td colspan="3" align="right"><input type='submit' value='Register'/></td></tr>
     </table>
 </form>
