@@ -125,7 +125,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = '/home/rdj259/vital_static'
 
-CAPTCHA_IMAGE_SIZE = '100,100'
+CAPTCHA_IMAGE_SIZE = '400,400'
 
 
 LOGGING = {
