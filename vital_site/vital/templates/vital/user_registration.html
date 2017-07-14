@@ -25,8 +25,10 @@
             <tr>
             <td>{{ field.label_tag }}</td>
             <td>{{ field }}</td>
-            {% if field.name = 'captcha' %}
-                <a class= "btn btn-mini" onclick="refresh_captcha()"><i class="icon-refresh"></i>Refresh</a>
+            {% if field.label_tag %}
+                {% for captcha in field.label_tag %}
+                    <a class= "btn btn-mini" onclick="refresh_captcha()"><i class="icon-refresh"></i>Refresh</a>
+                {% endfor %}
             {% endif %}
             {% if field.errors %}
 		          <td colspan="2" align="right">
@@ -47,7 +49,7 @@
             $('#id_captcha_0').val(json['new_cptch_key'])
             $('#id_captcha_1').val('')
         });
-    };
+    }
     </script>
 
 {% endblock content %}
