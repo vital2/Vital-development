@@ -127,7 +127,7 @@ STATIC_ROOT = '/home/rdj259/vital_static'
 
 CAPTCHA_IMAGE_SIZE = (120, 60)
 CAPTCHA_FONT_SIZE = 32
-
+CAPTCHA_OUTPUT_FORMAT = u'%(image)s %(hidden_field)s <br> %(text_field)s'
 
 LOGGING = {
     'version': 1,
