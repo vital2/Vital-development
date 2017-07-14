@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect, render_to_response
 from django.contrib.auth import login as django_login, authenticate, logout as django_logout
 from django.core.mail import send_mail
-from django.http import HttpResponseNotAllowed
+from django.http import HttpResponseNotAllowed, HttpResponse
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from ..utils import XenClient, audit, get_notification_message
 from subprocess import Popen, PIPE
+from captcha.models import CaptchaStore
+from captcha.helpers import captcha_image_url
 import ConfigParser
 
 from ..forms import Registration_Form, User_Activation_Form, Authentication_Form, Reset_Password_Form, \
@@ -14,7 +16,9 @@ from ..models import VLAB_User, Allowed_Organization, User_VM_Config, Available_
 
 import logging
 import re
+import json
 from random import randint
+
 config_ini = ConfigParser.ConfigParser()
 config_ini.optionxform=str
 
@@ -28,6 +32,14 @@ logger = logging.getLogger(__name__)
 def register(request):
     logger.debug("in register")
     error_message = ''
+
+    if request.GET and 'refresh_captcha' in request.GET:
+        form = Registration_Form()
+        to_json_response = dict()
+        to_json_response['new_cptch_key'] = CaptchaStore.generate_key()
+        to_json_response['new_cptch_image'] = captcha_image_url(to_json_response['new_cptch_key'])
+
+        return HttpResponse(json.dumps(to_json_response), content_type='application/json')
 
     if request.method == 'POST':
         form = Registration_Form(request.POST)
