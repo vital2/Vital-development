@@ -23,15 +23,13 @@
     <table style="width: auto">
         {% for field in form %}
             <tr>
-            <td>{{ field.label_tag }}</td>
-            <td>{{ field }}</td>
-
-            <label for="{{ field.auto_id }}">{{ field.label_tag }}
+            <td><label for="{{ field.auto_id }}">{{ field.label_tag }}
                 {% if field.field.required %}
                     <span class="required">*</span>
                 {% endif %}
-            </label>
-
+            </label></td>
+            <td>{{ field }}</td>
+            
              {% if field.captcha %}
                 <tr>
                     <td align="right"><a class= "btn btn-mini" onclick="refresh_captcha()">Refresh</a></td>
