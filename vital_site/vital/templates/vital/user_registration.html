@@ -29,11 +29,7 @@
                 {% endif %}
             </label></td>
 
-            <td>{{ field }}
-                {% if field.captcha.image_field %}
-                    <div align="right"><button class= "btn btn-mini" onclick="refresh_captcha()">Refresh</button></div>
-                {% endif %}
-            </td>
+            <td>{{ field }}</td>
 
             {% if field.errors %}
 		          <td colspan="2" align="right">

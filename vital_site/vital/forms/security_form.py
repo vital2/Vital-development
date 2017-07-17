@@ -12,6 +12,7 @@ class Registration_Form(ModelForm):
     password = PasswordField(label="Password")
     confirm_password = forms.CharField(widget=forms.PasswordInput)
     captcha = CaptchaField()
+    phone = forms.CharField(required=False)
 
     class Meta:
         model = VLAB_User
