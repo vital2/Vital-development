@@ -21,17 +21,18 @@
     </p>
     {% endif %}
 
-    {% if field.captcha %}
-        <td align="right">
-            <a class= "btn btn-mini" onclick="refresh_captcha()"><i class="con-refresh">Refresh</i></a>
-        </td>
-    {% endif %}
-
     <table style="width: auto">
         {% for field in form %}
             <tr>
             <td>{{ field.label_tag }}</td>
-            <td>{{ field }}</td
+            <td>{{ field }}</td>
+
+            {% if field.captcha %}
+                <td align="right">
+                    <a class= "btn btn-mini" onclick="refresh_captcha()"><i class="con-refresh">Refresh</i></a>
+                </td>
+            {% endif %}
+
             {% if field.errors %}
 		          <td colspan="2" align="right">
 		          {% for error in field.errors %}
