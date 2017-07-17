@@ -25,6 +25,11 @@
             <tr>
             <td>{{ field.label_tag }}</td>
             <td>{{ field }}</td>
+
+            {% if filed.field.required %}
+                <span class="required">*</span>
+            {% enfif %}
+
             {% if field.errors %}
 		          <td colspan="2" align="right">
 		          {% for error in field.errors %}
