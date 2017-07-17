@@ -30,7 +30,7 @@
                 <span class="required">*</span>
             {% endif %}
 
-             {% if field.field.captcha %}
+             {% if field.label_tag is captcha %}
                 <tr>
                     <td align="right"><a class= "btn btn-mini" onclick="refresh_captcha()">Refresh</a></td>
                 </tr>
