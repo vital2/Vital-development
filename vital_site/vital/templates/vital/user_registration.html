@@ -25,16 +25,16 @@
             <tr>
             <td><label for="{{ field.auto_id }}">{{ field.label_tag }}
                 {% if field.field.required %}
-                    <span class="required">*</span>
+                    <span class="required" style="color:red">*</span>
                 {% endif %}
             </label></td>
-            <td>{{ field }}</td>
-            
-             {% if field.captcha %}
-                <tr>
-                    <td align="right"><a class= "btn btn-mini" onclick="refresh_captcha()">Refresh</a></td>
-                </tr>
-            {% endif %}
+            <td>{{ field }}
+                {% if field.captcha %}
+                    <div align="right"><a class= "btn btn-mini" onclick="refresh_captcha()">Refresh</a>
+                    </div>
+                {% endif %}
+            </td>
+
 
             {% if field.errors %}
 		          <td colspan="2" align="right">
