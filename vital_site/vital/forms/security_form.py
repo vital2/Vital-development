@@ -9,7 +9,7 @@ class Registration_Form(ModelForm):
 
     cleaned_data = {}
     #  password = forms.CharField(widget=forms.PasswordInput)
-    password = PasswordField(label="Password", help_text="Must be at least 8 characters and contain 1 uppercase, 1 lowercase letter and 1 number. No special characters are allowed")
+    password = PasswordField(label="Password", help_text="No special characters allowed")
     confirm_password = forms.CharField(widget=forms.PasswordInput)
     captcha = CaptchaField()
 
