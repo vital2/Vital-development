@@ -19,6 +19,7 @@
     <p class="error">
             {{ error_message }}
     </p>
+    {% endif %}
 
     {% if field.captcha %}
         <td align="right">
@@ -26,7 +27,6 @@
         </td>
     {% endif %}
 
-    {% endif %}
     <table style="width: auto">
         {% for field in form %}
             <tr>
@@ -54,5 +54,5 @@
         });
     }
     </script>
-    
+
 {% endblock content %}
