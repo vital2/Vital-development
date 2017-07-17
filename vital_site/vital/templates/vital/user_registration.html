@@ -28,13 +28,12 @@
                     <span class="required" style="color:red">*</span>
                 {% endif %}
             </label></td>
+
             <td>{{ field }}
-                {% if field.captcha %}
-                    <div align="right"><a class= "btn btn-mini" onclick="refresh_captcha()">Refresh</a>
-                    </div>
+                {% if field.captcha.image_field %}
+                    <div align="right"><a class= "btn btn-mini" onclick="refresh_captcha()">Refresh</a></div>
                 {% endif %}
             </td>
-
 
             {% if field.errors %}
 		          <td colspan="2" align="right">
