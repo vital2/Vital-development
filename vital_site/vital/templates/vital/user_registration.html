@@ -30,6 +30,12 @@
                 <span class="required">*</span>
             {% endif %}
 
+             {% if field.field.captcha %}
+                <tr>
+                    <td align="right"><a class= "btn btn-mini" onclick="refresh_captcha()">Refresh</a></td>
+                </tr>
+            {% endif %}
+
             {% if field.errors %}
 		          <td colspan="2" align="right">
 		          {% for error in field.errors %}
