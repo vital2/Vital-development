@@ -34,6 +34,15 @@
                  {% if field.name == 'captcha' %}
                     <a class= "btn btn-mini" onclick="refresh_captcha()">Refresh</a>
                  {% endif %}
+
+                {% if field.name == 'password' %}
+                    <br>
+                    <p><ul>
+                        <li>Must be at least 8 characters</li>
+                        <li>Must include at least 1 uppercase, 1 lowercase and 1 number</li>
+                        <li>No special characters allowed</li>
+                    </ul></p>
+                {% endif %}
             </td>
 
             {% if field.errors %}
