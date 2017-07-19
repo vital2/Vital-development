@@ -29,7 +29,11 @@
                 {% endif %}
             </label></td>
 
-            <td>{{ field }}</td>
+            <td>{{ field }}
+                 {% if field.field.captcha %}
+                    <a class= "btn btn-mini" onclick="refresh_captcha()">Refresh</a>
+                 {% endif %}
+            </td>
 
             {% if field.errors %}
 		          <td colspan="2" align="right">
@@ -37,7 +41,7 @@
 		            <div style="font-size: 10px; color: red" align="right">{{ error }}</div>
 		          {% endfor %}
                   </td>
-		        {% endif %}
+            {% endif %}
             </tr>
         {% endfor %}
     <tr>
