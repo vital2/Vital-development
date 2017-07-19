@@ -30,7 +30,9 @@
             </label></td>
 
             <td>{{ field }}
+            {{ field.name }}
                  {% if field.captcha %}
+
                     <a class= "btn btn-mini" onclick="refresh_captcha()">Refresh</a>
                  {% endif %}
             </td>
