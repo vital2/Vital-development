@@ -30,16 +30,17 @@
                 {% endif %}
             </label></td>
             <td>{{ field }}
-                 {% if field.name == 'captcha' %}
+                {% if field.name == 'captcha' %}
                     <a class= "btn btn-mini" onclick="refresh_captcha()">Refresh</a>
-                 {% endif %}
+                {% endif %}
 
                 {% if field.name == 'password' %}
                     <br>
                     <span><ul style="list-style-type:disc">
                         <li>Must be at least 8 characters</li>
                         <li>Must include 1 uppercase and 1 number</li>
-                        <li>No special characters allowed</li></ul></span>
+                        <li>No special characters allowed</li>
+                    </ul></span>
                 {% endif %}
             </td>
 
@@ -53,7 +54,6 @@
             </tr>
         {% endfor %}
     <tr>
-        <!--<td colspan="3" align="right"><a class= "btn btn-mini" onclick="refresh_captcha()">Refresh</a></td> -->
         <td colspan="3" align="right"><input type='submit' value='Register'/></td>
     </tr>
     </table>
