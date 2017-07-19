@@ -31,7 +31,7 @@
 
             <td>{{ field }}
             {{ field.name }}
-                 {% if field.captcha %}
+                 {% if field.name == 'captcha' %}
 
                     <a class= "btn btn-mini" onclick="refresh_captcha()">Refresh</a>
                  {% endif %}
@@ -47,7 +47,7 @@
             </tr>
         {% endfor %}
     <tr>
-        <td colspan="3" align="right"><a class= "btn btn-mini" onclick="refresh_captcha()">Refresh</a></td>
+        <!--<td colspan="3" align="right"><a class= "btn btn-mini" onclick="refresh_captcha()">Refresh</a></td> -->
         <td colspan="3" align="right"><input type='submit' value='Register'/></td>
     </tr>
     </table>
