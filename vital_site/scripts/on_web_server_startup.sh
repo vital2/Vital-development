@@ -22,8 +22,10 @@ done
 # enables SFTP access to the SFTP server from xen vms
 # TODO change the hardcorded server IP
 SERVER_IP="128.238.66.35"
-iptables -I FORWARD 1 -p icmp --icmp-type 8 -s 0/0 -d $SERVER_IP -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+iptables -I FORWARD 2 -p icmp --icmp-type 8 -s 0/0 -d $SERVER_IP -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
 iptables -I FORWARD 1 -p icmp --icmp-type 0 -s $SERVER_IP -d 0/0 -m state --state ESTABLISHED,RELATED -j ACCEPT
 
 # to enable NAT from xen
-iptables -t nat -A POSTROUTING -s 192.168.35.0/24 -o eth0 -j MASQUERADE
+#iptables -t nat -A POSTROUTING -s 192.168.35.0/24 -o eth0 -j MASQUERADE
+##ap4414 EDIT: moving iptables rules to the front of the chain
+iptables -t nat -I POSTROUTING 1 -s 192.168.35.0/24 -o eth0 -j MASQUERADE
