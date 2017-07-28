@@ -221,6 +221,7 @@ def forgot_password(request):
             except VLAB_User.DoesNotExist:
                 logger.debug('Cannot find requested email -'+form.cleaned_data['email'])
             message = "Email with reset password instructions is on the way"
+            return redirect('/vital/login/')
     else:
         form = Forgot_Password_Form()
     return render(request, 'vital/forgot_password.html', {'form': form, 'message': message})
@@ -239,7 +240,7 @@ def login(request):
                 if user.is_active:
                     django_login(request, user)
                     audit(request, 'User logged in')
-                    return redirect('/vital/login/')
+                    return redirect('/vital')
                 else:
                     form = User_Activation_Form(initial={'user_email': user.email})
                     return render(request, 'vital/user_registration_validate.html',
