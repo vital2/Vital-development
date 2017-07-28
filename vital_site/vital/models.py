@@ -93,7 +93,6 @@ class Course(models.Model):
     status = models.CharField(max_length=10)
     auto_shutdown_after = models.IntegerField(default=3)
     allow_long_running_vms = models.BooleanField(default=False)
-    no_of_students = models.IntegerField(default=0)
 
     def __str__(self):
         return self.course_number + ":" + self.name

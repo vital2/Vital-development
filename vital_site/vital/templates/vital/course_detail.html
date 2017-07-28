@@ -82,10 +82,7 @@
                 <td style="background-color: #d2bfde;">Registration Code</td><td>{{ course.registration_code }}</td></tr>
             <tr><td style="background-color: #d2bfde;">Created On</td><td>{{ course.created_date }}</td>
                 <td style="background-color: #d2bfde;">Start On</td><td>{{ course.start_date }}</td></tr>
-<!--ap4414 edit
             <tr><td style="background-color: #d2bfde;">Capacity</td><td>{{ course.capacity }}</td>
--->
-            <tr><td style="background-color: #d2bfde;">Number_of_students</td><td>{{ course.no_of_students }}</td>
                 <td style="background-color: #d2bfde;">Currently Registered</td><td>{{ students_registered }}</td></tr>
             <tr><td style="background-color: #d2bfde;">Professors</td><td>{% if professors %}{{ professors }}{% else %} None Assigned {% endif %}</td>
                 <td style="background-color: #d2bfde;">Teaching Assistants</td><td>{% if teaching_assistants %}{{ teaching_assistants }}{% else %} None Assigned {% endif %}</td></tr>
