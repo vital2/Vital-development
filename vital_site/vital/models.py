@@ -87,7 +87,7 @@ class Course(models.Model):
     name = models.CharField(max_length=200)
     course_number = models.CharField(max_length=200, unique=True)
     registration_code = models.CharField(max_length=10, unique=True)
-    capacity = models.IntegerField(default=0, hidden=True)
+    capacity = models.IntegerField(default=0)
     start_date = models.DateTimeField(default=datetime.now, blank=True)
     created_date = models.DateTimeField(default=datetime.now, blank=True)
     status = models.CharField(max_length=10)
