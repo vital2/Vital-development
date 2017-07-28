@@ -170,7 +170,7 @@ def reset_password(request):
 
                 user.save()
                 update_session_auth_hash(request, user)
-                return redirect('/vital/login/')  # change here to home page
+                return redirect('/vital')  # change here to home page
             else:
                 logger.debug(form.cleaned_data['user_email']+'-'+form.cleaned_data['activation_code'])
                 user = VLAB_User.objects.get(email=form.cleaned_data['user_email'])
