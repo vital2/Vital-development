@@ -193,7 +193,6 @@ def reset_password(request):
                     return redirect('/vital')  # change here to home page
                 else:
                     error_message = 'Please use the link sent to you in your email'
-        return redirect('/vital/login/')
     else:
         user_email = request.GET.get('user_email', 'x')
         activation_code = request.GET.get('activation_code', 'x')
@@ -240,7 +239,7 @@ def login(request):
                 if user.is_active:
                     django_login(request, user)
                     audit(request, 'User logged in')
-                    return redirect('/vital')
+                    return redirect('/vital/login/')
                 else:
                     form = User_Activation_Form(initial={'user_email': user.email})
                     return render(request, 'vital/user_registration_validate.html',
