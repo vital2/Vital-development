@@ -221,7 +221,7 @@ def forgot_password(request):
             except VLAB_User.DoesNotExist:
                 logger.debug('Cannot find requested email -'+form.cleaned_data['email'])
             message = "Email with reset password instructions is on the way"
-            return redirect('/vital/login/')
+            return render('vital/login.html', {'message': message})
     else:
         form = Forgot_Password_Form()
     return render(request, 'vital/forgot_password.html', {'form': form, 'message': message})
