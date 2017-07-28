@@ -1,6 +1,7 @@
 {% extends 'vital/base.html' %}
 
 {% block content %}
+    {% if message %} <p style="color: green">{{ message }}</p> {% endif %}
 <form action="{% url 'vital:login' %}" method='POST' style="width: 300px">
     {% csrf_token %}
     {% if error_message %}

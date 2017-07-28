@@ -125,6 +125,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = '/home/rdj259/vital_static'
 
+CAPTCHA_IMAGE_SIZE = (120, 50)
+CAPTCHA_FONT_SIZE = 32
+CAPTCHA_OUTPUT_FORMAT = u'%(image)s %(hidden_field)s <br> %(text_field)s'
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

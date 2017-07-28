@@ -8,10 +8,11 @@ from passwords.fields import PasswordField
 class Registration_Form(ModelForm):
 
     cleaned_data = {}
-    #  password = forms.CharField(widget=forms.PasswordInput)
-    password = PasswordField(label="Password", help_text="Must be at least 8 characters and contain 1 uppercase, 1 lowercase letter and 1 number. No special characters are allowed")
+    # password = forms.CharField(widget=forms.PasswordInput)
+    password = PasswordField(label="Password")
     confirm_password = forms.CharField(widget=forms.PasswordInput)
     captcha = CaptchaField()
+    phone = forms.CharField(required=False)
 
     class Meta:
         model = VLAB_User
@@ -42,6 +43,7 @@ class Authentication_Form(forms.Form):
 
     class Meta:
         fields = ['email', 'password']
+
 
 class Reset_Password_Form(forms.Form):
     password = PasswordField(label="Password")
