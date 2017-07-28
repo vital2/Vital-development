@@ -222,7 +222,7 @@ def forgot_password(request):
                 logger.debug('Cannot find requested email -'+form.cleaned_data['email'])
             message = "Email with reset password instructions is on the way"
             form = Authentication_Form()
-            return render(request, 'vital/login.html', {'form': form,'message': message})
+            return render(request, 'vital/login.html', {'form': form, 'message': message})
     else:
         form = Forgot_Password_Form()
     return render(request, 'vital/forgot_password.html', {'form': form, 'message': message})
