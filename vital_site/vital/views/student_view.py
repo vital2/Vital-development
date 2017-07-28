@@ -241,8 +241,12 @@ def register_for_course(request):
                     if len(Registered_Course.objects.filter(course_id=course.id, user_id=user.id)) > 0:
                         error_message = 'You have already registered for this course'
                     else:
+                        '''
+                        ap4414 EDIT : removing limit on the number students registering for a course
                         if course.capacity > len(Registered_Course.objects.filter(course_id=course.id)) \
                                 and course.status == 'ACTIVE':
+                        '''
+                        if course.status == 'ACTIVE':
                             XenClient().register_student_vms(request.user, course)
                             registered_course = Registered_Course(course_id=course.id, user_id=user.id)
                             registered_course.save()
