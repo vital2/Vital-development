@@ -12,7 +12,7 @@ config = ConfigParser.ConfigParser()
 config.optionxform=str
 
 # TODO change to common config file in shared location
-config.read("/home/rdj259/config.ini")
+config.read("/home/vital/config.ini")
 
 
 class Command(BaseCommand):

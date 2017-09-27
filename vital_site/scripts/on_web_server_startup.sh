@@ -16,7 +16,7 @@ array=(${nets// / })
 
 for var in "${array[@]}"
 do
-    /home/rdj259/vital2.0/source/virtual_lab/vital_site/scripts/ws_course_network_startup.sh $var
+    /home/vital/vital2.0/source/virtual_lab/vital_site/scripts/ws_course_network_startup.sh $var
 done
 
 # enables SFTP access to the SFTP server from xen vms

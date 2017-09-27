@@ -15,7 +15,7 @@ class Command(BaseCommand):
             '-m', '--message',
             action='store',
             dest='message',
-            help='specify message to be displayed on all page',
+            help='specify message to be displayed on all pages',
             required=True
         )
 
