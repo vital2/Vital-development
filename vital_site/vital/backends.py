@@ -1,5 +1,6 @@
 from .models import VLAB_User
 
+
 class EmailAuthBackend(object):
 
     def authenticate(self, email=None, password=None):
