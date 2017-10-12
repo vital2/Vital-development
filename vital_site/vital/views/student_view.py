@@ -14,7 +14,7 @@ config_ini = ConfigParser.ConfigParser()
 config_ini.optionxform=str
 
 # TODO change to common config file in shared location
-config_ini.read("/home/rdj259/config.ini")
+config_ini.read("/home/vital/config.ini")
 
 
 @login_required(login_url='/vital/login/')

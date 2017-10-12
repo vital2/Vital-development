@@ -9,7 +9,7 @@ import ConfigParser
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 config = ConfigParser.ConfigParser()
-config.read("/home/rdj259/config.ini")
+config.read("/home/vital/config.ini")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config.get("Security", "SECRET_KEY")
@@ -123,7 +123,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/home/rdj259/vital_static'
+STATIC_ROOT = '/home/vital/vital_static'
 
 CAPTCHA_IMAGE_SIZE = (120, 50)
 CAPTCHA_FONT_SIZE = 32

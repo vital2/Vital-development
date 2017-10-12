@@ -16,12 +16,12 @@ array=(${nets// / })
 
 for var in "${array[@]}"
 do
-    /home/rdj259/vital2.0/source/virtual_lab/vital_site/scripts/ws_course_network_startup.sh $var
+    /home/vital/vital2.0/source/virtual_lab/vital_site/scripts/ws_course_network_startup.sh $var
 done
 
 # enables SFTP access to the SFTP server from xen vms
 # TODO change the hardcorded server IP
-SERVER_IP="128.238.66.35"
+SERVER_IP="128.238.77.36"
 iptables -I FORWARD 2 -p icmp --icmp-type 8 -s 0/0 -d $SERVER_IP -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
 iptables -I FORWARD 1 -p icmp --icmp-type 0 -s $SERVER_IP -d 0/0 -m state --state ESTABLISHED,RELATED -j ACCEPT
 

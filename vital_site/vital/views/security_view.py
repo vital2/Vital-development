@@ -23,7 +23,7 @@ config_ini = ConfigParser.ConfigParser()
 config_ini.optionxform=str
 
 # TODO change to common config file in shared location
-config_ini.read("/home/rdj259/config.ini")
+config_ini.read("/home/vital/config.ini")
 
 
 logger = logging.getLogger(__name__)
@@ -71,8 +71,8 @@ def register(request):
                                   {'form': form, 'error_message': error_message})
 
                 logger.debug("Creating SFTP account")
-                cmd = 'sudo /home/rdj259/vital2.0/source/virtual_lab/vital_site/scripts/sftp_account.sh create '+ \
-                      user.sftp_account+' '+user.sftp_pass + ' > /home/rdj259/vital2.0/log/sftp.log'
+                cmd = 'sudo /home/vital/vital2.0/source/virtual_lab/vital_site/scripts/sftp_account.sh create '+ \
+                      user.sftp_account+' '+user.sftp_pass + ' > /home/vital/vital2.0/log/sftp.log'
                 p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
                 out, err = p.communicate()
                 if not p.returncode == 0:
@@ -160,7 +160,7 @@ def reset_password(request):
                 user.sftp_pass = form.cleaned_data['password']
 
                 logger.debug("Resetting SFTP account")
-                cmd = 'sudo /home/rdj259/vital2.0/source/virtual_lab/vital_site/scripts/sftp_account.sh resetpass ' + \
+                cmd = 'sudo /home/vital/vital2.0/source/virtual_lab/vital_site/scripts/sftp_account.sh resetpass ' + \
                       user.sftp_account + ' ' + user.sftp_pass
                 p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
                 out, err = p.communicate()
@@ -180,7 +180,7 @@ def reset_password(request):
                     user.activation_code=None
 
                     logger.debug("Resetting SFTP account")
-                    cmd = 'sudo /home/rdj259/vital2.0/source/virtual_lab/vital_site/scripts/sftp_account.sh resetpass ' + \
+                    cmd = 'sudo /home/vital/vital2.0/source/virtual_lab/vital_site/scripts/sftp_account.sh resetpass ' + \
                           user.sftp_account + ' ' + user.sftp_pass
                     p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
                     out, err = p.communicate()

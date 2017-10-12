@@ -29,4 +29,4 @@ class Command(BaseCommand):
         send_mail('Activation code reset mail',
                   'Hi ' + user.first_name + ',\r\n\n Please enter the activation code' + str(activation_code) +
                                             ' to access your vital account.' +
-                  + '.\r\n\nVital', 'no-reply-vital@nyu.edu', [user.email], fail_silently=False)
+                  '.\r\n\nVital', 'no-reply-vital@nyu.edu', [user.email], fail_silently=False)
