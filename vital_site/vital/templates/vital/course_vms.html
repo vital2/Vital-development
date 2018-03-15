@@ -112,9 +112,9 @@ $(window).load(function(){
     {% endif %}
 
     <script> function reimage_prompt() {
-         if (!confirm("Are you sure you want to reimage?")){
+         if (confirm("Are you sure you want to reimage?")){
              openNav();
-             return false;
+             return true;
          }
     }
     </script>
