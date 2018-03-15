@@ -255,7 +255,6 @@ class XenServer:
         return self.proxy.xenapi.is_bridge_up(user.email, user.password, name)
 
 
-
 class SneakyXenLoadBalancer:
 
     def get_best_server(self, user, course_id):

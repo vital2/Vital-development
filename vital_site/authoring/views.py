@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 # Create your views here.
 
 
-@login_required(login_url='/vital/login/')
+#@login_required(login_url='/vital/login/')
 def index(request):
-    return render(request, 'vital/index.html')
+    return render(request, 'authoring/index.html')
 

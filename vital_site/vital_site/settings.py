@@ -9,7 +9,7 @@ import ConfigParser
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 config = ConfigParser.ConfigParser()
-config.read("/home/vital/config.ini")
+config.read("/Users/anusha/virtual_lab/config.ini")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config.get("Security", "SECRET_KEY")
@@ -23,6 +23,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'authoring.apps.AuthoringConfig',
     'vital.apps.VitalConfig',
     'captcha',
     'passwords',

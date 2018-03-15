@@ -91,10 +91,11 @@ $(window).load(function(){
                         </div>
                         <div style="height:33%;">
                             {% if vm.state != 'R'%}
-                            <a href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/rebase' onclick="openNav()">
+                            <a href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/rebase' onclick="reimage_prompt()">
                                 <img src="{% static  'vital/reimage.png' %}" width="30px" height="30px" title="Reimage VM"/>
                             </a>
                             {% endif %}
+
                         </div>
 		            </div>
 
@@ -110,5 +111,13 @@ $(window).load(function(){
      </div>
     {% endif %}
 
+    <script> function reimage_prompt() {
+         if (confirm("Are you sure you want to reimage?")){
+             openNav();
+         }else{
+
+         }
+    }
+    </script>
 
 {% endblock content_without_center %}
