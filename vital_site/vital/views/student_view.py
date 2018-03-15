@@ -101,8 +101,9 @@ def start_novnc(config, started_vm):
             val = locked_conf[0].value
             locked_conf.delete()
             launch_script = config_ini.get("VITAL", "NOVNC_LAUNCH_SCRIPT")
-            cmd = 'sh '+launch_script+' --listen {} ' \
-                  '--vnc {}:{}'.format(val, started_vm['xen_server'], started_vm['vnc_port'])
+            # cmd = 'sh '+launch_script+' --listen {} ' \
+            cmd = launch_script + ' --listen {} ' \
+                                          '--vnc {}:{}'.format(val, started_vm['xen_server'], started_vm['vnc_port'])
             logger.debug("start novnc - "+cmd)
             p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
             config.no_vnc_pid = p.pid
