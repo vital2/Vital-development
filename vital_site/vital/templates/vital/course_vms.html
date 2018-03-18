@@ -91,9 +91,9 @@ $(window).load(function(){
                         </div>
                         <div style="height:33%;">
                             {% if vm.state != 'R'%}
-                            <a href="/vital/courses/{{ course_id }}/vms/{{ vm.id }}/rebase" onclick="reimage_prompt()">
+                            <button onclick="reimage_prompt()">
                                 <img src="{% static  'vital/reimage.png' %}" width="30px" height="30px" title="Reimage VM"/>
-                            </a>
+                            </button>
                             {% endif %}
                         </div>
 		            </div>
