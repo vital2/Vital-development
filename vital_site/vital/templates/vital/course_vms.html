@@ -52,10 +52,19 @@ $(window).load(function(){
 	.box:hover .overlay {
 	    opacity:1;
 	}
+    button{
+        background-color: Transparent;
+        background-repeat: no-repeat;
+        border: none;
+        cursor: pointer;
+        overflow: hidden;
+        outline: none;
+    }
+
     </style>
 
     {% if message %}
-           <div id="message" style="position: absolute; width:65%; height:25px; background-color: #ddea91;
+        <div id="message" style="position: absolute; width:65%; height:25px; background-color: #ddea91;
            z-index: 1100; top:160px; font-size: small; color: darkred">{{ message }}</div>
        {% endif %}
     {% if virtual_machines %}
@@ -89,7 +98,7 @@ $(window).load(function(){
                             </a>-->
                             {% endif %}
                         </div>
-                        <div style="height:33%; background-color:transparent;">
+                        <div style="height:33%;">
                             {% if vm.state != 'R'%}
                             <button type="button" onclick="reimage_prompt({{ course_id }},{{ vm.id }})">
                                 <img src="{% static  'vital/reimage.png' %}" width="30px" height="30px" title="Reimage VM"/>
