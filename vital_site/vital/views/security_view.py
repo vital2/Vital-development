@@ -322,3 +322,34 @@ def index(request):
     else:
         logger.debug('user is admin')
 
+def release_vm(request):
+    logger.debug("in releaseVM")
+    error_message = ''
+
+    try:
+        if request.method == 'GET':
+            # Get the VM ID in request
+            vm_id = request.GET['vm_id']
+            xen_server = request.GET['xen_server']
+            # Get user ID from somewhere in this view
+            # user_id = None
+
+            vm = User_VM_Config.objects.get(xen_server=xen_server, vm_id=vm_id)
+
+            cmd = 'kill ' + vm.no_vnc_pid
+            p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+            out, err = p.communicate()
+            if not p.returncode == 0:
+                if 'No such process' not in err.rstrip():
+                    logger.error('Error stopping NoVNC Client with PID ' + str(vm.no_vnc_pid) + '(' + err.rstrip() + ')')
+
+            config = Available_Config()
+            config.category = 'TERM_PORT'
+            config.value = vm.terminal_port
+            config.save()
+            vm.delete()
+            # audit(request, 'Stopped Virtual machine ' + str(virtual_machine.name))
+            # return redirect('/vital/courses/' + course_id + '/vms?message=VM stopped...')
+
+    except:
+        logger.error('Error in Release VM')
