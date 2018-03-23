@@ -52,7 +52,7 @@ $(window).load(function(){
 	.box:hover .overlay {
 	    opacity:1;
 	}
-    button{
+    .button{
         background-color: Transparent;
         background-repeat: no-repeat;
         border: none;
@@ -100,7 +100,7 @@ $(window).load(function(){
                         </div>
                         <div style="height:33%;">
                             {% if vm.state != 'R'%}
-                            <button type="button" onclick="reimage_prompt({{ course_id }},{{ vm.id }})">
+                            <button class="button" onclick="reimage_prompt({{ course_id }},{{ vm.id }})">
                                 <img src="{% static  'vital/reimage.png' %}" width="30px" height="30px" title="Reimage VM"/>
                             </button>
                             {% endif %}
