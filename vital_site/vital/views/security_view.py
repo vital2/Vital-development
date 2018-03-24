@@ -332,9 +332,10 @@ def release_vm(request):
             vm_id = request.GET['vm_id']
             xen_server = request.GET['xen_server']
             # Get user ID from somewhere in this view
-            # user_id = None
+            user_id = 2
 
-            vm = User_VM_Config.objects.get(xen_server=xen_server, vm_id=vm_id)
+            vm = User_VM_Config.objects.get(user_id=17, vm_id=18)
+	    logger.debug('VM : {}'.format(vm.no_vnc_pid))
 
             cmd = 'kill ' + vm.no_vnc_pid
             p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
@@ -349,8 +350,8 @@ def release_vm(request):
             config.save()
             vm.delete()
             # audit(request, 'Stopped Virtual machine ' + str(virtual_machine.name))
-            # return redirect('/vital/courses/' + course_id + '/vms?message=VM stopped...')
+            # return redirect('/vital/courses/14/vms?message=VM stopped...')
             return HttpResponse('SUCCESS')
 
-    except:
-        logger.error('Error in Release VM')
+    except Exception as e:
+	logger.error(str(e))
