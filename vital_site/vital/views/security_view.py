@@ -350,6 +350,7 @@ def release_vm(request):
             vm.delete()
             # audit(request, 'Stopped Virtual machine ' + str(virtual_machine.name))
             # return redirect('/vital/courses/' + course_id + '/vms?message=VM stopped...')
+            return HttpResponse('SUCCESS')
 
     except:
         logger.error('Error in Release VM')
