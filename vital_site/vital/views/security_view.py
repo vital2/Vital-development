@@ -333,7 +333,7 @@ def release_vm(request):
             user_id = request.GET['user_id']
 
             vm = User_VM_Config.objects.get(user_id=user_id, vm_id=vm_id)
-	        logger.debug('VM : {}'.format(vm.no_vnc_pid))
+	    logger.debug('VM : {}'.format(vm.no_vnc_pid))
 
             cmd = 'kill ' + vm.no_vnc_pid
             p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)

@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, render, redirect, render_to_response
 from django.contrib.auth.decorators import login_required
 from ..models import Course, Registered_Course, Virtual_Machine, User_VM_Config, Available_Config, \
     User_Network_Configuration
@@ -37,14 +37,14 @@ def registered_courses(request):
 
 
 @login_required(login_url='/vital/login/')
-def course_vms(request, course_id):
+def virtual_machines(request, course_id):
     """
     lists all VMs of the selected course
     :param request: http request
     :param course_id: id of the selected course
     :return: course VMs page
     """
-    logger.debug("in course vms")
+    logger.debug("in detail vms")
     params = dict()
     virtual_machines = Virtual_Machine.objects.filter(course_id=course_id)
     server_name = config_ini.get('VITAL', 'SERVER_NAME')
@@ -62,6 +62,21 @@ def course_vms(request, course_id):
     params['virtual_machines'] = virtual_machines
     params['course_id'] = course_id
     params['server_name'] = server_name
+
+    # if not request.GET.get('message', '') == '':
+    #     params['message'] = request.GET.get('message')
+
+    return render_to_response('vital/virtual_machines.html', params)
+
+@login_required(login_url='/vital/login/')
+def course_vms(request, course_id):
+    """
+    Stub method for rendering course Page
+    """
+    logger.debug("in course vms")
+    params = dict()
+
+    params['course_id'] = course_id
 
     if not request.GET.get('message', '') == '':
         params['message'] = request.GET.get('message')

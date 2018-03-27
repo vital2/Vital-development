@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^courses/register/$', views.register_for_course, name='course_register'),
     url(r'^courses/(?P<course_id>[0-9]+)/deregister/$', views.unregister_from_course, name='course_deregister'),
     url(r'^courses/(?P<course_id>[0-9]+)/vms/$', views.course_vms, name='course_vms'),
+    url(r'^courses/(?P<course_id>[0-9]+)/virtual_machines/$', views.virtual_machines, name='virtual_machines'),
     url(r'^courses/(?P<course_id>[0-9]+)/detail/$', views.course_detail, name='course_detail'),
     url(r'^console/(?P<vm_id>[0-9]+)/$', views.console, name='console'),
     url(r'^courses/registered/$', views.registered_courses, name='registered_courses'),
