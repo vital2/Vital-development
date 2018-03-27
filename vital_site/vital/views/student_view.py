@@ -185,22 +185,22 @@ def stop_vm(request, course_id, vm_id):
     audit(request, 'Stopping Virtual machine ' + str(virtual_machine.name))
     vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
 
-    cmd = 'kill ' + vm.no_vnc_pid
-    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-    out, err = p.communicate()
-    if not p.returncode == 0:
-        if 'No such process' not in err.rstrip():
-            audit(request, 'Error stopping Virtual machine ' + str(virtual_machine.name) +
-                  '(' + err.rstrip() + ')')
-            raise Exception('ERROR : cannot stop the vm '
-                            '\n Reason : %s' % err.rstrip())
+    # cmd = 'kill ' + vm.no_vnc_pid
+    # p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+    # out, err = p.communicate()
+    # if not p.returncode == 0:
+    #     if 'No such process' not in err.rstrip():
+    #         audit(request, 'Error stopping Virtual machine ' + str(virtual_machine.name) +
+    #               '(' + err.rstrip() + ')')
+    #         raise Exception('ERROR : cannot stop the vm '
+    #                         '\n Reason : %s' % err.rstrip())
     try:
         XenClient().stop_vm(vm.xen_server, request.user, course_id, vm_id)
-        config = Available_Config()
-        config.category = 'TERM_PORT'
-        config.value = vm.terminal_port
-        config.save()
-        vm.delete()
+        # config = Available_Config()
+        # config.category = 'TERM_PORT'
+        # config.value = vm.terminal_port
+        # config.save()
+        # vm.delete()
         audit(request, 'Stopped Virtual machine ' + str(virtual_machine.name))
         return redirect('/vital/courses/' + course_id + '/vms?message=VM stopped...')
     except Exception as e:
