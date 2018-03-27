@@ -44,7 +44,7 @@ def virtual_machines(request, course_id):
     :param course_id: id of the selected course
     :return: course VMs page
     """
-    logger.debug("in detail vms")
+    # logger.debug("in detail vms")
     params = dict()
     virtual_machines = Virtual_Machine.objects.filter(course_id=course_id)
     server_name = config_ini.get('VITAL', 'SERVER_NAME')
