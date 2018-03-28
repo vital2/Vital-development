@@ -196,11 +196,11 @@ def stop_vm(request, course_id, vm_id):
     #                         '\n Reason : %s' % err.rstrip())
     try:
         XenClient().stop_vm(vm.xen_server, request.user, course_id, vm_id)
-        # config = Available_Config()
-        # config.category = 'TERM_PORT'
-        # config.value = vm.terminal_port
-        # config.save()
-        # vm.delete()
+    #     config = Available_Config()
+    #     config.category = 'TERM_PORT'
+    #     config.value = vm.terminal_port
+    #     config.save()
+    #     vm.delete()
         audit(request, 'Stopped Virtual machine ' + str(virtual_machine.name))
         return redirect('/vital/courses/' + course_id + '/vms?message=VM stopped...')
     except Exception as e:
