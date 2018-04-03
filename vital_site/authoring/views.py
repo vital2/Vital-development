@@ -11,4 +11,4 @@ config_ini.read("/home/vital/config.ini")
 
 
 def index(request):
-    return HttpResponse("Hello")
+    return render(request, 'authoring/index.html')
