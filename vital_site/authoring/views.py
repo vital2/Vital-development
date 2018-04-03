@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from ..models import Course, Registered_Course, Virtual_Machine, User_VM_Config, Available_Config, \
     User_Network_Configuration
@@ -16,4 +16,4 @@ config_ini.read("/home/vital/config.ini")
 
 
 def index(request):
-    return render(request, '/authoring/index.html')
+    return HttpResponse("Hello")
