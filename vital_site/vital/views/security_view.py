@@ -318,7 +318,7 @@ def index(request):
         return redirect('/vital/courses/registered')  # change here to home page
     elif user.is_faculty:
         logger.debug('user is a faculty')
-        return redirect('/vital/courses/advising')  # change here to home page
+        return redirect('/authoring')  # change here to home page
     else:
         logger.debug('user is admin')
 
