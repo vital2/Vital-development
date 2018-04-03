@@ -1,9 +1,4 @@
 from django.shortcuts import render, redirect, HttpResponse
-from django.contrib.auth.decorators import login_required
-from ..models import Course, Registered_Course, Virtual_Machine, User_VM_Config, Available_Config, \
-    User_Network_Configuration
-from ..forms import Course_Registration_Form
-from ..utils import audit, XenClient, get_notification_message
 import logging
 import ConfigParser
 
