@@ -23,6 +23,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'authoring.apps.AuthoringConfig',
     'vital.apps.VitalConfig',
     'captcha',
     'passwords',
