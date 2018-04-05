@@ -14,7 +14,7 @@ config_ini.read("/home/vital/config.ini")
 
 
 def index(request):
-    return redirect('/authoring/courses/creation/')
+    return redirect('/authoring/courses/create/')
 
 
 def course_home(request):
