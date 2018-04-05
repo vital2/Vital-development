@@ -1,0 +1,32 @@
+{% extends 'vital/base.html' %}
+
+{% block content_without_center %}
+    <div id="center" align="center" style="width: 800px">
+{% if message %} <p style="color: green">{{ message }}&nbsp;&nbsp;&nbsp;<a href="/authoring/courses/create">Create a new course</a></p> {% endif %}
+      {% if active_courses %}
+      <div style="width: 100%" align="left">
+          <div style="width: 50%;float: left"><h5 style="padding-left: 10px"> Active Courses </h5></div>
+          <div style="width: 50%;float: left;" align="right"><a href="/authoring/courses/create">Create course</a></div></div>
+
+            <table width="75%" style="font-size: small">
+            <tr style="background-color: #d2bfde; color: white">
+                <th width="30%">Course</th>
+                <th width="20%">Course Number</th>
+                <th width="30%">Start Date</th>
+                <th width="20%">&nbsp;</th>
+            </tr>
+            {% for active_course in active_courses %}
+                <tr>{% if active_course.course.status == "ACTIVE" %}
+                        <td><a href="{% url 'authoring:course_vm_setup' active_course.course.id %}">{{ reg_course.course.name }}</a></td>
+                    {% else %}
+                        <td title="Course is inactive.">{{ active_course.course.name }}</td>
+                    {% endif %}
+                    <td>{{ active_course.course.course_number }}</td>
+                    <td>{{ active_course.course.start_date }}</td>
+                    <td><a href="{% url 'authoring:course_destroy' active_course.course.id %}">Destroy</a></td>
+                </tr>
+            {% endfor %}
+            </table>
+      {% endif %}
+    </div>
+{% endblock content_without_center %}
