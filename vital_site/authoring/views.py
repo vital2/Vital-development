@@ -3,6 +3,7 @@ import logging
 import ConfigParser
 from vital.utils import get_notification_message
 from django.apps import apps
+from vital.models import Registered_Course
 
 
 logger = logging.getLogger(__name__)
@@ -24,8 +25,8 @@ def course_home(request):
     :return: active courses page
     """
     logger.debug("In course home")
-    reg_courses = apps.get_model('Registered_Course', require_ready=True)
-    active_courses = reg_courses.objects.filter(user_id=request.user.id, course__status='ACTIVE')
+    #reg_courses = apps.get_model('Registered_Course', require_ready=True)
+    active_courses = Registered_Course.objects.filter(user_id=request.user.id, course__status='ACTIVE')
 
     # to display common notification messages like system maintenance plans on all pages
     request.session['notification'] = get_notification_message()
