@@ -24,7 +24,7 @@ def course_home(request):
     :return: active courses page
     """
     logger.debug("In course home")
-    reg_courses = apps.get_model('Registered_Course')
+    reg_courses = apps.get_model('Registered_Course', require_ready=True)
     active_courses = reg_courses.objects.filter(user_id=request.user.id, course__status='ACTIVE')
 
     # to display common notification messages like system maintenance plans on all pages
