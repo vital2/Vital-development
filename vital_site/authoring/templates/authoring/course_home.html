@@ -17,7 +17,7 @@
             </tr>
             {% for active_course in active_courses %}
                 <tr>{% if active_course.course.status == "ACTIVE" %}
-                        <td><a href="{% url 'authoring:course_vm_setup' active_course.course.id %}">{{ active_course.course.name }}</a></td>
+                        <td><a href="{% url 'authoring:course_vms' active_course.course.id %}">{{ active_course.course.name }}</a></td>
                     {% else %}
                         <td title="Course is inactive.">{{ active_course.course.name }}</td>
                     {% endif %}
