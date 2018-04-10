@@ -40,6 +40,20 @@ def is_number(s):
     except ValueError:
         return False
 
+def get_spice_options():
+    spice_opts = {
+        'vnc': '0',
+        'vga': 'qxl',
+        'spice': '1',
+        'spicehost': '0:0:0:0',
+        'spiceport': '',
+        'spicedisable_ticketing': '1',
+        'spicevdagent': '1',
+        'spice_clipboard_sharing': '1'
+    }
+
+    return spice_opts
+
 
 class XenClient:
 
@@ -150,7 +164,21 @@ class XenClient:
                 conf.bridge.created = True
                 conf.bridge.save()
 
-            vm = xen.start_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
+            display_server = config_ini.get('VITAL', 'DISPLAY_SERVER')
+
+            if display_server == 'SPICE':
+                vm_options = ';'.join('{}="{}"'.format(key,val) for (
+                    key,val) in get_spice_options().iteritems())
+                logger.debug('VM OPTIONS : {}'.format(vm_options))
+                vm_options = ''
+            else if display_server == 'VNC':
+                vm_options = ''
+            else:
+                logger.error('Invalid Display Server found - {}. Starting with NoVNC'.format(
+                    display_server))
+                vm_options = ''
+
+            vm = xen.start_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id), vm_options)
             vm['xen_server'] = xen.name
             return vm
 
@@ -227,8 +255,8 @@ class XenServer:
     def stop_vm(self, user, vm_name):
         self.proxy.xenapi.stop_vm(user.email, user.password, vm_name)
 
-    def start_vm(self, user, vm_name):
-        return self.proxy.xenapi.start_vm(user.email, user.password, vm_name)
+    def start_vm(self, user, vm_name, vm_options=''):
+        return self.proxy.xenapi.start_vm(user.email, user.password, vm_name, vm_options)
 
     def save_vm(self, user, vm_name):
         return self.proxy.xenapi.save_vm(user.email, user.password, vm_name)
