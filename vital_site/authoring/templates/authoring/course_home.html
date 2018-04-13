@@ -23,7 +23,7 @@
                         {% endif %}
                     <td>{{ active_course.course.course_number }}</td>
                     <td>{{ active_course.course.start_date }}</td>
-                    <td><a href="{% url 'authoring:course_destroy' %}">Destroy</a></td>
+                    <td><a href="{% url 'authoring:course_destroy' %}">Destroy course</a></td>
                 </tr>
             {% endfor %}
             </table>

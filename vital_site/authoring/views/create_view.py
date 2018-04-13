@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect, HttpResponse
 import logging
 import ConfigParser
 from vital.utils import get_notification_message
-from django.apps import apps
 from vital.models import Registered_Course
+from ..forms import CreateCourseForm
+from django.utils.crypto import get_random_string
 
 
 logger = logging.getLogger(__name__)
@@ -25,7 +26,6 @@ def course_home(request):
     :return: active courses page
     """
     logger.debug("In course home")
-    #reg_courses = apps.get_model('Registered_Course', require_ready=True)
     active_courses = Registered_Course.objects.filter(user_id=request.user.id, course__status='ACTIVE')
 
     # to display common notification messages like system maintenance plans on all pages
@@ -37,7 +37,22 @@ def course_home(request):
 
 
 def course_create(request):
-    return HttpResponse('you are on the course creation page')
+    logger.debug("in course create")
+    error_message = ''
+    if request.method == 'POST':
+        form = CreateCourseForm(request.POST)
+        form.clean()
+        if form.is_valid():
+            course = form.save(commit=False)
+            course.course_owner = request.user.id
+            reg_code = get_random_string(length=8)
+            course.registration_code = reg_code
+            course.course_owner = form.cleaned_data['course_owner']
+            course.save()
+            return HttpResponse("You are on VM listing page")
+    else:
+        form = Registration_Form()
+    return render(request, 'authoring/course_create.html', {'form': form, 'error_message':error_message})
 
 
 def course_vm_setup(request):

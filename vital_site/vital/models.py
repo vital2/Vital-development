@@ -90,10 +90,11 @@ class Course(models.Model):
     capacity = models.IntegerField(default=0)
     start_date = models.DateTimeField(default=datetime.now, blank=True)
     created_date = models.DateTimeField(default=datetime.now, blank=True)
-    status = models.CharField(max_length=10)
+    status = models.CharField(max_length=10, default='INACTIVE')
     auto_shutdown_after = models.IntegerField(default=3)
     allow_long_running_vms = models.BooleanField(default=False)
     no_of_students = models.IntegerField(default=0)
+    course_owner = models.IntegerField(default=0)
 
     def __str__(self):
         return self.course_number + ":" + self.name
