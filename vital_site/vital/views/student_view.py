@@ -95,7 +95,13 @@ def console(request, vm_id):
     server_name = config_ini.get('VITAL', 'SERVER_NAME')
     vm = Virtual_Machine.objects.get(id=vm_id)
     user_vm_config = vm.user_vm_config_set.get(user_id=request.user.id)
-    return render(request, 'vital/console.html', {"server_name":server_name, "terminal_port":user_vm_config.terminal_port})
+    if config_ini.get('VITAL', 'DISPLAY_SERVER') == 'SPICE':
+        return render(request, 'vital/console-spice.html', {
+            "server_name":server_name, "terminal_port":user_vm_config.terminal_port})
+    else:
+        # By default always VNC is used as Display Server
+        return render(request, 'vital/console-vnc.html', {
+            "server_name":server_name, "terminal_port":user_vm_config.terminal_port})
 
 
 def start_novnc(config, started_vm):
@@ -115,8 +121,12 @@ def start_novnc(config, started_vm):
         if locked_conf is not None and len(locked_conf) > 0:
             val = locked_conf[0].value
             locked_conf.delete()
-            launch_script = config_ini.get("VITAL", "NOVNC_LAUNCH_SCRIPT")
-            cmd = launch_script+' --listen {} ' \
+            if started_vm['display_type'] == 'SPICE':
+                launch_script = config_ini.get("VITAL", "SPICE_LAUNCH_SCRIPT")
+            else:
+                # It's either Spice or VNC (Always defaults to VNC)
+                launch_script = config_ini.get("VITAL", "NOVNC_LAUNCH_SCRIPT")    
+            cmd = launch_script + ' --listen {} ' \
                   '--vnc {}:{}'.format(val, started_vm['xen_server'], started_vm['vnc_port'])
             logger.debug("start novnc - "+cmd)
             p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)

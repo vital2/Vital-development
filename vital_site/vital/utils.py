@@ -179,10 +179,12 @@ class XenClient:
             else:
                 logger.error('ERROR : Invalid Display Server found - %s.' \
                     'Starting with NoVNC', display_server)
+                display_server = 'VNC'
                 vm_options = ''
 
             vm = xen.start_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id), vm_options)
             vm['xen_server'] = xen.name
+            vm['display_type'] = display_server
             return vm
 
     def stop_vm(self, server, user, course_id, vm_id):
