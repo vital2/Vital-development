@@ -98,9 +98,8 @@ def console(request, vm_id):
     if config_ini.get('VITAL', 'DISPLAY_SERVER') == 'SPICE':
         return render(request, 'vital/console-spice.html', {
             "server_name":server_name, "terminal_port":user_vm_config.terminal_port})
-    else:
-        # By default always VNC is used as Display Server
-        return render(request, 'vital/console-vnc.html', {
+    # By default always VNC is used as Display Server
+    return render(request, 'vital/console-vnc.html', {
             "server_name":server_name, "terminal_port":user_vm_config.terminal_port})
 
 
