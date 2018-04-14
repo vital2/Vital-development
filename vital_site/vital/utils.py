@@ -41,17 +41,20 @@ def is_number(s):
         return False
 
 def get_spice_options():
+    """
+    Just to define the Spice options dictionary as a function.
+    returns: Dictionary conatining the various Spice Options.
+    """
     spice_opts = {
-        'vnc': '0',
+        'vnc': 0,
         'vga': 'qxl',
-        'spice': '1',
+        'spice': 1,
         'spicehost': '0:0:0:0',
-        'spiceport': '',
-        'spicedisable_ticketing': '1',
-        'spicevdagent': '1',
-        'spice_clipboard_sharing': '1'
+        'spiceport': 0,
+        'spicedisable_ticketing': 1,
+        'spicevdagent': 1,
+        'spice_clipboard_sharing': 1
     }
-
     return spice_opts
 
 
@@ -95,7 +98,7 @@ class XenClient:
                         if network.is_course_net:
                             available_config = Available_Config.objects.filter(category='MAC_ADDR').order_by('id').first()
                             locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
-                            if locked_conf is not None and len(locked_conf) > 0:
+                            if locked_conf is not None:
                                 val = locked_conf[0].value
                                 locked_conf.delete()
                                 vif = vif + '\'mac=' + val + ', bridge=' + network.name + '\'' + ','
@@ -103,7 +106,7 @@ class XenClient:
                         else:
                             locked_conf = Local_Network_MAC_Address.objects.get( network_configuration = network.id)
                             val = locked_conf.mac_id
-                            if locked_conf is not None and len(locked_conf) > 0:
+                            if locked_conf is not None:
                                 net_name = str(user.id) + '_' + str(course.id) + '_' + network.name
                                 vif = vif + '\'mac=' + val + ', bridge=' + net_name + '\'' + ','
                                 user_net_config.bridge, obj_created = User_Bridge.objects.get_or_create(name=net_name)
@@ -164,18 +167,18 @@ class XenClient:
                 conf.bridge.created = True
                 conf.bridge.save()
 
-            display_server = config_ini.get('VITAL', 'DISPLAY_SERVER')
+            display_server = config.get('VITAL', 'DISPLAY_SERVER')
 
             if display_server == 'SPICE':
-                vm_options = ';'.join('{}="{}"'.format(key,val) for (
-                    key,val) in get_spice_options().iteritems())
-                logger.debug('VM OPTIONS : {}'.format(vm_options))
+                vm_options = ';'.join('{}="{}"'.format(key, val) for (
+                    key, val) in get_spice_options().iteritems())
+                logger.debug('VM OPTIONS : %s', vm_options)
                 vm_options = ''
-            else if display_server == 'VNC':
+            elif display_server == 'VNC':
                 vm_options = ''
             else:
-                logger.error('Invalid Display Server found - {}. Starting with NoVNC'.format(
-                    display_server))
+                logger.error('ERROR : Invalid Display Server found - %s.' \
+                    'Starting with NoVNC', display_server)
                 vm_options = ''
 
             vm = xen.start_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id), vm_options)

@@ -101,7 +101,7 @@ def console(request, vm_id):
 def start_novnc(config, started_vm):
     """
     starts the novnc server for client to connect to
-    :param config: AvailableConfig object to save vnc pid
+    :param config: User VM Config object to save vnc pid
     :param started_vm: object refering to the started VM
     :return: None
     """
