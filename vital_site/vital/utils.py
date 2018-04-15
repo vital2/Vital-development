@@ -49,7 +49,7 @@ def get_spice_options():
         'vnc': 0,
         'vga': 'qxl',
         'spice': 1,
-        'spicehost': '0:0:0:0',
+        'spicehost': '0.0.0.0',
         'spiceport': 0,
         'spicedisable_ticketing': 1,
         'spicevdagent': 1,
@@ -173,7 +173,7 @@ class XenClient:
                 vm_options = ';'.join('{}="{}"'.format(key, val) for (
                     key, val) in get_spice_options().iteritems())
                 logger.debug('VM OPTIONS : %s', vm_options)
-                vm_options = ''
+                # vm_options = ''
             elif display_server == 'VNC':
                 vm_options = ''
             else:

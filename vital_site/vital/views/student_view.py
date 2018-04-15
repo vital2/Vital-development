@@ -62,6 +62,7 @@ def virtual_machines(request, course_id):
     params['virtual_machines'] = virtual_machines
     params['course_id'] = course_id
     params['server_name'] = server_name
+    params['display_type'] = config_ini.get('VITAL', 'DISPLAY_SERVER')
 
     # if not request.GET.get('message', '') == '':
     #     params['message'] = request.GET.get('message')
@@ -95,6 +96,7 @@ def console(request, vm_id):
     server_name = config_ini.get('VITAL', 'SERVER_NAME')
     vm = Virtual_Machine.objects.get(id=vm_id)
     user_vm_config = vm.user_vm_config_set.get(user_id=request.user.id)
+    logger.debug('Server : {}'.format(config_ini.get('VITAL', 'DISPLAY_SERVER')))
     if config_ini.get('VITAL', 'DISPLAY_SERVER') == 'SPICE':
         return render(request, 'vital/console-spice.html', {
             "server_name":server_name, "terminal_port":user_vm_config.terminal_port})

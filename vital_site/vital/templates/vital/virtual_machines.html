@@ -20,11 +20,17 @@
                     {% endif %}
                 </div>
                 <div style="height:33%;">
-                    {% if vm.state == 'R'%}
-                    <a href="http://{{ server_name }}:{{ vm.terminal_port }}/vnc_auto.html" onclick="return windowpop(this.href, 'Terminal-{{ vm.id }}', 825, 680, {{ vm.id }})">
-                        <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console" />
-                    </a>
-                    <!--<a href="/vital/console/{{ vm.id }}"
+                    {% if vm.state == 'R' %}
+                        {% if display_type == 'SPICE' %}
+                            <a href="https://{{ server_name }}/spice/index.html?host={{ server_name }}&port={{ vm.terminal_port }}" onclick="return windowpop(this.href, 'Terminal-{{ vm.id }}', 825, 680, {{ vm.id }})">
+                                <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console" />
+                            </a>
+                        {% else %}
+                            <a href="http://{{ server_name }}:{{ vm.terminal_port }}/vnc_auto.html" onclick="return windowpop(this.href, 'Terminal-{{ vm.id }}', 825, 680, {{ vm.id }})">
+                                <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console" />
+                            </a>
+                        {% endif %}
+		    <!--<a href="/vital/console/{{ vm.id }}"
                                onclick="return windowpop(this.href, 'Terminal-{{ vm.id }}', 825, 680, {{ vm.id }})">
                                 <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console"/>
                             </a>-->
