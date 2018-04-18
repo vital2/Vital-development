@@ -51,7 +51,7 @@ def course_create(request):
             course.save()
             return HttpResponse("You are on VM listing page")
     else:
-        form = Registration_Form()
+        form = CreateCourseForm()
     return render(request, 'authoring/course_create.html', {'form': form, 'error_message':error_message})
 
 

@@ -12,10 +12,10 @@ action=$1
 user=$2
 if [ "$action" == "create" ]; then
   passwd=$3
-  ssh vlab-sftp "/s905060/create_user.sh" $user $passwd
+  ssh vlab-sftp "/home/s905060/create_user.sh" $user $passwd
 elif [ "$action" == "resetpass" ]; then
   passwd=$3
-  ssh vlab-sftp "/s905060/mod_user_password.sh" $user $passwd
+  ssh vlab-sftp "/home/s905060/mod_user_password.sh" $user $passwd
 elif [ "$action" == "remove" ]; then
-  ssh vlab-sftp "/s905060/rm_user.sh" $user
+  ssh vlab-sftp "/home/s905060/rm_user.sh" $user
 fi
