@@ -41,7 +41,7 @@ def course_create(request):
     error_message = ''
     if request.method == 'POST':
         form = CreateCourseForm(request.POST)
-        form.clean()
+        #form.clean()
         if form.is_valid():
             course = form.save(commit=False)
             course.course_owner = request.user.id
