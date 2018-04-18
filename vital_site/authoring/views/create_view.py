@@ -47,7 +47,7 @@ def course_create(request):
             course.course_owner = request.user.id
             reg_code = get_random_string(length=8)
             course.registration_code = reg_code
-            course.course_owner = form.cleaned_data['course_owner']
+            course.course_owner = request.user
             course.save()
             return HttpResponse("You are on VM listing page")
     else:
