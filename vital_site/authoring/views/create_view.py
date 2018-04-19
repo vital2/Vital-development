@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, HttpResponse
 import logging
 import ConfigParser
 from vital.utils import get_notification_message
-from vital.models import Registered_Course
+from vital.models import Registered_Course, Course
 from ..forms import CreateCourseForm
 from django.utils.crypto import get_random_string
 
@@ -41,9 +41,11 @@ def course_create(request):
     error_message = ''
     if request.method == 'POST':
         form = CreateCourseForm(request.POST)
-        #form.clean()
         if form.is_valid():
-            course = form.save(commit=False)
+            course = Course()
+            course.name = form.cleaned_data['course_name']
+            course.course_number = form.cleaned_data['course_number']
+            course.start_date = form.cleaned_data['start_date']
             course.course_owner = request.user.id
             reg_code = get_random_string(length=8)
             course.registration_code = reg_code
