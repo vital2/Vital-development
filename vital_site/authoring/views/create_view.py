@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, HttpResponse
 import logging
 import ConfigParser
 from vital.utils import get_notification_message
-from vital.models import Registered_Course, Course
-from ..forms import CreateCourseForm
+from vital.models import Registered_Course, Course, Virtual_Machine, Virtual_Machine_Type
+from ..forms import CreateCourseForm, CreateVmsForm
 from django.utils.crypto import get_random_string
 
 
@@ -50,10 +50,28 @@ def course_create(request):
             reg_code = get_random_string(length=8)
             course.registration_code = reg_code
             course.save()
-            return HttpResponse("You are on VM listing page")
+            return render(request, 'authoring/course_add_vms.html', {'form': form})
     else:
         form = CreateCourseForm()
     return render(request, 'authoring/course_create.html', {'form': form, 'error_message':error_message})
+
+
+def course_add_vms(request):
+    logger.debug("in course create")
+    error_message = ''
+    if request.method == 'POST':
+        form = CreateVmsForm(request.POST)
+        if form.is_valid():
+            course = Course.objects.get(course_owner=user.id)
+            vm = Virtual_Machine()
+            vm.name = form.cleaned_data['vm_name']
+            vm.type = form.cleaned_data['vm_type']
+            vm.course = course.id
+            vm.save()
+            return HttpResponse('You are at the Networking Page')
+    else:
+        form = CreateCourseForm()
+    return render(request, 'authoring/course_add_vms.html', {'form': form, 'error_message': error_message})
 
 
 def course_vm_setup(request):

@@ -66,7 +66,7 @@ def course_vms(request, course_id):
     if not request.GET.get('message', '') == '':
         params['message'] = request.GET.get('message')
 
-    return render(request, 'vital/course_vms.html', params)
+    return render(request, 'vital/course_add_vms.html', params)
 
 
 @login_required(login_url='/vital/login/')
