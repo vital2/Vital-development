@@ -1,4 +1,4 @@
-from django.forms import ModelFormm
+from django.forms import ModelForm
 from django import forms
 import datetime
 
