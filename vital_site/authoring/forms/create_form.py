@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 import datetime
-from vital.models import Virtual_Machine_Type
+from vital.models import Virtual_Machine_Type, Course
 
 
 class CreateCourseForm(forms.Form):
@@ -13,4 +13,4 @@ class CreateCourseForm(forms.Form):
 
 class CreateVmsForm(forms.Form):
     vm_name = forms.CharField(widget=forms.widgets.TextInput)
-    vm_type = forms.ModelChoiceField(queryset=Virtual_Machine_Type.objects.all())
+    vm_type = forms.ModelChoiceField(queryset=Virtual_Machine_Type.objects)
