@@ -12,5 +12,6 @@ class CreateCourseForm(forms.Form):
 
 
 class CreateVmsForm(forms.Form):
+    queryset = Virtual_Machine_Type.objects.all()
     vm_name = forms.CharField(widget=forms.widgets.TextInput)
-    vm_type = forms.ModelChoiceField(queryset=Virtual_Machine_Type.objects)
+    vm_type = forms.ModelChoiceField(queryset=queryset)
