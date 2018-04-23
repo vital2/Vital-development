@@ -58,13 +58,13 @@ def course_create(request):
     return render(request, 'authoring/course_create.html', {'form': form, 'error_message':error_message})
 
 
-def course_add_vms(request, user_id):
+def course_add_vms(request):
     logger.debug("in course create")
     error_message = ''
     if request.method == 'POST':
         form = CreateVmsForm(request.POST)
         if form.is_valid():
-            vm_course = Course.objects.get(course_owner=user_id)
+            vm_course = Course.objects.get(course_owner=request.user.id)
             vm = Virtual_Machine()
             vm.name = form.cleaned_data['vm_name']
             vm.type = form.cleaned_data['vm_type']
