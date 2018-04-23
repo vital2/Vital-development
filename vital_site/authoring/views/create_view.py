@@ -46,27 +46,29 @@ def course_create(request):
             course.name = form.cleaned_data['course_name']
             course.course_number = form.cleaned_data['course_number']
             course.start_date = form.cleaned_data['start_date']
-            course.course_owner = request.user.id
+            user_id = request.user.id
+            course.course_owner = user_id
             reg_code = get_random_string(length=8)
             course.registration_code = reg_code
             course.save()
+
             return render(request, 'authoring/course_add_vms.html', {'form': form})
     else:
         form = CreateCourseForm()
     return render(request, 'authoring/course_create.html', {'form': form, 'error_message':error_message})
 
 
-def course_add_vms(request):
+def course_add_vms(request, user_id):
     logger.debug("in course create")
     error_message = ''
     if request.method == 'POST':
         form = CreateVmsForm(request.POST)
         if form.is_valid():
-            course = Course.objects.get(course_owner=user.id)
+            vm_course = Course.objects.get(course_owner=user_id)
             vm = Virtual_Machine()
             vm.name = form.cleaned_data['vm_name']
             vm.type = form.cleaned_data['vm_type']
-            vm.course = course.id
+            vm.course = vm_course.id
             vm.save()
             return HttpResponse('You are at the Networking Page')
     else:
