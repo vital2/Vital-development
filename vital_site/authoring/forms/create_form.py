@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 import datetime
-from vital.models import Virtual_Machine_Type, Course, Virtual_machine
+from vital.models import Virtual_Machine_Type, Course, Virtual_Machine
 
 
 class CreateCourseForm(forms.Form):
@@ -13,7 +13,7 @@ class CreateCourseForm(forms.Form):
 
 class CreateVmsForm(ModelForm):
     class Meta:
-        model = Virtual_machine
+        model = Virtual_Machine
 
     def __init__(self, *args, **kwargs):
         super(CreateVmsForm, self).__init__(*args, **kwargs)
