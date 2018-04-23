@@ -11,7 +11,7 @@ class CreateCourseForm(forms.Form):
     created_date = forms.DateField(initial=datetime.date.today, widget=forms.HiddenInput())
 
 
-class CreateVmsForm(ModelForm):
+class CreateVmsForm(forms.Form):
     # class Meta:
     #     model = Virtual_Machine
     #     fields = ['course', 'name', 'type']
