@@ -14,7 +14,7 @@ class CreateCourseForm(forms.Form):
 class CreateVmsForm(ModelForm):
     class Meta:
         model = Virtual_Machine
-        fields = ['course', 'name', 'type']
+        fields = ['name', 'type']
 
     def __init__(self, *args, **kwargs):
         super(CreateVmsForm, self).__init__(*args, **kwargs)
