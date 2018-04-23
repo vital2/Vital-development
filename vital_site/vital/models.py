@@ -108,7 +108,7 @@ class Virtual_Machine_Type(models.Model):
 
 
 class Virtual_Machine(models.Model):
-    course = models.ForeignKey(Course)
+    course = models.ForeignKey(Course, blank=True)
     name = models.CharField(max_length=200)
     type = models.ForeignKey(Virtual_Machine_Type, null=True)
 

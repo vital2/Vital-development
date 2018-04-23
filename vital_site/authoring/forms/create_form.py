@@ -12,12 +12,8 @@ class CreateCourseForm(forms.Form):
 
 
 class CreateVmsForm(ModelForm):
-    class Meta:
-        model = Virtual_Machine
-        fields = ['name', 'type']
-
-    def __init__(self, *args, **kwargs):
-        super(CreateVmsForm, self).__init__(*args, **kwargs)
-        self.fields['course'].required = False
-    # vm_name = forms.CharField(widget=forms.widgets.TextInput)
-    # vm_type = forms.ModelChoiceField(queryset=Virtual_Machine_Type.objects)
+    # class Meta:
+    #     model = Virtual_Machine
+    #     fields = ['course', 'name', 'type']
+    vm_name = forms.CharField(widget=forms.widgets.TextInput)
+    vm_type = forms.ModelChoiceField(queryset=Virtual_Machine_Type.objects.all())
