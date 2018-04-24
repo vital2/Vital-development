@@ -64,9 +64,9 @@ def course_add_vms(request):
     if request.method == 'POST':
         form = CreateVmsForm(request.POST)
         if form.is_valid():
-            vm_course = Course.objects.get(course_owner=request.user.id)
+            # vm_course = Course.objects.get(course_owner=request.user.id)
             vm = Virtual_Machine()
-            vm.course = vm_course.id
+            vm.course = Course.objects.get(course_owner=request.user.id).id
             vm.name = form.cleaned_data['vm_name']
             vm.type = form.cleaned_data['vm_type']
             vm.save()
