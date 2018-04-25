@@ -1,7 +1,7 @@
 {% extends 'vital/base.html' %}
 
 {% block content %}
-<form action="{% url 'authoring:course_add_vms' %}" method='POST'>
+<form action="{% url 'authoring:course_add_vms' course_id=course.id %}" method='POST'>
     {% csrf_token %}
     {% if error_message %}
     <p class="error">
