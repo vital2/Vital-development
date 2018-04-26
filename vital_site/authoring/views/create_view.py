@@ -59,7 +59,8 @@ def course_create(request):
         return render(request, 'authoring/course_create.html', {'form': form, 'error_message':error_message})
 
 
-def course_add_vms(request, course_id):
+def course_add_vms(request):
+    course_id = 33
     logger.debug("in course create")
     error_message = ''
     if request.method == 'POST':
