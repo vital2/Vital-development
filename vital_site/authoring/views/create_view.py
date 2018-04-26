@@ -6,7 +6,6 @@ from vital.models import Registered_Course, Course, Virtual_Machine, Virtual_Mac
 from ..forms import CreateCourseForm, CreateVmsForm
 from django.utils.crypto import get_random_string
 
-
 logger = logging.getLogger(__name__)
 config_ini = ConfigParser.ConfigParser()
 config_ini.optionxform = str
@@ -52,7 +51,7 @@ def course_create(request):
             course.registration_code = reg_code
             course.save()
             logger.info('>>>>>'+'/authoring/courses/'+str(course.id)+'/vms')
-            return redirect('/authoring/courses/id/'+str(course.id)+'/vms')
+            return redirect('/authoring/courses/'+str(course.id)+'/vms/')
     else:
         form = CreateCourseForm()
         return render(request, 'authoring/course_create.html', {'form': form, 'error_message':error_message})
