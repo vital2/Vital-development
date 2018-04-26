@@ -52,7 +52,7 @@ def course_create(request):
             course.registration_code = reg_code
             course.save()
             logger.info('>>>>>'+'/authoring/courses/'+str(course.id)+'/vms')
-            return redirect('/authoring/courses/'+str(course.id)+'/vms')
+            return redirect('course_add_vms', args=(course.id))
     else:
         form = CreateCourseForm()
         return render(request, 'authoring/course_create.html', {'form': form, 'error_message':error_message})
