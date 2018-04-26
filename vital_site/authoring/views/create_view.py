@@ -5,7 +5,7 @@ from vital.utils import get_notification_message
 from vital.models import Registered_Course, Course, Virtual_Machine, Virtual_Machine_Type
 from ..forms import CreateCourseForm, CreateVmsForm
 from django.utils.crypto import get_random_string
-
+from django.core.urlresolvers import reverse
 
 logger = logging.getLogger(__name__)
 config_ini = ConfigParser.ConfigParser()
@@ -52,7 +52,8 @@ def course_create(request):
             course.registration_code = reg_code
             course.save()
             logger.info('>>>>>'+'/authoring/courses/'+str(course.id)+'/vms')
-            return redirect('course_add_vms', args=(course.id))
+            url = reverse('course_add_vms', kwargs={'course_id': course.id})
+            return redirect(url)
     else:
         form = CreateCourseForm()
         return render(request, 'authoring/course_create.html', {'form': form, 'error_message':error_message})
