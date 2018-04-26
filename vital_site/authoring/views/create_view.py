@@ -32,7 +32,7 @@ def course_home(request):
     message = ''
     if len(active_courses) == 0:
         message = 'You have no active courses'
-    return render(request, 'authoring/course_home.html', {'active_courses': active_courses, 'message':message})
+    return render(request, 'authoring/course_home.html', {'active_courses': active_courses, 'message': message})
 
 
 def course_create(request):
@@ -54,7 +54,7 @@ def course_create(request):
             return redirect('/authoring/courses/'+str(course.id)+'/vms/')
     else:
         form = CreateCourseForm()
-        return render(request, 'authoring/course_create.html', {'form': form, 'error_message':error_message})
+        return render(request, 'authoring/course_create.html', {'form': form, 'error_message': error_message})
 
 
 def course_add_vms(request, course_id):
