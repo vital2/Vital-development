@@ -51,7 +51,8 @@ def course_create(request):
             reg_code = get_random_string(length=8)
             course.registration_code = reg_code
             course.save()
-            return redirect('/authoring/courses/'+str(course.id)+'/create/vms')
+            logger.info('>>>>>'+'/authoring/courses/'+str(course.id)+'/vms')
+            return redirect('/authoring/courses/'+str(course.id)+'/vms')
     else:
         form = CreateCourseForm()
         return render(request, 'authoring/course_create.html', {'form': form, 'error_message':error_message})
