@@ -36,9 +36,8 @@ def course_home(request):
 
 
 def course_create(request):
-    logger.debug("in course create")
+    logger.debug("in course create - " + request.method)
     error_message = ''
-    logger.debug("in course create - "+request.method)
     if request.method == 'POST':
         form = CreateCourseForm(request.POST)
         logger.debug('>>>>>' + 'blaaaaaaaaaaahhhhhhh')
