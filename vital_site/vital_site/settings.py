@@ -146,7 +146,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/vital/vital.log',
+            'filename': '/var/log/vital/authoring.log',
             'maxBytes': 1024*1024*1, # 1 MB
             'backupCount': 15,
             'formatter': 'verbose'
