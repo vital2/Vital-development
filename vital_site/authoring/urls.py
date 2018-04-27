@@ -7,7 +7,8 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^courses/home/$', views.course_home, name='course_home'),
     url(r'^courses/create/$', views.course_create, name='course_create'),
-    url(r'^courses/(?P<course_id>\d+)/vms', views.course_add_vms, name='course_add_vms'),
+    # url(r'^courses/(?P<course_id>[0-9]+)/vms', views.course_add_vms, name='course_add_vms'),
+    url(r'^courses/addvms/(?P<course_id>[0-9]+)', views.course_add_vms, name='course_add_vms'),
     url(r'^courses/vms/$', views.course_vm_setup, name='course_vms'),
     url(r'^courses/destroy/$', views.course_destroy, name='course_destroy'),
 ]
