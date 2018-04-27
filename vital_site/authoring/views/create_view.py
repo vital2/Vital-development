@@ -54,7 +54,7 @@ def course_create(request):
             course.registration_code = reg_code
             course.save()
             logger.debug('>>>>>'+'/authoring/courses/'+str(course.id)+'/vms')
-            return HttpResponseRedirect(reverse('course_add_vms', kwargs={'course_id': course.id}))
+            return HttpResponseRedirect(reverse('authoring:course_add_vms', kwargs={'course_id': course.id}))
             # return redirect('/authoring/courses/'+str(course.id)+'/vms/')
     else:
         form = CreateCourseForm()
