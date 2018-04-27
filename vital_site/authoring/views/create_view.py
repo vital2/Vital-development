@@ -38,9 +38,10 @@ def course_home(request):
 def course_create(request):
     logger.debug("in course create")
     error_message = ''
+    logger.debug("in course create - "+request.method)
     if request.method == 'POST':
         form = CreateCourseForm(request.POST)
-        logger.error('>>>>>' + 'blaaaaaaaaaaahhhhhhh')
+        logger.debug('>>>>>' + 'blaaaaaaaaaaahhhhhhh')
         if form.is_valid():
             course = Course()
             course.name = form.cleaned_data['course_name']
