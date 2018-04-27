@@ -47,7 +47,7 @@ def get_spice_options():
     """
     spice_opts = {
         'vnc': 0,
-        'vga': 'qxl',
+        'vga': 'stdvga',
         'spice': 1,
         'spicehost': '0.0.0.0',
         'spiceport': 0,
