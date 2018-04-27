@@ -11,3 +11,4 @@ urlpatterns = [
     url(r'^courses/vms/$', views.course_vm_setup, name='course_vms'),
     url(r'^courses/destroy/$', views.course_destroy, name='course_destroy'),
 ]
+

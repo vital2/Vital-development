@@ -40,6 +40,7 @@ def course_create(request):
     error_message = ''
     if request.method == 'POST':
         form = CreateCourseForm(request.POST)
+        logger.error('>>>>>' + 'blaaaaaaaaaaahhhhhhh')
         if form.is_valid():
             course = Course()
             course.name = form.cleaned_data['course_name']
