@@ -5,7 +5,7 @@ from . import views
 app_name = 'authoring'
 urlpatterns = [
     url(r'^$', views.index, name='index'),
-    url(r'^courses/(?P<course_id>\d+)/vms', views.course_add_vms, name='course_add_vms'),
+    url(r'^courses/addvms', views.course_add_vms, name='course_add_vms'),
     url(r'^courses/home/$', views.course_home, name='course_home'),
     url(r'^courses/create/$', views.course_create, name='course_create'),
     url(r'^courses/vms/$', views.course_vm_setup, name='course_vms'),

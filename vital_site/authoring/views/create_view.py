@@ -53,16 +53,16 @@ def course_create(request):
             reg_code = get_random_string(length=8)
             course.registration_code = reg_code
             course.save()
-            logger.debug(type(course.id))
-            logger.debug('>>>>>'+'/authoring/courses/'+course.id+'/vms')
-            return HttpResponseRedirect(reverse('authoring:course_add_vms', kwargs={'course_id': course.id}))
-            #return redirect('/authoring/courses/'+course.id+'/vms')
+            request.session['course_id'] = course.id
+            return redirect('/authoring/courses/addvms')
+            #return HttpResponseRedirect(reverse('authoring:course_add_vms', kwargs={'course_id': course.id}))
+
     else:
         form = CreateCourseForm()
         return render(request, 'authoring/course_create.html', {'form': form, 'error_message': error_message})
 
 
-def course_add_vms(request, course_id):
+def course_add_vms(request):
     logger.debug("in course create")
     error_message = ''
     if request.method == 'POST':
@@ -70,6 +70,7 @@ def course_add_vms(request, course_id):
         if form.is_valid():
             # vm_course = Course.objects.get(course_owner=request.user.id)
             vm = Virtual_Machine()
+            course_id = request.session.get['course_id', None]
             vm.course = Course.objects.get(id=course_id)
             vm.name = form.cleaned_data['vm_name']
             vm.type = form.cleaned_data['vm_type']
