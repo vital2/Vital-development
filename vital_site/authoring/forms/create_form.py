@@ -14,3 +14,9 @@ class CreateCourseForm(forms.Form):
 class CreateVmsForm(forms.Form):
     vm_name = forms.CharField(widget=forms.widgets.TextInput)
     vm_type = forms.ModelChoiceField(queryset=Virtual_Machine_Type.objects.all())
+
+
+class CreateNetworksForm(forms.Form):
+    hub_name = forms.CharField(widget=forms.widgets.TextInput)
+    hub_vms = forms.ModelChoiceField(queryset=Virtual_Machine.objects.none())
+    vm_iface = forms.CharField(widget=forms.widgets.TextInput)

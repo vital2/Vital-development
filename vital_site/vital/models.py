@@ -112,6 +112,9 @@ class Virtual_Machine(models.Model):
     name = models.CharField(max_length=200)
     type = models.ForeignKey(Virtual_Machine_Type, null=True)
 
+    def __str__(self):
+        return self.name
+
 
 class User_VM_Config(models.Model):
     xen_server = models.CharField(max_length=50)

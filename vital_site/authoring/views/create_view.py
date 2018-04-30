@@ -2,10 +2,9 @@ from django.shortcuts import render, redirect, HttpResponse
 import logging
 import ConfigParser
 from vital.utils import get_notification_message
-from vital.models import Registered_Course, Course, Virtual_Machine, Virtual_Machine_Type
-from ..forms import CreateCourseForm, CreateVmsForm
+from vital.models import Registered_Course, Course, Virtual_Machine, Virtual_Machine_Type, Network_Configuration
+from ..forms import CreateCourseForm, CreateVmsForm, CreateNetworksForm
 from django.utils.crypto import get_random_string
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 
 logger = logging.getLogger(__name__)
@@ -42,7 +41,6 @@ def course_create(request):
     error_message = ''
     if request.method == 'POST':
         form = CreateCourseForm(request.POST)
-        logger.debug('>>>>>' + 'blaaaaaaaaaaahhhhhhh')
         if form.is_valid():
             course = Course()
             course.name = form.cleaned_data['course_name']
@@ -55,31 +53,48 @@ def course_create(request):
             course.save()
             request.session['course_id'] = course.id
             return redirect('/authoring/courses/addvms')
-            #return HttpResponseRedirect(reverse('authoring:course_add_vms', kwargs={'course_id': course.id}))
-
     else:
         form = CreateCourseForm()
         return render(request, 'authoring/course_create.html', {'form': form, 'error_message': error_message})
 
 
 def course_add_vms(request):
-    logger.debug("in course create")
+    logger.debug("in course add vms")
     error_message = ''
     if request.method == 'POST':
         form = CreateVmsForm(request.POST)
         if form.is_valid():
-            # vm_course = Course.objects.get(course_owner=request.user.id)
             vm = Virtual_Machine()
             course_id = request.session.get('course_id', None)
             vm.course = Course.objects.get(id=course_id)
             vm.name = form.cleaned_data['vm_name']
             vm.type = form.cleaned_data['vm_type']
             vm.save()
-            return HttpResponse('You are at the Networking Page')
+            return redirect('/authoring/courses/networking')
     else:
-        #vms = Virtual_Machine.objects.filter()
         form = CreateVmsForm()
     return render(request, 'authoring/course_add_vms.html', {'form': form, 'error_message': error_message})
+
+
+def course_networking(request):
+    logger.debug("in course networking")
+    error_message = ''
+    if request.method == 'POST':
+        form = CreateNetworksForm(request.POST)
+        course_id = request.session.get('course_id', None)
+        form.fields['vm_iface'].queryset = Virtual_Machine.objects.filter(id=course_id)
+        if form.is_valid():
+            net = Network_Configuration()
+            net.name = form.cleaned_data['hub_name']
+            net.course = course_id
+            net.virtual_machine = form.cleaned_data['hub_vms']
+            net.is_course_net = 'f'
+            net.has_internet_access = 'f'
+            net.save()
+            return HttpResponse('form is valid')
+    else:
+        form = CreateNetworksForm()
+    return render(request, 'authoring/course_networking.html', {'form': form, 'error_message': error_message})
 
 
 def course_vm_setup(request):
