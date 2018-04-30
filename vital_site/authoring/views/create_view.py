@@ -82,7 +82,7 @@ def course_networking(request):
     if request.method == 'POST':
         form = CreateNetworksForm(request.POST)
         course_id = request.session.get('course_id', None)
-        form.fields['vm_iface'].queryset = Virtual_Machine.objects.filter(course=course_id)
+        form.fields['hub_vms'].queryset = Virtual_Machine.objects.filter(course=course_id)
         if form.is_valid():
             net = Network_Configuration()
             net.name = form.cleaned_data['hub_name']
