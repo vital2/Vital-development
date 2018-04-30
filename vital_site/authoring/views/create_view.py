@@ -70,7 +70,7 @@ def course_add_vms(request):
         if form.is_valid():
             # vm_course = Course.objects.get(course_owner=request.user.id)
             vm = Virtual_Machine()
-            course_id = request.session.get['course_id', None]
+            course_id = request.session.get('course_id', None)
             vm.course = Course.objects.get(id=course_id)
             vm.name = form.cleaned_data['vm_name']
             vm.type = form.cleaned_data['vm_type']
