@@ -12,12 +12,13 @@
 
         <table style="width: auto">
             <tr>
-                <td><label for="{{ field.auto_id }}">{{ field.label_tag }}
+                <td><label for="{{ form.hub_name.id_for_label }}">Hub name</label>
                 <td>{{ form.hub_name }}</td>
             </tr>
             <tr>
-                <td><label for="{{ field.auto_id }}">{{ field.label_tag }}
+                <td><label for="{{ form.hub_vms.id_for_label }}">VM name</label>
                 <td>{{ form.hub_vms }}</td>
+                <td><label for="{{ form.vm_iface.id_for_label }}">Iface</label>
                 <td>{{ form.vm_iface }}</td>
             </tr>
 
