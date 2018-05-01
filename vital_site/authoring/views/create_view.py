@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, HttpResponse
 import logging
+from django import forms
 import ConfigParser
 from vital.utils import get_notification_message
 from vital.models import Registered_Course, Course, Virtual_Machine, Virtual_Machine_Type, Network_Configuration
@@ -82,7 +83,8 @@ def course_networking(request):
     if request.method == 'POST':
         form = CreateNetworksForm(request.POST)
         course_id = request.session.get('course_id', None)
-        form.fields['hub_vms'].queryset = Virtual_Machine.objects.filter(course=course_id)
+        form.fields['hub_vms'] = forms.ModelChoiceField(Virtual_Machine.objects.filter(course=course_id))
+        #form.fields['hub_vms'].queryset = Virtual_Machine.objects.filter(course=course_id)
         if form.is_valid():
             net = Network_Configuration()
             net.name = form.cleaned_data['hub_name']
