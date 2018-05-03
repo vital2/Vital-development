@@ -83,9 +83,6 @@ def course_networking(request):
     course_id = request.session.get('course_id', None)
     if request.method == 'POST':
         form = CreateNetworksForm(course_id, request.POST)
-
-        #form.fields['hub_vms'] = forms.ModelChoiceField(Virtual_Machine.objects.filter(course=course_id))
-        #form.fields['hub_vms'].queryset = Virtual_Machine.objects.filter(course=course_id)
         if form.is_valid():
             net = Network_Configuration()
             net.name = form.cleaned_data['hub_name']
@@ -94,7 +91,7 @@ def course_networking(request):
             net.is_course_net = 'f'
             net.has_internet_access = 'f'
             net.save()
-            return HttpResponse('form is valid')
+            return HttpResponseRedirect('form is valid')
     else:
         form = CreateNetworksForm(course_id)
     return render(request, 'authoring/course_networking.html', {'form': form, 'error_message': error_message})
