@@ -1,7 +1,7 @@
 {% extends 'vital/base.html' %}
 
 {% block content %}
-    <form action="{% url 'authoring:course_create' %}" method='POST'>
+    <form action="{% url 'authoring:course_networking' %}" method='POST'>
         {% csrf_token %}
 
         {% if error_message %}
