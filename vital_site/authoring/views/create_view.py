@@ -91,9 +91,10 @@ def course_networking(request):
             net.is_course_net = 'f'
             net.has_internet_access = 'f'
             net.save()
-            return HttpResponseRedirect('form is valid')
+            return HttpResponse('form is valid')
     else:
         form = CreateNetworksForm(course_id)
+        return HttpResponse('form is not valid')
     return render(request, 'authoring/course_networking.html', {'form': form, 'error_message': error_message})
 
 
