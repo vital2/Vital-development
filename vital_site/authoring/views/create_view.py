@@ -87,7 +87,7 @@ def course_networking(request):
         if form.is_valid():
             net = Network_Configuration()
             net.name = form.cleaned_data['hub_name']
-            net.course = course_id
+            net.course = Course.objects.get(id=course_id)
             net.virtual_machine = form.cleaned_data['hub_vms']
             net.is_course_net = 'f'
             net.has_internet_access = 'f'
