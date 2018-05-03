@@ -82,7 +82,6 @@ def course_networking(request):
     error_message = ''
     course_id = request.session.get('course_id', None)
     if request.method == 'POST':
-        #course_id = request.session.get('course_id', None)
         form = CreateNetworksForm(course_id, request.POST)
         if form.is_valid():
             net = Network_Configuration()
@@ -90,11 +89,14 @@ def course_networking(request):
             net.course = Course.objects.get(id=course_id)
             net.virtual_machine = form.cleaned_data['hub_vms']
             net.save()
-            return HttpResponse('form is valid')
+            return redirect('/authoring/courses/summary')
     else:
-        #course_id = request.session.get('course_id', None)
         form = CreateNetworksForm(course_id)
     return render(request, 'authoring/course_networking.html', {'form': form, 'error_message': error_message})
+
+
+def course_summary(request):
+    return HttpResponse('you are on the course summary page')
 
 
 def course_vm_setup(request):
