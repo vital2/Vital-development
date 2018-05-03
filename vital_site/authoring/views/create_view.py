@@ -80,23 +80,20 @@ def course_add_vms(request):
 def course_networking(request):
     logger.debug("in course networking")
     error_message = ''
-
+    course_id = request.session.get('course_id', None)
     if request.method == 'POST':
-        course_id = request.session.get('course_id', None)
+        #course_id = request.session.get('course_id', None)
         form = CreateNetworksForm(course_id, request.POST)
         if form.is_valid():
             net = Network_Configuration()
             net.name = form.cleaned_data['hub_name']
             net.course = Course.objects.get(id=course_id)
             net.virtual_machine = form.cleaned_data['hub_vms']
-            net.is_course_net = 'f'
-            net.has_internet_access = 'f'
             net.save()
             return HttpResponse('form is valid')
     else:
-        course_id = request.session.get('course_id', None)
+        #course_id = request.session.get('course_id', None)
         form = CreateNetworksForm(course_id)
-        #return HttpResponse('form is not valid')
     return render(request, 'authoring/course_networking.html', {'form': form, 'error_message': error_message})
 
 
