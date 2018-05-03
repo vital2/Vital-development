@@ -20,3 +20,7 @@ class CreateNetworksForm(forms.Form):
     hub_name = forms.CharField(widget=forms.widgets.TextInput)
     hub_vms = forms.ModelChoiceField(queryset=Virtual_Machine.objects.all())
     vm_iface = forms.CharField(widget=forms.widgets.TextInput)
+
+    def __init__(self, course_id):
+        super(CreateNetworksForm, self).__init__()
+        self.fields['hub_vms'].queryset = Virtual_Machine.objects.filter(course=course_id)
