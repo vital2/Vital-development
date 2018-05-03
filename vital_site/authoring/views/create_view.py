@@ -94,9 +94,9 @@ def course_networking(request):
             net.save()
             return HttpResponse('form is valid')
     else:
-        #course_id = request.session.get('course_id', None)
+        course_id = request.session.get('course_id', None)
         form = CreateNetworksForm(course_id)
-        return HttpResponse('form is not valid')
+        #return HttpResponse('form is not valid')
     return render(request, 'authoring/course_networking.html', {'form': form, 'error_message': error_message})
 
 
