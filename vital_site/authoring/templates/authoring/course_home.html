@@ -3,7 +3,7 @@
 {% block content_without_center %}
     <div id="center" align="center" style="width: 800px">
 {% if message %} <p style="color: green">{{ message }}&nbsp;&nbsp;&nbsp;<a href="/authoring/courses/create">Create a new course</a></p> {% endif %}
-      {% if active_courses %}
+      {% if created_courses %}
       <div style="width: 100%" align="left">
           <div style="width: 50%;float: left"><h5 style="padding-left: 10px"> Active Courses </h5></div>
           <div style="width: 50%;float: left;" align="right"><a href="/authoring/courses/create">Create course</a></div></div>
@@ -14,14 +14,14 @@
                 <th width="30%">Start Date</th>
                 <th width="20%">&nbsp;</th>
             </tr>
-            {% for active_course in active_courses %}
-                <tr>{% if active_course.course.status == "ACTIVE" %}
-                        <td><a href="{% url 'authoring:course_vms' %}">{{ active_course.course.name }}</a></td>
+            {% for created_course in created_courses %}
+                <tr>{% if created_course.course.status == "ACTIVE" %}
+                        <td><a href="{% url 'authoring:course_vms' %}">{{ created_course.course.name }}</a></td>
                     {% else %}
-                        <td title="Course is inactive.">{{ active_course.course.name }}</td>
+                        <td title="Course is inactive.">{{ created_course.course.name }}</td>
                     {% endif %}
-                    <td>{{ active_course.course.course_number }}</td>
-                    <td>{{ active_course.course.start_date }}</td>
+                    <td>{{ created_course.course.course_number }}</td>
+                    <td>{{ created_course.course.start_date }}</td>
                     <td><a href="{% url 'authoring:course_destroy' %}">Destroy course</a></td>
                 </tr>
             {% endfor %}

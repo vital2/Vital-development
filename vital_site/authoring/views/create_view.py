@@ -27,14 +27,14 @@ def course_home(request):
     :return: active courses page
     """
     logger.debug("In course home")
-    active_courses = Course.objects.filter(course_owner=request.user.id)
+    created_courses = Course.objects.filter(course_owner=request.user.id)
     reg_courses = Course.objects.filter(id=request.user.id)
     # to display common notification messages like system maintenance plans on all pages
     request.session['notification'] = get_notification_message()
     message = ''
-    if len(active_courses) == 0:
+    if len(created_courses) == 0:
         message = 'You have no active courses'
-    return render(request, 'authoring/course_home.html', {'active_courses': active_courses, 'reg_courses': reg_courses,
+    return render(request, 'authoring/course_home.html', {'created_courses': created_courses, 'reg_courses': reg_courses,
                   'message': message})
 
 def course_create(request):
