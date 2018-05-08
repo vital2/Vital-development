@@ -15,13 +15,13 @@
                 <th width="20%">&nbsp;</th>
             </tr>
             {% for created_course in created_courses %}
-                <tr>{% if created_course.course.status == "ACTIVE" %}
-                        <td><a href="{% url 'authoring:course_vms' %}">{{ created_course.course.name }}</a></td>
+                <tr>{% if created_course.status == "ACTIVE" %}
+                        <td><a href="{% url 'authoring:course_vms' %}">{{ created_course.name }}</a></td>
                     {% else %}
-                        <td title="Course is inactive.">{{ created_course.course.name }}</td>
+                        <td title="Course is inactive.">{{ created_course.name }}</td>
                     {% endif %}
-                    <td>{{ created_course.course.course_number }}</td>
-                    <td>{{ created_course.course.start_date }}</td>
+                    <td>{{ created_course.course_number }}</td>
+                    <td>{{ created_course.start_date }}</td>
                     <td><a href="{% url 'authoring:course_destroy' %}">Destroy course</a></td>
                 </tr>
             {% endfor %}

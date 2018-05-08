@@ -37,6 +37,7 @@ def course_home(request):
     return render(request, 'authoring/course_home.html', {'created_courses': created_courses, 'reg_courses': reg_courses,
                   'message': message})
 
+
 def course_create(request):
     logger.debug("in course create - " + request.method)
     error_message = ''
