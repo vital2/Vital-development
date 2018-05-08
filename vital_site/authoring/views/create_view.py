@@ -7,6 +7,7 @@ from vital.models import Registered_Course, Course, Virtual_Machine, Virtual_Mac
 from ..forms import CreateCourseForm, CreateVmsForm, CreateNetworksForm
 from django.utils.crypto import get_random_string
 from django.http import HttpResponseRedirect, HttpResponse
+import datetime
 
 logger = logging.getLogger(__name__)
 config_ini = ConfigParser.ConfigParser()
@@ -48,6 +49,7 @@ def course_create(request):
             course.name = form.cleaned_data['course_name']
             course.course_number = form.cleaned_data['course_number']
             course.start_date = form.cleaned_data['start_date']
+            course.created_date = datetime.date.today
             user_id = request.user.id
             course.course_owner = user_id
             reg_code = get_random_string(length=8)
