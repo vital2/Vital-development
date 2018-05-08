@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect
 import logging
 from django import forms
 import ConfigParser
@@ -27,7 +27,7 @@ def course_home(request):
     :return: active courses page
     """
     logger.debug("In course home")
-    active_courses = Registered_Course.objects.filter(user_id=request.user.id, course__status='ACTIVE')
+    active_courses = Course.objects.filter(course_owner=request.user.id)
 
     # to display common notification messages like system maintenance plans on all pages
     request.session['notification'] = get_notification_message()
@@ -96,6 +96,12 @@ def course_networking(request):
 
 
 def course_summary(request):
+    logger.debug("in course summary")
+    error_message = ''
+    course_id = request.session.get('course_id', None)
+    course_name = Course.objects.get(id=course_id)
+    vms = Virtual_Machine.objects.get(course=course_id)
+    hubs = Network_Configuration.objects.get(course=course_id)
     return HttpResponse('you are on the course summary page')
 
 

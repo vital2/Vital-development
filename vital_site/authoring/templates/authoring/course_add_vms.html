@@ -1,7 +1,7 @@
 {% extends 'vital/base.html' %}
 
 {% block content %}
-<form action="{% url 'authoring:course_add_vms' %}" method='POST'>
+<form action="{% url 'authoring:course_add_vms' %}" method='POST' id="form">
     {% csrf_token %}
     {% if error_message %}
     <p class="error">
@@ -26,6 +26,18 @@
         <td colspan="3" align="right"><input type='submit' value='Next'/></td>
     </tr>
     </table>
-
+    <a href="#" id="addMore" onclick="addmore()">add VMs</a>
 </form>
+
+<script>
+function addmore(){
+    var contents = document.getElementById("form");
+    var cln = contents.cloneNode(true);
+    document.getElementById("form").appendChild(cln);
+}
+</script>
+
+
 {% endblock content %}
+
+
