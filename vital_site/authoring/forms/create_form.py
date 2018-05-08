@@ -7,7 +7,7 @@ from vital.models import Virtual_Machine_Type, Course, Virtual_Machine
 class CreateCourseForm(forms.Form):
     course_name = forms.CharField(widget=forms.widgets.TextInput)
     course_number = forms.CharField(widget=forms.widgets.TextInput)
-    start_date = forms.DateField(initial=datetime.date.today)
+    start_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'datepicker'}))
 
 
 class CreateVmsForm(forms.Form):
