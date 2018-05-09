@@ -44,12 +44,13 @@ def course_create(request):
     error_message = ''
     if request.method == 'POST':
         form = CreateCourseForm(request.POST)
-        print(type(form.cleaned_data['start_date']))
+
         if form.is_valid():
             course = Course()
             course.name = form.cleaned_data['course_name']
             course.course_number = form.cleaned_data['course_number']
             course.start_date = form.cleaned_data['start_date']
+            logger.debug(type(form.cleaned_data['start_date']))
             course.created_date = datetime.date.today
             user_id = request.user.id
             course.course_owner = user_id
