@@ -32,8 +32,11 @@
     </table>
 </form>
 
-    <!--{% load static %}
-    <script type="text/javascript" src="{% static 'vital/jquery-1.12.0.min.js' %}"></script>-->
+    {% load staticfiles %}
+    <script type="text/javascript" src="{% static 'authoring/jquery-ui.min.js' %}"></script>
+    <link rel="Stylesheet" type="text/css" href={% static "/authoring/jquery-ui.min.css"%}/>
+    <link rel="Stylesheet" type="text/css" href={% static "/authoring/jquery-ui.structure.min.css"%}/>
+    <link rel="Stylesheet" type="text/css" href={% static "/authoring/jquery-ui.theme.min.css"%}/>s
 
     <script>
       $(function() {
