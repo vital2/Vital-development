@@ -44,6 +44,7 @@ def course_create(request):
     error_message = ''
     if request.method == 'POST':
         form = CreateCourseForm(request.POST)
+        print(type(form.cleaned_data['start_date']))
         if form.is_valid():
             course = Course()
             course.name = form.cleaned_data['course_name']
