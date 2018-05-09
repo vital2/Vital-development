@@ -16,6 +16,7 @@
             <td>{{ field }}</td>
             {% if field.start_date %}
                 <td class="datepicker"></td>
+            {% endif %}
             {% if field.errors %}
                 <td colspan="2" align="right">
 		          {% for error in field.errors %}
