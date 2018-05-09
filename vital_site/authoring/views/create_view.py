@@ -65,19 +65,24 @@ def course_create(request):
 def course_add_vms(request):
     logger.debug("in course add vms")
     error_message = ''
+    course_id = request.session.get('course_id', None)
+    created_vms = Virtual_Machine.ojects.filter(course=course_id)
     if request.method == 'POST':
         form = CreateVmsForm(request.POST)
         if form.is_valid():
             vm = Virtual_Machine()
-            course_id = request.session.get('course_id', None)
             vm.course = Course.objects.get(id=course_id)
             vm.name = form.cleaned_data['vm_name']
             vm.type = form.cleaned_data['vm_type']
             vm.save()
-            return redirect('/authoring/courses/networking')
+            if "Next" in request.POST:
+                return redirect('/authoring/courses/networking')
+            else:
+                form = CreateVmsForm()
     else:
         form = CreateVmsForm()
-    return render(request, 'authoring/course_add_vms.html', {'form': form, 'error_message': error_message})
+    return render(request, 'authoring/course_add_vms.html', {'created_vms': created_vms, 'form': form,
+                                                             'error_message': error_message})
 
 
 def course_networking(request):

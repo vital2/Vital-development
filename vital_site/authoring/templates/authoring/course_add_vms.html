@@ -8,6 +8,19 @@
             {{ error_message }}
     </p>
     {% endif %}
+
+    {% if created_vms %}
+        {%  for created_vm in created_vms %}
+            <div style="width: 100%" align="left">
+                <table width="75%" style="font-size: small">
+                    <tr>
+                        <td> {{ created_vm.name }}</td>
+                        <td> {{ created_vm.type }}</td>
+                    </tr>
+                </table>
+            {% endfor %}
+    {% endif %}
+
     <table style="width: auto">
     {% for field in form %}
         <tr>
@@ -23,7 +36,7 @@
         </tr>
     {% endfor %}
     <tr>
-        <td colspan="3" align="right"><a href="#" id="addMore"  onclick="addmore()">Add More</a></td>
+        <td colspan="3" align="right"><a href="/authoring/courses/addvms" id="addMore">Add More</a></td>
     </tr>
     <tr>
         <td colspan="3" align="right"><input type='submit' value='Next'/></td>
@@ -32,13 +45,13 @@
 
 </form>
 
-<script>
+<!--<script>
 function addmore(){
     var contents = document.getElementById("form");
     var cln = contents.cloneNode(true);
     document.getElementById("form").appendChild(cln);
 }
-</script>
+</script>-->
 
 
 {% endblock content %}
