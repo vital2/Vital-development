@@ -14,6 +14,8 @@
         <tr>
             <td><label for="{{ field.auto_id }}">{{ field.label_tag }}
             <td>{{ field }}</td>
+            {% if field.start_date %}
+                <td class="datepicker"></td>
             {% if field.errors %}
                 <td colspan="2" align="right">
 		          {% for error in field.errors %}
@@ -29,8 +31,8 @@
     </table>
 </form>
 
-    {% load staticfiles %}
-     <script type="text/javascript" src="{% static 'vital/jquery-1.12.0.min.js' %}"></script>
+    <!--{% load static %}
+    <script type="text/javascript" src="{% static 'vital/jquery-1.12.0.min.js' %}"></script>-->
 
     <script>
       $(function() {
