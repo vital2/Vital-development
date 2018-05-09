@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 from django.db import models
-from datetime import datetime, date
+import datetime
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 
@@ -87,8 +87,8 @@ class Course(models.Model):
     course_number = models.CharField(max_length=200, unique=True)
     registration_code = models.CharField(max_length=10, unique=True)
     capacity = models.IntegerField(default=0)
-    start_date = models.DateField(default=date.today)
-    created_date = models.DateField(default=date.today)
+    start_date = models.DateField(default=datetime.date.today, blank=True)
+    created_date = models.DateField(default=datetime.date.today, blank=True)
     status = models.CharField(max_length=10, default='INACTIVE')
     auto_shutdown_after = models.IntegerField(default=3)
     allow_long_running_vms = models.BooleanField(default=False)
