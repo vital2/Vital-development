@@ -48,7 +48,6 @@ def course_create(request):
             course = Course()
             course.name = form.cleaned_data['course_name']
             course.course_number = form.cleaned_data['course_number']
-            print(type(form.cleaned_data['start_date']))
             course.start_date = form.cleaned_data['start_date']
             course.created_date = datetime.date.today
             user_id = request.user.id
