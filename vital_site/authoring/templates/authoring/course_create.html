@@ -2,19 +2,6 @@
 
 {% block content %}
 
-    <link rel="stylesheet" type="text/css" href="http://jquery-ui.googlecode.com/svn/tags/latest/themes/base/jquery-ui.css" media="all" />
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
-    <script>
-      $(function() {
-        $( '.datepicker' ).datepicker({
-          changeMonth: true,
-          changeYear: true,
-          yearRange: "2000:2019",
-        });
-      });
-    </script>
-
 <form action="{% url 'authoring:course_create' %}" method='POST'>
     {% csrf_token %}
     {% if error_message %}
@@ -41,5 +28,19 @@
     </tr>
     </table>
 </form>
+
+    {% load staticfiles %}
+     <script type="text/javascript" src="{% static 'vital/jquery-1.12.0.min.js' %}"></script>
+
+    <script>
+      $(function() {
+        $( '.datepicker' ).datepicker({
+          changeMonth: true,
+          changeYear: true,
+          yearRange: "2000:2019",
+        });
+      });
+    </script>
+
 
 {% endblock content %}
