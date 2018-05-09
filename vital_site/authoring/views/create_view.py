@@ -66,7 +66,7 @@ def course_add_vms(request):
     logger.debug("in course add vms")
     error_message = ''
     course_id = request.session.get('course_id', None)
-    created_vms = Virtual_Machine.ojects.filter(course=course_id)
+    created_vms = Virtual_Machine.objects.filter(course=course_id)
     if request.method == 'POST':
         form = CreateVmsForm(request.POST)
         if form.is_valid():
