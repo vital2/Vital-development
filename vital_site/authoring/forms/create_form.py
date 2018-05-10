@@ -9,7 +9,7 @@ class CreateCourseForm(forms.Form):
     course_name = forms.CharField(widget=forms.widgets.TextInput)
     course_number = forms.CharField(widget=forms.widgets.TextInput)
     #start_date = forms.DateField(widget=forms.DateInput(attrs={'class': 'datepicker'}), initial=date.today)
-    start_date = forms.DateTimeField()
+    #start_date = forms.DateTimeField()
 
 
 class CreateVmsForm(forms.Form):
