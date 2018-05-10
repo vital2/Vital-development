@@ -76,8 +76,6 @@ def course_add_vms(request):
             vm.name = form.cleaned_data['vm_name']
             vm.type = form.cleaned_data['vm_type']
             vm.save()
-            nxt = request.POST.get('next')
-            logger.debug(nxt)
             if request.POST.get("next"):
                 return redirect('/authoring/courses/networking')
             else:
@@ -92,6 +90,7 @@ def course_networking(request):
     logger.debug("in course networking")
     error_message = ''
     course_id = request.session.get('course_id', None)
+    created_nets = Network_Configuration.objects.filter(course=course_id)
     if request.method == 'POST':
         form = CreateNetworksForm(course_id, request.POST)
         if form.is_valid():
@@ -100,10 +99,14 @@ def course_networking(request):
             net.course = Course.objects.get(id=course_id)
             net.virtual_machine = form.cleaned_data['hub_vms']
             net.save()
-            return redirect('/authoring/courses/summary')
+            if request.POST.get("next"):
+                return redirect('/authoring/courses/summary')
+            else:
+                form = CreateNetworksForm()
     else:
         form = CreateNetworksForm(course_id)
-    return render(request, 'authoring/course_networking.html', {'form': form, 'error_message': error_message})
+    return render(request, 'authoring/course_networking.html', {'created_nets': created_nets,
+                                                                'form': form, 'error_message': error_message})
 
 
 def course_summary(request):

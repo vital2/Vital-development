@@ -10,6 +10,20 @@
         </p>
         {% endif %}
 
+        {% if created_nets %}
+            {%  for created_net in created_nets %}
+                <div style="width: 100%" align="left">
+                    <table width="75%" style="font-size: small">
+                        <tr>
+                            <td>{{ created_net.name }}</td>
+                            <td>{{ created_net.virtual_machine }}</td>
+                        </tr>
+                    </table>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+
         <table style="width: auto">
             <tr>
                 <td><label for="{{ form.hub_name.id_for_label }}">Hub name</label>
@@ -31,7 +45,10 @@
         {% endif %}
 
             <tr>
-                <td colspan="4" align="right"><input type='submit' value='Next'/></td>
+                <td colspan="4" align="right"><input type='submit' value='Add more' name="addmore"/></td>
+            </tr>
+            <tr>
+                <td colspan="4" align="right"><input type='submit' value='Next' name="next"/></td>
             </tr>
         </table>
     </form>
