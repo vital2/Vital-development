@@ -45,7 +45,6 @@ def course_create(request):
     error_message = ''
     if request.method == 'POST':
         form = CreateCourseForm(request.POST)
-
         if form.is_valid():
             course = Course()
             course.name = form.cleaned_data['course_name']
@@ -62,7 +61,7 @@ def course_create(request):
             return redirect('/authoring/courses/addvms')
     else:
         form = CreateCourseForm()
-        return render(request, 'authoring/course_create.html', {'form': form, 'error_message': error_message})
+    return render(request, 'authoring/course_create.html', {'form': form, 'error_message': error_message})
 
 
 def course_add_vms(request):
