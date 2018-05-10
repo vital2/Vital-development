@@ -1,13 +1,15 @@
 from django.forms import ModelForm
 from django import forms
 from datetime import date
+import datetime
 from vital.models import Virtual_Machine_Type, Course, Virtual_Machine
 
 
 class CreateCourseForm(forms.Form):
     course_name = forms.CharField(widget=forms.widgets.TextInput)
     course_number = forms.CharField(widget=forms.widgets.TextInput)
-    start_date = forms.DateField(widget=forms.DateInput(attrs={'class': 'datepicker'}), initial=date.today)
+    #start_date = forms.DateField(widget=forms.DateInput(attrs={'class': 'datepicker'}), initial=date.today)
+    start_date = forms.DateTimeField(initial=datetime.date.today)
 
 
 class CreateVmsForm(forms.Form):
