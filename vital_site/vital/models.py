@@ -137,6 +137,7 @@ class Network_Configuration(models.Model):
     virtual_machine = models.ForeignKey(Virtual_Machine)
     is_course_net = models.BooleanField(default=False)
     has_internet_access = models.BooleanField(default=False)
+    interface = models.CharField(max_length=10)
 
 
 class User_Bridge(models.Model):

@@ -114,8 +114,8 @@ def course_summary(request):
     error_message = ''
     # course_id = request.session.get('course_id', None)
     # course_name = Course.objects.get(id=course_id)
-    # vms = Virtual_Machine.objects.get(course=course_id)
-    # hubs = Network_Configuration.objects.get(course=course_id)
+    # vms = Virtual_Machine.objects.filter(course=course_id)
+    # hubs = Network_Configuration.objects.filter(course=course_id)
     return HttpResponse('you are on the course summary page')
 
 
