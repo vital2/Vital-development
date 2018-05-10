@@ -102,7 +102,7 @@ def course_networking(request):
             if request.POST.get("next"):
                 return redirect('/authoring/courses/summary')
             else:
-                form = CreateNetworksForm()
+                form = CreateNetworksForm(course_id)
     else:
         form = CreateNetworksForm(course_id)
     return render(request, 'authoring/course_networking.html', {'created_nets': created_nets,
