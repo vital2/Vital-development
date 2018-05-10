@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from datetme import date
+from datetime import date
 from vital.models import Virtual_Machine_Type, Course, Virtual_Machine
 
 
