@@ -112,10 +112,10 @@ def course_networking(request):
 def course_summary(request):
     logger.debug("in course summary")
     error_message = ''
-    course_id = request.session.get('course_id', None)
-    course_name = Course.objects.get(id=course_id)
-    vms = Virtual_Machine.objects.get(course=course_id)
-    hubs = Network_Configuration.objects.get(course=course_id)
+    # course_id = request.session.get('course_id', None)
+    # course_name = Course.objects.get(id=course_id)
+    # vms = Virtual_Machine.objects.get(course=course_id)
+    # hubs = Network_Configuration.objects.get(course=course_id)
     return HttpResponse('you are on the course summary page')
 
 
