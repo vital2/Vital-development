@@ -7,7 +7,7 @@ from vital.models import Registered_Course, Course, Virtual_Machine, Virtual_Mac
 from ..forms import CreateCourseForm, CreateVmsForm, CreateNetworksForm
 from django.utils.crypto import get_random_string
 from django.http import HttpResponseRedirect, HttpResponse
-from datetime import datetime, date
+#from datetime import datetime, date
 import datetime
 
 logger = logging.getLogger(__name__)
