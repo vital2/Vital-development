@@ -76,8 +76,8 @@ def course_add_vms(request):
             vm.name = form.cleaned_data['vm_name']
             vm.type = form.cleaned_data['vm_type']
             vm.save()
-            if "Next" in request.POST:
-                return HttpResponseRedirect('/authoring/courses/networking')
+            if "next" in request.POST:
+                return redirect('/authoring/courses/networking')
             else:
                 form = CreateVmsForm()
     else:
