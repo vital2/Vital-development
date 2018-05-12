@@ -5,24 +5,24 @@
         {% csrf_token %}
 
         {% if error_message %}
-        <p class="error">
+            <p class="error">
                 {{ error_message }}
-        </p>
+            </p>
         {% endif %}
 
         {% if created_nets %}
-            {%  for created_net in created_nets %}
+            {% for created_net in created_nets %}
                 <div style="width: 100%" align="left">
                     <table width="75%" style="font-size: small">
                         <tr>
                             <td>{{ created_net.name }}</td>
                             <td>{{ created_net.virtual_machine }}</td>
+                            <td>{{ created_net.interface }}</td>
                         </tr>
                     </table>
                 </div>
             {% endfor %}
         {% endif %}
-
 
         <table style="width: auto">
             <tr>

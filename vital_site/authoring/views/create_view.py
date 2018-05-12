@@ -98,6 +98,7 @@ def course_networking(request):
             net.name = form.cleaned_data['hub_name']
             net.course = Course.objects.get(id=course_id)
             net.virtual_machine = form.cleaned_data['hub_vms']
+            net.interface = form.cleaned_data['vm_iface']
             net.save()
             if request.POST.get("next"):
                 return redirect('/authoring/courses/summary')
@@ -112,11 +113,17 @@ def course_networking(request):
 def course_summary(request):
     logger.debug("in course summary")
     error_message = ''
-    # course_id = request.session.get('course_id', None)
-    # course_name = Course.objects.get(id=course_id)
-    # vms = Virtual_Machine.objects.filter(course=course_id)
-    # hubs = Network_Configuration.objects.filter(course=course_id)
-    return HttpResponse('you are on the course summary page')
+    course_id = request.session.get('course_id', None)
+    course_name = Course.objects.get(id=course_id)
+    vms = Virtual_Machine.objects.filter(course=course_id)
+    hubs = Network_Configuration.objects.filter(course=course_id)
+    xen_servers = config_ini.get("Servers")
+    logger.debug(xen_servers)
+    if request.method == 'POST':
+        logger.debug("activating course" + course_id)
+
+    return render(request, 'authoring/course_summary.html', {'course_name': course_name, 'vms': vms, 'hubs': hubs,
+                                                             'error_message': error_message})
 
 
 def course_vm_setup(request):
