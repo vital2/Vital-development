@@ -3,7 +3,6 @@
 {% block content_without_center %}
     <div id="center" align="center" style="width: 800px">
 {% if message %} <p style="color: green">{{ message }}&nbsp;&nbsp;&nbsp;<a href="/authoring/courses/create">Create a new course</a></p> {% endif %}
-        <div id="center" align="center" style="width: 800px"><a href="/vital/courses/register">Register for a new course</a></div>
       {% if created_courses %}
       <div style="width: 100%" align="left">
           <div style="width: 50%;float: left"><h5 style="padding-left: 10px"> Active Courses </h5></div>
@@ -29,6 +28,7 @@
             </table>
       {% endif %}
     </div>
+    {% if message %} <p style="color: green">{{ message }}&nbsp;&nbsp;&nbsp;<a href="/vital/courses/register">Register for a new course</a></p> {% endif %}
     <div style="width: 100%" align="left">
     {% if reg_courses %}
         <div style="width: 50%;float: left"><h5 style="padding-left: 10px"> Registered Courses </h5></div>

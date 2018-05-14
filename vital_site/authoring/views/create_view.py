@@ -32,13 +32,15 @@ def course_home(request):
     """
     logger.debug("In course home")
     created_courses = Course.objects.filter(course_owner=request.user.id)
-    reg_courses = Registered_Course.objects.filter(id=request.user.id)
+    reg_courses = Registered_Course.objects.filter(user_id=request.user.id)
     request.session['notification'] = get_notification_message()
     message = ''
     if len(created_courses) == 0:
         message = 'You have no active courses'
-    return render(request, 'authoring/course_home.html', {'created_courses': created_courses, 'reg_courses': reg_courses,
-                  'message': message})
+    if len(reg_courses) == 0:
+        message = 'You have no registered courses'
+    return render(request, 'authoring/course_home.html', {'created_courses': created_courses,
+                                                          'reg_courses': reg_courses, 'message': message})
 
 
 def course_create(request):
