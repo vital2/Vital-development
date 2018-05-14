@@ -20,10 +20,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         course_id = options['course_id']
         course = Course.objects.get(id=course_id)
-        print "Removing course: "+course.name+" (ID:" + str(course.id) + ")"
-        print "Removing registered students"
+        logger.debug("Removing course: "+course.name+" (ID:" + str(course.id) + ")")
+        logger.debug("Removing registered students")
         Registered_Course.objects.filter(course=course).delete()
-        print "Removing registered user network configs"
+        logger.debug("Removing registered user network configs")
         user_nets = User_Network_Configuration.objects.filter(course=course)
         for net in user_nets:
             conf = Available_Config()
@@ -31,9 +31,9 @@ class Command(BaseCommand):
             conf.value = net.mac_id
             conf.save()
             net.delete()
-        print "Removing course network config"
+        logger.debug("Removing course network config")
         Network_Configuration.objects.filter(course=course).delete()
-        print "Removing course virtual machines"
+        logger.debug("Removing course virtual machines")
         Virtual_Machine.objects.filter(course=course).delete()
         Course.objects.get(id=course_id).delete()
-        print course.name+" (ID:" + str(course.id) + ")"+" has been deleted"
+        logger.debug(course.name+" (ID:" + str(course.id) + ")"+" has been deleted")
