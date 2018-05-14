@@ -32,6 +32,7 @@
     <div style="width: 100%" align="left">
     {% if reg_courses %}
         <div style="width: 50%;float: left"><h5 style="padding-left: 10px"> Registered Courses </h5></div>
+        <div style="width: 50%;float: left;" align="right"><a href="/vital/courses/register">Register</a></div></div>
         <table width="75%" style="font-size: small">
             <tr style="background-color: #d2bfde; color: white">
                 <th width="30%">Course</th>
@@ -40,13 +41,13 @@
                 <th width="20%">&nbsp;</th>
             </tr>
             {% for reg_course in reg_courses %}
-                <tr>{% if reg_course.status == "ACTIVE" %}
-                        <td><a href="{% url 'authoring:course_vms' %}">{{ reg_course.name }}</a></td>
+                <tr>{% if reg_course.course.status == "ACTIVE" %}
+                        <td><a href="{% url 'authoring:course_vms' %}">{{ reg_course.course.name }}</a></td>
                     {% else %}
-                        <td title="Course is inactive.">{{ reg_course.name }}</td>
+                        <td title="Course is inactive.">{{ reg_course.course.name }}</td>
                     {% endif %}
-                    <td>{{ reg_course.course_number }}</td>
-                    <td>{{ reg_course.start_date }}</td>
+                    <td>{{ reg_course.course.course_number }}</td>
+                    <td>{{ reg_course.course.start_date }}</td>
                     <td><a href="{% url 'authoring:course_destroy' %}">Remove</a></td>
                 </tr>
             {% endfor %}
