@@ -1,5 +1,5 @@
 {% extends 'vital/base.html' %}
 
 {% block content %}
-Hello world
+{% if message %} <p style="color: green">{{ message }}</p> {% endif %}
 {% endblock content %}

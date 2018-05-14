@@ -3,10 +3,12 @@ import logging
 from django import forms
 import ConfigParser
 from vital.utils import get_notification_message
-from vital.models import Registered_Course, Course, Virtual_Machine, Virtual_Machine_Type, Network_Configuration
+from vital.models import Registered_Course, Course, Virtual_Machine, Virtual_Machine_Type, Network_Configuration, \
+    Registered_Course
 from ..forms import CreateCourseForm, CreateVmsForm, CreateNetworksForm
 from django.utils.crypto import get_random_string
 from django.http import HttpResponseRedirect, HttpResponse
+from subprocess import Popen, PIPE
 #from datetime import datetime, date
 import datetime
 
@@ -30,8 +32,7 @@ def course_home(request):
     """
     logger.debug("In course home")
     created_courses = Course.objects.filter(course_owner=request.user.id)
-    reg_courses = Course.objects.filter(id=request.user.id)
-    # to display common notification messages like system maintenance plans on all pages
+    reg_courses = Registered_Course.objects.filter(id=request.user.id)
     request.session['notification'] = get_notification_message()
     message = ''
     if len(created_courses) == 0:
@@ -78,6 +79,8 @@ def course_add_vms(request):
             vm.save()
             if request.POST.get("next"):
                 return redirect('/authoring/courses/networking')
+            elif request.POST.get("cancel"):
+                return redirect('/authoring/courses/home')
             else:
                 form = CreateVmsForm()
     else:
@@ -102,6 +105,8 @@ def course_networking(request):
             net.save()
             if request.POST.get("next"):
                 return redirect('/authoring/courses/summary')
+            elif request.POST.get("cancel"):
+                return redirect('/authoring/courses/home')
             else:
                 form = CreateNetworksForm(course_id)
     else:
@@ -112,18 +117,26 @@ def course_networking(request):
 
 def course_summary(request):
     logger.debug("in course summary")
-    error_message = ''
+    message = ''
     course_id = request.session.get('course_id', None)
     course_name = Course.objects.get(id=course_id)
     vms = Virtual_Machine.objects.filter(course=course_id)
     hubs = Network_Configuration.objects.filter(course=course_id)
-    xen_servers = config_ini.get("Servers")
-    logger.debug(xen_servers)
     if request.method == 'POST':
         logger.debug("activating course" + course_id)
+        cmd = 'sudo /home/vital/vital2.0/source/virtual_lab/vital_site/scripts/sftp_account.sh '+course_id
+        p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
+        out, err = p.communicate()
+        if p.returncode == 0:
+            course_name.status = 'ACTIVE'
+            message = 'Course have been successfully activated'
+            return redirect('/authoring/courses/home')
+        else:
+            logger.debug("Course not activated")
+            raise Exception('ERROR : cannot activate course. \n Reason : %s' % err.rstrip())
 
     return render(request, 'authoring/course_summary.html', {'course_name': course_name, 'vms': vms, 'hubs': hubs,
-                                                             'error_message': error_message})
+                                                             'message': message})
 
 
 def course_vm_setup(request):
@@ -131,4 +144,4 @@ def course_vm_setup(request):
 
 
 def course_destroy(request):
-    return HttpResponse('you are on the course remove page')
+    return HttpResponse('you are on the course destroy page')
