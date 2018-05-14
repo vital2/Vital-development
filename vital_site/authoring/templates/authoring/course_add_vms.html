@@ -28,7 +28,7 @@
             <td>{{ field }}</td>
 
             {% if field.name == 'vm_type' %}
-                <td>{{ form.vm_type }}<a href="{% url 'authoring:upload_iso' %}">Upload iso</a></td>
+                <td><a href="{% url 'authoring:upload_iso' %}">Upload iso</a></td>
             {% endif %}
             {% if field.errors %}
                 <td colspan="2" align="right">
