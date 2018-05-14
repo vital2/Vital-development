@@ -15,7 +15,7 @@
                 <table width="75%" style="font-size: small">
                     <tr>
                         <td> {{ created_vm.name }}</td>
-                        <td> {{ created_vm.type }} <a href="{% url 'authoring:upload_iso' %}">Upload iso</a></td>
+                        <td> {{ created_vm.type }} </td>
                     </tr>
                 </table>
             {% endfor %}
@@ -26,6 +26,10 @@
         <tr>
             <td><label for="{{ field.auto_id }}">{{ field.label_tag }}
             <td>{{ field }}</td>
+
+            {% if field.name == 'vm_type' %}
+                <td>{{ form.vm_type }}<a href="{% url 'authoring:upload_iso' %}">Upload iso</a></td>
+            {% endif %}
             {% if field.errors %}
                 <td colspan="2" align="right">
 		          {% for error in field.errors %}
