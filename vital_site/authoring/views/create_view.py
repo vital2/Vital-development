@@ -148,5 +148,6 @@ def course_vm_setup(request):
 def course_destroy(request):
     return HttpResponse('you are on the course destroy page')
 
+
 def upload_iso(request):
     return HttpResponse('you are on the iso upload page')
