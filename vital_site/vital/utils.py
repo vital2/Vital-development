@@ -46,8 +46,9 @@ def get_spice_options():
     returns: Dictionary conatining the various Spice Options.
     """
     spice_opts = {
+	'vcpus': 4,
         'vnc': 0,
-        'vga': 'stdvga',
+        'vga': 'qxl',
         'spice': 1,
         'spicehost': '0.0.0.0',
         'spiceport': 0,
