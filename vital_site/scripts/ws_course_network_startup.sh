@@ -21,7 +21,7 @@ iptables -A INPUT -s 10.$vlan.1.0/24 -j DROP
 #iptables -A FORWARD -i bond0.$vlan -s 10.$vlan.1.0/24 -d 10.$vlan.1.0/24 -j ACCEPT
 
 ##ap4414 EDIT: moving SFTP requests to front of the chain
-SERVER_IP="128.238.66.35"
+SERVER_IP="128.238.77.36"
 iptables -I FORWARD 1 -i bond0.$vlan -s 10.$vlan.1.0/24 -d $SERVER_IP -p tcp --dport 22 -j ACCEPT
 
 iptables -I FORWARD 2 -i bond0.$vlan -s $SERVER_IP -d 10.$vlan.1.0/24 -j ACCEPT
