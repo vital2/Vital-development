@@ -1,10 +1,12 @@
 import logging
 import xmlrpclib
+import datetime
 from models import Audit, Available_Config, User_Network_Configuration, Virtual_Machine, \
     User_VM_Config, Course, VLAB_User, Xen_Server, User_Bridge, Local_Network_MAC_Address
 import ConfigParser
 from decimal import *
 from django.db import transaction
+from influxdb import InfluxDBClient
 
 logger = logging.getLogger(__name__)
 config = ConfigParser.ConfigParser()
@@ -361,3 +363,78 @@ class SneakyXenLoadBalancer:
                 server.status = 'INACTIVE'
             finally:
                 server.save()
+                self.send_stats_to_influxdb(server)
+
+    def send_stats_to_influxdb(self, server):
+        """
+        Send Stats to InfluxDB for Grafana Visualization
+        :param server: server instance with all the values from the xen Machines
+        """
+        timestr = datetime.datetime.now().replace(microsecond=0).isoformat() + 'Z'
+        json_body = [
+            {
+                "measurement": "used_memory",
+                "tags": {
+                    "host": server.name
+                },
+                "time": timestr,
+                "fields": {
+                    "value": server.used_memory
+                }
+            },
+            {
+                "measurement": "no_of_students",
+                "tags": {
+                    "host": server.name
+                },
+                "time": timestr,
+                "fields": {
+                    "value": server.no_of_students
+                }
+            },
+            {
+                "measurement": "no_of_courses",
+                "tags": {
+                    "host": server.name
+                },
+                "time": timestr,
+                "fields": {
+                    "value": server.no_of_courses
+                }
+            },
+            {
+                "measurement": "no_of_vms",
+                "tags": {
+                    "host": server.name
+                },
+                "time": timestr,
+                "fields": {
+                    "value": server.no_of_vms
+                }
+            },
+            {
+                "measurement": "utilization",
+                "tags": {
+                    "host": server.name
+                },
+                "time": timestr,
+                "fields": {
+                    "value": round(server.utilization, 5)
+                }
+            },
+            {
+                "measurement": "status",
+                "tags": {
+                    "host": server.name
+                },
+                "time": timestr,
+                "fields": {
+                    "value": server.status
+                }
+            }
+        ]
+
+        c = InfluxDBClient(host='localhost', port=8086)
+        c.switch_database('xen_stats')
+        c.write_points(json_body)
+        c.close()
