@@ -290,7 +290,8 @@ class XenServer:
     def is_bridge_up(self, user, name):
         return self.proxy.xenapi.is_bridge_up(user.email, user.password, name)
 
-
+    def get_dom_details(self, user):
+        return self.proxy.xenapi.get_dom_details(user.email, user.password)
 
 class SneakyXenLoadBalancer:
 
@@ -438,3 +439,60 @@ class SneakyXenLoadBalancer:
         c.switch_database('xen_stats')
         c.write_points(json_body)
         c.close()
+
+    def get_xen_dom_details(self):
+        # heart beat - 1 Minute stats collection
+        # this is exposed as a custom django command that will be executed on server start
+        # vital/management/commands
+        server_configs = config.items('Servers')
+        user = VLAB_User.objects.get(first_name='Cron', last_name='User')
+        for key, server_url in server_configs:
+            server = Xen_Server.objects.get(name=key)
+            try:
+                dom_detail_arr = []
+                vms = XenServer(key, server_url).get_dom_details(user)
+                for vm in vms:
+                    if 'Domain' not in vm['name'] and vm['name'].count('_') == 2:
+                        # Parse the data and format the same into a a json
+                        vm_details = vm['name'].split('_')
+                        student = VLAB_User.objects.get(id = vm_details[0])
+                        student_name = '{} {}'.format(student.first_name, student.last_name)
+                        if 'b' in vm['state']:
+                            vm_state = 'Blocked'
+                        elif 'r' in vm['state']:
+                            vm_state = 'Running'
+                        elif 'p' in vm['state']:
+                            vm_state = 'Paused'
+                        else:
+                            vm_state = 'Unknown'
+
+                        tags = {}
+                        tags['host'] = server.name
+                        tags['student'] = student_name
+                        tags['course'] = Course.objects.get(id = vm_details[1]).name
+			tags['vm_name'] = Virtual_Machine.objects.get(id = vm_details[2]).name
+                        tags['state'] = vm_state
+                        fields = {}
+                        fields['cpu_secs'] = long(vm['cpu_secs'])
+                        fields['cpu_per'] = float(vm['cpu_per'])
+                        fields['memory'] = long(vm['mem'])
+                        fields['mem_per'] = float(vm['mem_per'])
+                        fields['vcpus'] = int(vm['vcpus'])
+                        fields['networks'] = int(vm['nets'])
+                        timestr = datetime.datetime.now().replace(microsecond=0).isoformat() + 'Z'
+                        dom_detail = {}
+                        dom_detail['measurement'] = 'vm_details'
+                        dom_detail['tags'] = tags
+                        dom_detail['time'] = timestr
+                        dom_detail['fields'] = fields
+
+                        dom_detail_arr.append(dom_detail)
+
+                if dom_detail_arr:
+                    c = InfluxDBClient(host='localhost', port=8086)
+                    c.switch_database('xen_dom_stats')
+                    c.write_points(dom_detail_arr)
+                    c.close()
+ 
+            except Exception as e:
+                logger.error(key+ ' ' + str(e))
