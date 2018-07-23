@@ -322,7 +322,7 @@ def index(request):
     else:
         logger.debug('user is admin')
 
-def release_vm(request):
+def release_vm(request, user_id, vm_id):
     logger.debug("in releaseVM")
     error_message = ''
 
@@ -334,9 +334,6 @@ def release_vm(request):
 		logger.debug('Incorrect API Key found in Release Vm Request {}'.format(api_key))
                 return HttpResponse('FAILED')
             else:
-                vm_id = request.GET['vm_id']
-                user_id = request.GET['user_id']
-
                 vm = User_VM_Config.objects.get(user_id=user_id, vm_id=vm_id)
                 logger.debug('VM : {}'.format(vm.no_vnc_pid))
 
