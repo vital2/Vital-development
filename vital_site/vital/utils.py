@@ -48,11 +48,11 @@ def get_spice_options():
     returns: Dictionary conatining the various Spice Options.
     """
     spice_opts = {
-	'vcpus': 4,
+	# 'vcpus': 4,
         'vnc': 0,
-        'vga': 'qxl',
+        'vga': 'cirrus',
         'spice': 1,
-        'spicehost': '0.0.0.0',
+        # 'spicehost': '0.0.0.0',
         'spiceport': 0,
         'spicedisable_ticketing': 1,
         'spicevdagent': 1,
@@ -190,7 +190,7 @@ class XenClient:
             vm['display_type'] = display_server
             return vm
 
-    def stop_vm(self, server, user, course_id, vm_id):
+    def remove_network_bridges(self, server, user, course_id, vm_id):
         xen = SneakyXenLoadBalancer().get_server(server)
 
         with transaction.atomic():
@@ -217,7 +217,10 @@ class XenClient:
                     xen.remove_bridge(user, bridge.name)
                     bridge.created = False
                     bridge.save()
-            xen.stop_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
+
+    def stop_vm(self, server, user, course_id, vm_id):
+        xen = SneakyXenLoadBalancer().get_server(server)
+        xen.stop_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
 
     def rebase_vm(self, user, course_id, vm_id):
         xen = SneakyXenLoadBalancer().get_best_server(user, course_id)
