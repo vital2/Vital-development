@@ -127,16 +127,15 @@ def start_novnc(config, started_vm):
             else:
                 # It's either Spice or VNC (Always defaults to VNC)
                 launch_script = config_ini.get("VITAL", "NOVNC_LAUNCH_SCRIPT")    
-            cmd = launch_script + ' --listen {} ' \
-                  '--vnc {}:{}'.format(val, started_vm['xen_server'], started_vm['vnc_port'])
+            cmd = launch_script + ' {} {}:{}'.format(val, started_vm['xen_server'], started_vm['vnc_port'])
             logger.debug("start novnc - "+cmd)
             p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
             config.no_vnc_pid = p.pid
-            line = p.stdout.readline()
-            if 'on port' in line:
-                port = line[line.index('on port') + 7:].strip()
-                config.terminal_port = port
-                flag = False
+            # line = p.stdout.readline()
+            # if 'on port' in line:
+            #     port = line[line.index('on port') + 7:].strip()
+            config.terminal_port = val
+            flag = False
         if cnt >= 100:
             raise Exception('Server busy : cannot start VM')
 
@@ -178,6 +177,7 @@ def start_vm(request, course_id, vm_id):
         logger.error(str(e))
         audit(request, 'Error starting Virtual machine ' + str(vm.name) + '( ' + e.message + ' )')
         if 'Connection refused' not in str(e).rstrip() or started_vm is not None:
+            XenClient().remove_network_bridges(vm.xen_server, request.user, course_id, vm_id)
             XenClient().stop_vm(started_vm['xen_server'], request.user, course_id, vm_id)
         return redirect('/vital/courses/' + course_id + '/vms?message=Unable to start VM - ' + vm.name)
 
@@ -206,6 +206,7 @@ def stop_vm(request, course_id, vm_id):
     #         raise Exception('ERROR : cannot stop the vm '
     #                         '\n Reason : %s' % err.rstrip())
     try:
+        XenClient().remove_network_bridges(vm.xen_server, request.user, course_id, vm_id)
         XenClient().stop_vm(vm.xen_server, request.user, course_id, vm_id)
     #     config = Available_Config()
     #     config.category = 'TERM_PORT'

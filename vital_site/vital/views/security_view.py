@@ -292,7 +292,7 @@ def stop_vms_during_logout(user):
     for user_vm in user_vms:
         vm = user_vm.vm
         if not vm.course.allow_long_running_vms:
-            cmd = 'kill 0 ' + user_vm.no_vnc_pid
+            cmd = 'kill ' + user_vm.no_vnc_pid
             p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
             out, err = p.communicate()
             if not p.returncode == 0:
