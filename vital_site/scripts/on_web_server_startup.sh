@@ -9,8 +9,13 @@
 ##ap4414 EDIT: added nfs mount to /etc/fstab
 #gusterfs1-dev:volume1 /mnt/vlab-datastore/ nfs async,hard,intr,rw,nolock 0 0
 
+# Read details from Config File
+# reading from config file
+host=$(awk -F ":" '/VITAL_DB_HOST/ {print $2}' /home/vital/config.ini | tr -d ' ')
+pass=$(awk -F ":" '/VITAL_DB_PWD/ {print $2}' /home/vital/config.ini | tr -d ' ')
+
 # sets up required bridges and bonds for the courses on web server
-nets=$(psql -h vital-database -U postgres -d vital_db -t -c "SELECT c.id from vital_course c join vital_network_configuration n on c.id=n.course_id where c.status='ACTIVE' and n.is_course_net=True")
+nets=$(PGPASSWORD=$pass psql -U postgres -d vital_db -h $host -t -c "SELECT c.id from vital_course c join vital_network_configuration n on c.id=n.course_id where c.status='ACTIVE' and n.is_course_net=True")
 set -f
 array=(${nets// / })
 
