@@ -118,8 +118,11 @@ def activate(request):
                                   'Hi ' + user.first_name + ',\r\n\n Welcome to Vital. Your account has been activated. '
                                                             'Please follow instructions '
                                                             'from your instructor to access the course VMs. '
-                                                            '\r\n\nSFTP Host : 128.238.77.36 \n Your SFTP account is '+user.sftp_account+' and password'
-                                                            ' is the same as vital.  \r\n\nVital',
+                                                            '\r\n\nSFTP Host : 128.238.77.36 \n Your SFTP account is '+user.sftp_account+' and password '
+                                                            'is the same as vital.'
+                                                            '\r\n\n For help on using Vital Interface please read the wiki '
+                                                            'https://github.com/vital2/virtual_lab/wiki/Vital-User-Guide '
+                                                            '\r\n\nVital',
                                   'no-reply-vital@nyu.edu', [user.email], fail_silently=False)
                         logger.debug('activated..'+user.email)
                         form = Authentication_Form()

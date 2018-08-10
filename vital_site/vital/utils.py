@@ -457,6 +457,7 @@ class SneakyXenLoadBalancer:
                 for vm in vms:
                     if 'Domain' not in vm['name'] and vm['name'].count('_') == 2:
                         # Parse the data and format the same into a a json
+                        # logger.debug('Dom Details : {}'.format(vm))
                         vm_details = vm['name'].split('_')
                         student = VLAB_User.objects.get(id = vm_details[0])
                         student_name = '{} {}'.format(student.first_name, student.last_name)
