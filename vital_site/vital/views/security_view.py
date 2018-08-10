@@ -16,6 +16,8 @@ from ..models import VLAB_User, Allowed_Organization, User_VM_Config, Available_
 
 import logging
 import re
+import os
+import signal
 import json
 from random import randint
 
@@ -295,13 +297,11 @@ def stop_vms_during_logout(user):
     for user_vm in user_vms:
         vm = user_vm.vm
         if not vm.course.allow_long_running_vms:
-            cmd = 'kill ' + user_vm.no_vnc_pid
-            p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-            out, err = p.communicate()
-            if not p.returncode == 0:
-                if 'No such process' not in err.rstrip():
-                    raise Exception('ERROR : cannot stop the vm '
-                                    '\n Reason : %s' % err.rstrip())
+            try:
+                os.kill(int(vm.no_vnc_pid), signal.SIGTERM)
+            except OSError as e:
+                logger.error('Error stopping NoVNC Client with PID ' + str(vm.no_vnc_pid) + str(e))
+
             XenClient().stop_vm(user_vm.xen_server, user, vm.course.id, vm.id)
             config = Available_Config()
             config.category = 'TERM_PORT'

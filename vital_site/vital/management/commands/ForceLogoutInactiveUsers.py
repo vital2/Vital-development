@@ -8,6 +8,8 @@ from vital.utils import XenClient, audit
 from subprocess import Popen, PIPE
 from random import randint
 from django.core.mail import send_mail
+import os
+import signal
 
 logger = logging.getLogger(__name__)
 
@@ -38,13 +40,11 @@ class Command(BaseCommand):
                     time_difference_in_minutes = (now - session.expire_date).total_seconds() / 60
                     logger.debug("VM up after session expiry: " + str(time_difference_in_minutes))
                     if int(time_difference_in_minutes) >= started_vm.vm.course.auto_shutdown_after:
-                        cmd = 'kill ' + started_vm.no_vnc_pid
-                        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-                        out, err = p.communicate()
-                        if not p.returncode == 0:
-                            if 'No such process' not in err.rstrip():
-                                raise Exception('ERROR : cannot stop the vm '
-                                                '\n Reason : %s' % err.rstrip())
+                        try:
+                            os.kill(int(started_vm.no_vnc_pid), signal.SIGTERM)
+                        except OSError as e:
+                            logger.error('Error stopping NoVNC Client with PID ' + str(started_vm.no_vnc_pid) + str(e))
+
                         XenClient().stop_vm(started_vm.xen_server, user, started_vm.vm.course.id, started_vm.vm.id)
                         config = Available_Config()
                         config.category = 'TERM_PORT'

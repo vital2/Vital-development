@@ -1,5 +1,7 @@
 import ConfigParser
 import logging
+import os
+import signal
 import zmq
 from subprocess import Popen, PIPE
 
@@ -21,12 +23,10 @@ def release_vm(user_id, course_id, vm_id):
         user = VLAB_User.objects.get(id = user_id)
         XenClient().remove_network_bridges(vm.xen_server, user, course_id, vm_id)
 
-        cmd = 'kill -9 ' + vm.no_vnc_pid
-        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-        out, err = p.communicate()
-        if not p.returncode == 0:
-            if 'No such process' not in err.rstrip():
-                logger.error('Error stopping NoVNC Client with PID ' + str(vm.no_vnc_pid) + '(' + err.rstrip() + ')')
+        try:
+            os.kill(int(vm.no_vnc_pid), signal.SIGTERM)
+        except OSError as e:
+            logger.error('Error stopping NoVNC Client with PID ' + str(vm.no_vnc_pid) + str(e))
 
         config = Available_Config()
         config.category = 'TERM_PORT'
