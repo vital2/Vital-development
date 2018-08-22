@@ -148,7 +148,7 @@ class XenClient:
             available_conf.save()
             conf.delete()
         logger.debug("Removing User bridges..")
-        bridges_to_delete = User_Bridge.objects.filter(name__startswith=str(user.id) + '_')
+        bridges_to_delete = User_Bridge.objects.filter(name__startswith=str(user.id) + '_' + str(course.id))
         for bridge in bridges_to_delete:
             bridge.delete()
 
