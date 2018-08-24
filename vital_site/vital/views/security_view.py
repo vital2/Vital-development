@@ -297,17 +297,7 @@ def stop_vms_during_logout(user):
     for user_vm in user_vms:
         vm = user_vm.vm
         if not vm.course.allow_long_running_vms:
-            try:
-                os.kill(int(user_vm.no_vnc_pid), signal.SIGTERM)
-            except OSError as e:
-                logger.error('Error stopping NoVNC Client with PID ' + str(user_vm.no_vnc_pid) + str(e))
-
             XenClient().stop_vm(user_vm.xen_server, user, vm.course.id, vm.id)
-            config = Available_Config()
-            config.category = 'TERM_PORT'
-            config.value = user_vm.terminal_port
-            config.save()
-            user_vm.delete()
         else:
             all_vms_shutdown = False
     return all_vms_shutdown
