@@ -322,3 +322,36 @@ def index(request):
     else:
         logger.debug('user is admin')
 
+def release_vm(request, user_id, vm_id):
+    logger.debug("in releaseVM")
+    error_message = ''
+
+    try:
+        if request.method == 'GET':
+            # Get the VM ID in request
+	    api_key = request.GET['api_key']
+            if (api_key != config_ini.get("Security", "INTERNAL_API_KEY")):
+		logger.debug('Incorrect API Key found in Release Vm Request {}'.format(api_key))
+                return HttpResponse('FAILED')
+            else:
+                vm = User_VM_Config.objects.get(user_id=user_id, vm_id=vm_id)
+                logger.debug('VM : {}'.format(vm.no_vnc_pid))
+
+                cmd = 'kill ' + vm.no_vnc_pid
+                p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+                out, err = p.communicate()
+                if not p.returncode == 0:
+                    if 'No such process' not in err.rstrip():
+                        logger.error('Error stopping NoVNC Client with PID ' + str(vm.no_vnc_pid) + '(' + err.rstrip() + ')')
+
+                config = Available_Config()
+                config.category = 'TERM_PORT'
+                config.value = vm.terminal_port
+                config.save()
+                vm.delete()
+                # audit(request, 'Stopped Virtual machine ' + str(virtual_machine.name))
+                # return redirect('/vital/courses/14/vms?message=VM stopped...')
+                return HttpResponse('SUCCESS')
+
+    except Exception as e:
+	logger.error(str(e))

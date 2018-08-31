@@ -2,6 +2,20 @@
 {% load staticfiles %}
 {% block content_without_center %}
     <script type="application/javascript">
+    function refresh() {
+        $.ajax({
+            url: "{% url 'vital:virtual_machines' course_id %}",
+            success: function(data) {
+                $('#vms').html(data);
+            }
+        });
+        setTimeout(refresh, 5000);
+    }
+
+    $(function(){
+        refresh();
+    });
+
     function windowpop(url, name, width, height, vm_id) {
     var leftPosition, topPosition;
     //Allow for borders.
@@ -58,57 +72,8 @@ $(window).load(function(){
            <div id="message" style="position: absolute; width:65%; height:25px; background-color: #ddea91;
            z-index: 1100; top:160px; font-size: small; color: darkred">{{ message }}</div>
        {% endif %}
-    {% if virtual_machines %}
-
-    <div id="center" align="center" style="width: 800px">
-        <div width="500px" style="position: relative">
-            {% for vm in virtual_machines %}
-                <div class="box" width="25%" style='background:url({% static  vm.type.icon_location %}) no-repeat 50% 50%;background-size: contain;'
-                     title={{ vm.name }}>
-		            <div class="overlay" style="width:100%;height:100%">
-	                    <div style="height:33%;padding-top:7px">
-                            {% if vm.state == 'R'%}
-                                <a href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/stop' onclick="openNav()">
-                                    <img src="{% static  'vital/red-power.png' %}" width="30px" height="30px" title="Stop VM"/>
-                                </a>
-                            {% else %}
-                                <a href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/start' onclick="openNav()">
-                                <img src="{% static  'vital/green-power.png' %}" width="30px" height="30px" title="Start VM"/>
-                            </a>
-                            {% endif %}
-                        </div>
-                        <div style="height:33%;">
-                            {% if vm.state == 'R'%}
-                            <a href="http://{{ server_name }}:{{ vm.terminal_port }}/vnc_auto.html"
-                               onclick="return windowpop(this.href, 'Terminal-{{ vm.id }}', 825, 680, {{ vm.id }})">
-                                <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console"/>
-                            </a>
-                                <!--<a href="/vital/console/{{ vm.id }}"
-                               onclick="return windowpop(this.href, 'Terminal-{{ vm.id }}', 825, 680, {{ vm.id }})">
-                                <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console"/>
-                            </a>-->
-                            {% endif %}
-                        </div>
-                        <div style="height:33%;">
-                            {% if vm.state != 'R'%}
-                            <a href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/rebase' onclick="openNav()">
-                                <img src="{% static  'vital/reimage.png' %}" width="30px" height="30px" title="Reimage VM"/>
-                            </a>
-                            {% endif %}
-                        </div>
-		            </div>
-
-                    {% if vm.state == 'R'%}
-                        <div style="width:100%; margin-top:-5px; background-color: green; height: 7px">&nbsp;</div>
-                    {% else %}
-                        <div style="width:100%; margin-top:-5px; background-color: red; height: 7px">&nbsp;</div>
-                    {% endif %}
-		            <div style="width:100%; margin-top:-5px; font-weight:bold" align="center">{{ vm.name }}</div>
-		        </div>
-            {% endfor %}
-        </div>
-     </div>
-    {% endif %}
-
+<div id = "vms">
+    {% include "virtual_machines.html" %}
+</div>
 
 {% endblock content_without_center %}

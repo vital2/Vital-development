@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, render, redirect, render_to_response
 from django.contrib.auth.decorators import login_required
 from ..models import Course, Registered_Course, Virtual_Machine, User_VM_Config, Available_Config, \
     User_Network_Configuration
@@ -37,14 +37,14 @@ def registered_courses(request):
 
 
 @login_required(login_url='/vital/login/')
-def course_vms(request, course_id):
+def virtual_machines(request, course_id):
     """
     lists all VMs of the selected course
     :param request: http request
     :param course_id: id of the selected course
     :return: course VMs page
     """
-    logger.debug("in course vms")
+    # logger.debug("in detail vms")
     params = dict()
     virtual_machines = Virtual_Machine.objects.filter(course_id=course_id)
     server_name = config_ini.get('VITAL', 'SERVER_NAME')
@@ -62,6 +62,21 @@ def course_vms(request, course_id):
     params['virtual_machines'] = virtual_machines
     params['course_id'] = course_id
     params['server_name'] = server_name
+
+    # if not request.GET.get('message', '') == '':
+    #     params['message'] = request.GET.get('message')
+
+    return render_to_response('vital/virtual_machines.html', params)
+
+@login_required(login_url='/vital/login/')
+def course_vms(request, course_id):
+    """
+    Stub method for rendering course Page
+    """
+    logger.debug("in course vms")
+    params = dict()
+
+    params['course_id'] = course_id
 
     if not request.GET.get('message', '') == '':
         params['message'] = request.GET.get('message')
@@ -101,7 +116,7 @@ def start_novnc(config, started_vm):
             val = locked_conf[0].value
             locked_conf.delete()
             launch_script = config_ini.get("VITAL", "NOVNC_LAUNCH_SCRIPT")
-            cmd = 'sh '+launch_script+' --listen {} ' \
+            cmd = launch_script+' --listen {} ' \
                   '--vnc {}:{}'.format(val, started_vm['xen_server'], started_vm['vnc_port'])
             logger.debug("start novnc - "+cmd)
             p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
@@ -170,22 +185,22 @@ def stop_vm(request, course_id, vm_id):
     audit(request, 'Stopping Virtual machine ' + str(virtual_machine.name))
     vm = User_VM_Config.objects.get(user_id=request.user.id, vm_id=vm_id)
 
-    cmd = 'kill ' + vm.no_vnc_pid
-    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-    out, err = p.communicate()
-    if not p.returncode == 0:
-        if 'No such process' not in err.rstrip():
-            audit(request, 'Error stopping Virtual machine ' + str(virtual_machine.name) +
-                  '(' + err.rstrip() + ')')
-            raise Exception('ERROR : cannot stop the vm '
-                            '\n Reason : %s' % err.rstrip())
+    # cmd = 'kill ' + vm.no_vnc_pid
+    # p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+    # out, err = p.communicate()
+    # if not p.returncode == 0:
+    #     if 'No such process' not in err.rstrip():
+    #         audit(request, 'Error stopping Virtual machine ' + str(virtual_machine.name) +
+    #               '(' + err.rstrip() + ')')
+    #         raise Exception('ERROR : cannot stop the vm '
+    #                         '\n Reason : %s' % err.rstrip())
     try:
         XenClient().stop_vm(vm.xen_server, request.user, course_id, vm_id)
-        config = Available_Config()
-        config.category = 'TERM_PORT'
-        config.value = vm.terminal_port
-        config.save()
-        vm.delete()
+    #     config = Available_Config()
+    #     config.category = 'TERM_PORT'
+    #     config.value = vm.terminal_port
+    #     config.save()
+    #     vm.delete()
         audit(request, 'Stopped Virtual machine ' + str(virtual_machine.name))
         return redirect('/vital/courses/' + course_id + '/vms?message=VM stopped...')
     except Exception as e:
