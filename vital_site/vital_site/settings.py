@@ -145,7 +145,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/home/vital/vital2.0/log/vital.log',
+            'filename': '/var/log/vital/vital.log',
             'maxBytes': 1024*1024*1, # 1 MB
             'backupCount': 15,
             'formatter': 'verbose'
