@@ -3939,9 +3939,13 @@ ul.green-arrow li.event, .panel-pane ul li.event, .block ul li.event {
 }
 
 #footer {
-    background: #f9f9f9 url(/sites/all/themes/polyframe/images/dashes_gray.png) repeat center top;
+    background: #f9f9f9 repeat center top;
     padding: 36px 0 26px 0;
-    position: relative;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    /* position: relative; */
     height: 100px;
 }
 
@@ -5136,7 +5140,7 @@ form#webformsignup-quicksignup-export-form {
 }
 
 #main-nav-container {
-    background: #3d0463 url(/sites/all/themes/polyframe/images/dashes_light.png) repeat top left;
+    background: #3d0463 repeat top left;
     width: auto;
     height: 26px;
     position: relative;
