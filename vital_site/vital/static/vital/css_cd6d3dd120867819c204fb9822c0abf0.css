@@ -2829,8 +2829,10 @@ body {
 }
 
 #hug {
-    position: relative;
+    /* position: relative; */
     min-height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 #outter-wrap {
@@ -2852,6 +2854,7 @@ body {
     margin-bottom: 50px;
     width: 960px;
     padding: 36px 10px 0px 10px;
+    flex: 1 0 auto;
 }
 
 h1 span {
@@ -3941,11 +3944,12 @@ ul.green-arrow li.event, .panel-pane ul li.event, .block ul li.event {
 #footer {
     background: #f9f9f9 repeat center top;
     padding: 36px 0 26px 0;
-    position: absolute;
+    /* position: absolute; */
     right: 0;
     bottom: 0;
     left: 0;
-    /* position: relative; */
+    /* position: static; */
+    flex-shrink: 0;
     height: 100px;
 }
 
