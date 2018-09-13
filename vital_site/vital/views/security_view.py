@@ -117,12 +117,12 @@ def activate(request):
                         django_login(request, user)
                         #audit(request, 'Activated user')
                         send_mail('Welcome to Vital',
-                                  'Hi ' + user.first_name + ',\r\n\n Welcome to Vital. Your account has been activated. '
+                                  'Hi ' + user.first_name + ',\r\n\nWelcome to Vital. Your account has been activated. '
                                                             'Please follow instructions '
                                                             'from your instructor to access the course VMs. '
                                                             '\r\n\nSFTP Host : 128.238.77.36 \n Your SFTP account is '+user.sftp_account+' and password '
                                                             'is the same as vital.'
-                                                            '\r\n\n For help on using Vital Interface please read the wiki '
+                                                            '\r\n\nFor help on using Vital Interface and SFTP Access please read the wiki '
                                                             'https://github.com/vital2/virtual_lab/wiki/Vital-User-Guide '
                                                             '\r\n\nVital',
                                   'no-reply-vital@nyu.edu', [user.email], fail_silently=False)
@@ -216,9 +216,9 @@ def forgot_password(request):
                 activation_code = randint(100000, 999999)
                 user.activation_code = activation_code
                 user.save()
-                send_mail('Password reset mail', 'Hi '+user.first_name+',\r\n\n Please copy the following link to '
-                                                                       'reset your password to your browser. '
-                                                                       'http://'+config_ini.get("VITAL", "SERVER_NAME")+'/'
+                send_mail('Password reset mail', 'Hi '+user.first_name+',\r\n\nPlease click or copy the following link to '
+                                                                       'reset your password in your browser. '
+                                                                       'https://'+config_ini.get("VITAL", "SERVER_NAME")+'/'
                                                                        'vital/users/reset-password?user_email='
                           + user.email+'&activation_code='+str(activation_code)
                           + '.\r\n\nVital', 'no-reply-vital@nyu.edu',
