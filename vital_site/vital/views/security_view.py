@@ -253,7 +253,7 @@ def login(request):
                                   {'message': 'User is not active. ' +
                                               'Please check your mail(' +
                                               user.email + ') for ' +
-                                              'activation code',
+                                              'activation code. Also please check your SPAM folder as it may have been wrongly classified as spam.',
                                    'form': form})
                     # try:
                     #     Blocked_User.objects.get(user_id=user.id)
