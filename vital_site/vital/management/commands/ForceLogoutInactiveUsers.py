@@ -39,7 +39,7 @@ class Command(BaseCommand):
                     logger.debug("VM: " + str(started_vm.vm.name))
                     time_difference_in_minutes = (now - session.expire_date).total_seconds() / 60
                     logger.debug("VM up after session expiry: " + str(time_difference_in_minutes))
-                    if int(time_difference_in_minutes) >= started_vm.vm.course.auto_shutdown_after:
+                    if int(time_difference_in_minutes) >= started_vm.vm.course.auto_shutdown_after * 60:
                         try:
                             os.kill(int(started_vm.no_vnc_pid), signal.SIGTERM)
                         except OSError as e:
