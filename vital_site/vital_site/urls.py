@@ -17,7 +17,8 @@ from django.conf.urls import include, url
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^vital/', include('vital.urls')),
+    url(r'^authoring/', include('authoring.urls', namespace='authoring')),
+    url(r'^vital/', include('vital.urls', namespace='vital')),
     url(r'^admin/', admin.site.urls),
     url(r'^captcha/', include('captcha.urls')),
     url(r'session_security/', include('session_security.urls')),

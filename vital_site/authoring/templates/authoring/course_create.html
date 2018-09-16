@@ -1,0 +1,49 @@
+{% extends 'vital/base.html' %}
+
+{% block content %}
+
+<form action="{% url 'authoring:course_create' %}" method='POST'>
+    {% csrf_token %}
+    {% if error_message %}
+    <p class="error">
+            {{ error_message }}
+    </p>
+    {% endif %}
+    <table style="width: auto">
+    {% for field in form %}
+        <tr>
+            <td><label for="{{ field.auto_id }}">{{ field.label_tag }}
+            <td>{{ field }}</td>
+            {% if field.start_date %}
+                <td class="datepicker"></td>
+            {% endif %}
+            {% if field.errors %}
+                <td colspan="2" align="right">
+		          {% for error in field.errors %}
+		            <div style="font-size: 10px; color: red" align="right">{{ error }}</div>
+		          {% endfor %}
+                  </td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    <tr>
+        <td colspan="3" align="right"><input type='submit' value='Next'/></td>
+    </tr>
+    </table>
+</form>
+
+ <!--   {% load static %}
+    <script type="text/javascript" src="{% static 'authoring/js/jquery-ui.min.js' %}"></script>
+    <link rel="Stylesheet" type="text/css" href={% static "authoring/js/jquery-ui.min.css"%}/>
+    <link rel="Stylesheet" type="text/css" href={% static "authoring/js/jquery-ui.structure.min.css"%}/>
+    <link rel="Stylesheet" type="text/css" href={% static "authoring/js/jquery-ui.theme.min.css"%}/>
+
+    <script>
+      $(function() {
+        $( '.datepicker' ).datepicker({dateFormat : 'yy-mm-dd'});
+
+      });
+    </script>-->
+
+
+{% endblock content %}

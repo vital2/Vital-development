@@ -1,0 +1,64 @@
+{% extends 'vital/base.html' %}
+
+{% block content %}
+<form action="{% url 'authoring:course_add_vms' %}" method='POST' id="form">
+    {% csrf_token %}
+    {% if error_message %}
+    <p class="error">
+            {{ error_message }}
+    </p>
+    {% endif %}
+
+    {% if created_vms %}
+        {%  for created_vm in created_vms %}
+            <div style="width: 100%" align="left">
+                <table width="75%" style="font-size: small">
+                    <tr>
+                        <td> {{ created_vm.name }}</td>
+                        <td> {{ created_vm.type }} </td>
+                    </tr>
+                </table>
+            {% endfor %}
+    {% endif %}
+
+    <table style="width: auto">
+    {% for field in form %}
+        <tr>
+            <td><label for="{{ field.auto_id }}">{{ field.label_tag }}
+            <td>{{ field }}</td>
+
+            {% if field.name == 'vm_type' %}
+                <td><a href="{% url 'authoring:upload_iso' %}">Upload iso</a></td>
+            {% endif %}
+            {% if field.errors %}
+                <td colspan="2" align="right">
+		          {% for error in field.errors %}
+		            <div style="font-size: 10px; color: red" align="right">{{ error }}</div>
+		          {% endfor %}
+                  </td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    <tr>
+        <td colspan="3" align="right"><input type='submit' value='Add more' name="addmore"/>
+    </tr>
+    <tr>
+        <td colspan="3" align="right"><input type='submit' value='Next' name="next"/></td>
+        <td colspan="3" align="right"><input type='submit' value='Cancel' name="cancel"/></td>
+    </tr>
+    </table>
+
+</form>
+
+<!--<script>
+function addmore(){
+    var contents = document.getElementById("form");
+    var cln = contents.cloneNode(true);
+    document.getElementById("form").appendChild(cln);
+}
+</script>-->
+
+
+{% endblock content %}
+
+

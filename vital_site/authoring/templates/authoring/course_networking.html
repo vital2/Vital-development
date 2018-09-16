@@ -1,0 +1,57 @@
+{% extends 'vital/base.html' %}
+
+{% block content %}
+    <form action="{% url 'authoring:course_networking' %}" method='POST'>
+        {% csrf_token %}
+
+        {% if error_message %}
+            <p class="error">
+                {{ error_message }}
+            </p>
+        {% endif %}
+
+        {% if created_nets %}
+            {% for created_net in created_nets %}
+                <div style="width: 100%" align="left">
+                    <table width="75%" style="font-size: small">
+                        <tr>
+                            <td>{{ created_net.name }}</td>
+                            <td>{{ created_net.virtual_machine }}</td>
+                            <td>{{ created_net.interface }}</td>
+                        </tr>
+                    </table>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <table style="width: auto">
+            <tr>
+                <td><label for="{{ form.hub_name.id_for_label }}">Hub name</label>
+                <td>{{ form.hub_name }}</td>
+            </tr>
+            <tr>
+                <td><label for="{{ form.hub_vms.id_for_label }}">VM name</label>
+                <td>{{ form.hub_vms }}</td>
+                <td><label for="{{ form.vm_iface.id_for_label }}">Iface</label>
+                <td>{{ form.vm_iface }}</td>
+            </tr>
+
+        {% if field.errors %}
+            <td colspan="2" align="right">
+              {% for error in field.errors %}
+                <div style="font-size: 10px; color: red" align="right">{{ error }}</div>
+              {% endfor %}
+              </td>
+        {% endif %}
+
+            <tr>
+                <td colspan="4" align="right"><input type='submit' value='Add more VMs' name="addmore"/></td>
+                <td colspan="3" align="right"><input type='submit' value='Add more Hubs' name="addmore"/>
+            </tr>
+            <tr>
+                <td colspan="4" align="right"><input type='submit' value='Next' name="next"/></td>
+                <td colspan="4" align="right"><input type='submit' value='Cancel' name="cancel"/></td>
+            </tr>
+        </table>
+    </form>
+{% endblock content %}

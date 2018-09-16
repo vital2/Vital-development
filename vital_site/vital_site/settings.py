@@ -23,6 +23,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'authoring.apps.AuthoringConfig',
     'vital.apps.VitalConfig',
     'captcha',
     'passwords',
@@ -161,6 +162,10 @@ LOGGING = {
             'level':'ERROR',
         },
         'vital': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+        },
+        'authoring': {
             'handlers': ['file', 'console'],
             'level': 'DEBUG',
         },

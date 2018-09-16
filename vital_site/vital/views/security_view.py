@@ -71,7 +71,7 @@ def register(request):
                                   {'form': form, 'error_message': error_message})
 
                 logger.debug("Creating SFTP account")
-                cmd = 'sudo /home/vital/vital2.0/source/virtual_lab/vital_site/scripts/sftp_account.sh create '+ \
+                cmd = 'sudo /home/vital/vital2.0/source/virtual_lab/vital_site/scripts/sftp_account.sh create ' + \
                       user.sftp_account+' '+user.sftp_pass + ' > /home/vital/vital2.0/log/sftp.log'
                 p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
                 out, err = p.communicate()
@@ -118,7 +118,7 @@ def activate(request):
                                   'Hi ' + user.first_name + ',\r\n\n Welcome to Vital. Your account has been activated. '
                                                             'Please follow instructions '
                                                             'from your instructor to access the course VMs. '
-                                                            '\r\n\nSFTP Host : 128.238.66.35 \n Your SFTP account is '+user.sftp_account+' and password'
+                                                            '\r\n\nSFTP Host : 128.238.77.36 \n Your SFTP account is '+user.sftp_account+' and password'
                                                             ' is the same as vital.  \r\n\nVital',
                                   'no-reply-vital@nyu.edu', [user.email], fail_silently=False)
                         logger.debug('activated..'+user.email)
@@ -318,7 +318,7 @@ def index(request):
         return redirect('/vital/courses/registered')  # change here to home page
     elif user.is_faculty:
         logger.debug('user is a faculty')
-        return redirect('/vital/courses/advising')  # change here to home page
+        return redirect('/authoring')  # change here to home page
     else:
         logger.debug('user is admin')
 

@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
-
 from django.db import models
-from datetime import datetime
+#import datetime
+from datetime import datetime, date
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 
@@ -90,10 +90,11 @@ class Course(models.Model):
     capacity = models.IntegerField(default=0)
     start_date = models.DateTimeField(default=datetime.now, blank=True)
     created_date = models.DateTimeField(default=datetime.now, blank=True)
-    status = models.CharField(max_length=10)
+    status = models.CharField(max_length=10, default='INACTIVE')
     auto_shutdown_after = models.IntegerField(default=3)
     allow_long_running_vms = models.BooleanField(default=False)
     no_of_students = models.IntegerField(default=0)
+    course_owner = models.IntegerField(default=0)
 
     def __str__(self):
         return self.course_number + ":" + self.name
@@ -103,11 +104,17 @@ class Virtual_Machine_Type(models.Model):
     name = models.CharField(max_length=200)
     icon_location = models.CharField(max_length=500)
 
+    def __str__(self):
+        return self.name
+
 
 class Virtual_Machine(models.Model):
-    course = models.ForeignKey(Course)
+    course = models.ForeignKey(Course, blank=True)
     name = models.CharField(max_length=200)
     type = models.ForeignKey(Virtual_Machine_Type, null=True)
+
+    def __str__(self):
+        return self.name
 
 
 class User_VM_Config(models.Model):
@@ -130,6 +137,7 @@ class Network_Configuration(models.Model):
     virtual_machine = models.ForeignKey(Virtual_Machine)
     is_course_net = models.BooleanField(default=False)
     has_internet_access = models.BooleanField(default=False)
+    interface = models.CharField(max_length=10, null=True)
 
 
 class User_Bridge(models.Model):
