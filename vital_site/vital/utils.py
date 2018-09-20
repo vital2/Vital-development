@@ -374,7 +374,7 @@ class SneakyXenLoadBalancer:
         Send Stats to InfluxDB for Grafana Visualization
         :param server: server instance with all the values from the xen Machines
         """
-        timestr = datetime.datetime.now().replace(microsecond=0).isoformat() + 'Z'
+        timestr = datetime.datetime.utcnow().replace(microsecond=0).isoformat() + 'Z'
         json_body = [
             {
                 "measurement": "used_memory",
@@ -483,7 +483,7 @@ class SneakyXenLoadBalancer:
                         fields['mem_per'] = float(vm['mem_per'])
                         fields['vcpus'] = int(vm['vcpus'])
                         fields['networks'] = int(vm['nets'])
-                        timestr = datetime.datetime.now().replace(microsecond=0).isoformat() + 'Z'
+                        timestr = datetime.datetime.utcnow().replace(microsecond=0).isoformat() + 'Z'
                         dom_detail = {}
                         dom_detail['measurement'] = 'vm_details'
                         dom_detail['tags'] = tags
