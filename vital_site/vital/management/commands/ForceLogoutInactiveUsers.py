@@ -30,7 +30,7 @@ class Command(BaseCommand):
                 logger.debug('session user_id:' +user_id)
                 user = VLAB_User.objects.get(id=user_id)
                 stupid_user = False
-                logger.debug("Force shutting down VMs for user : " + user.email)
+                logger.debug("Checking session time for user : " + user.email)
 
                 started_vms = User_VM_Config.objects.filter(user_id=user_id)
                 for started_vm in started_vms:
