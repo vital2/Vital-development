@@ -46,7 +46,7 @@ def virtual_machines(request, course_id):
     """
     # logger.debug("in detail vms")
     params = dict()
-    virtual_machines = Virtual_Machine.objects.filter(course_id=course_id)
+    virtual_machines = Virtual_Machine.objects.filter(course_id=course_id).order_by('id')
     server_name = config_ini.get('VITAL', 'SERVER_NAME')
     for vm in virtual_machines:
         user_vm_configs = vm.user_vm_config_set.filter(user_id=request.user.id)

@@ -6,7 +6,6 @@
     var clicked = false;
     $('.ctrlbtn').on('click', function(e) {
 	if(clicked) {
-	    console.log("in script")
             e.preventDefault();
 	    $(this).off("click").attr('href', "javascript: void(0);");
         }
