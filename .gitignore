@@ -2,3 +2,6 @@
 *.log
 .idea/
 .vscode/
+
+# eliminate OSX file meta data
+*.DS_Store
