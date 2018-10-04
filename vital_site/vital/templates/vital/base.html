@@ -9,7 +9,7 @@
 <meta name="theme-color" content="#57068c">
 <link rel="mask-icon" href="http://engineering.nyu.edu/sites/all/themes/polyframe/nyu_torch_tab.svg" color="#57068c">
 <link rel="stylesheet" type="text/css" href="{% static 'vital/fonts.css' %}">
-<link rel="shortcut icon" href="http://engineering.nyu.edu/sites/all/themes/polyframe/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="https://engineering.nyu.edu/themes/custom/tandon/images/favicon/favicon-32x32.png" type="image">
     <link type="text/css" rel="stylesheet" media="all" href="{% static 'vital/css_cd6d3dd120867819c204fb9822c0abf0.css' %}">
 <link type="text/css" rel="stylesheet" media="all" href="{% static 'vital/homepage.css' %}">
     <!--[if lte IE 7]>
@@ -26,14 +26,14 @@
     /* Height & width depends on how you want to reveal the overlay (see JS below) */
     height: 100%;
     width: 0;
-    position: fixed; /* Stay in place */
+    position: absolute; /* Stay in place */
     z-index: 1101; /* Sit on top */
     left: 0;
     top: 0;
     background-color: rgb(0,0,0); /* Black fallback color */
     background-color: rgba(0,0,0, 0.9); /* Black w/opacity */
     overflow-x: hidden; /* Disable horizontal scroll */
-    transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+    transition: color 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
 }
 .pageoverlay-content {
     position: relative;
@@ -76,6 +76,7 @@
                 {% endif %}
                 <li class="menu-334"><a href="/vital/users/reset-password">Reset Password</a></li>
             {% endif %}
+	    <li class="menu-335"><a href="https://bugzilla.poly.edu">Report Issue</a></li>
             <li class="menu-335"><a href="https://github.com/vital2/virtual_lab/wiki/Vital-User-Guide">wiki</a></li>
         </ul>
       </div>
@@ -108,8 +109,8 @@
       <!--/div--> <!-- /#inner -->
       </div> <!-- /#container -->
     <div id="footer" class="clearfix">
-    	<div id="footer-top"><div class="container-12 clearfix"><div id="engineering-is" class="col-6"><h4><a href="http://engineering.nyu.edu/engineeringis">Engineering <span class="is">is</span> <span class="tagname">NYU</span></a></h4></div><div class="container-12 clearfix">
-<address class="col-9"><strong>NYU School of Engineering</strong> 6 MetroTech Center, Brooklyn, NY 11201 </address><p class="col-3 copy">© NYU School of Engineering</p>    	</div>
+    	<div id="footer-top"><div class="container-12 clearfix"><div id="engineering-is" class="col-6"><h4><a href="https://engineering.nyu.edu/">Engineering <span class="is">is</span> <span class="tagname">NYU</span></a></h4></div>
+<address style="text-align:right"><strong>NYU School of Engineering</strong> 6 MetroTech Center, Brooklyn, NY 11201 </address><p class="copy" style="text-align:right">© NYU Tandon 2018</p>
     </div> <!--#footer -->
             </div>
     </div>

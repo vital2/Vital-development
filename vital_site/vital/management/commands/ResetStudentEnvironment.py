@@ -127,13 +127,11 @@ class Command(BaseCommand):
             try:
                 user_vm = vm.user_vm_config_set.get(user_id=user.id)
                 logger.debug('Killing VNC for ' + vm.name)
-                cmd = 'kill ' + user_vm.no_vnc_pid
-                p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-                out, err = p.communicate()
-                if not p.returncode == 0:
-                    if 'No such process' not in err.rstrip():
-                        raise Exception('ERROR : cannot stop the vm '
-                                        '\n Reason : %s' % err.rstrip())
+                try:
+                    os.kill(int(user_vm.no_vnc_pid), signal.SIGTERM)
+                except OSError as e:
+                    logger.error('Error stopping NoVNC Client with PID ' + str(user_vm.no_vnc_pid) + str(e))
+
                 available_conf = Available_Config()
                 available_conf.category = 'TERM_PORT'
                 available_conf.value = user_vm.terminal_port

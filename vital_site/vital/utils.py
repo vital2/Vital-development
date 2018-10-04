@@ -1,10 +1,12 @@
 import logging
 import xmlrpclib
+import datetime
 from models import Audit, Available_Config, User_Network_Configuration, Virtual_Machine, \
     User_VM_Config, Course, VLAB_User, Xen_Server, User_Bridge, Local_Network_MAC_Address
 import ConfigParser
 from decimal import *
 from django.db import transaction
+from influxdb import InfluxDBClient
 
 logger = logging.getLogger(__name__)
 config = ConfigParser.ConfigParser()
@@ -39,6 +41,24 @@ def is_number(s):
         return True
     except ValueError:
         return False
+
+def get_spice_options():
+    """
+    Just to define the Spice options dictionary as a function.
+    returns: Dictionary conatining the various Spice Options.
+    """
+    spice_opts = {
+	# 'vcpus': 4,
+        'vnc': 0,
+        'vga': 'cirrus',
+        'spice': 1,
+        # 'spicehost': '0.0.0.0',
+        'spiceport': 0,
+        'spicedisable_ticketing': 1,
+        'spicevdagent': 1,
+        'spice_clipboard_sharing': 1
+    }
+    return spice_opts
 
 
 class XenClient:
@@ -81,7 +101,7 @@ class XenClient:
                         if network.is_course_net:
                             available_config = Available_Config.objects.filter(category='MAC_ADDR').order_by('id').first()
                             locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
-                            if locked_conf is not None and len(locked_conf) > 0:
+                            if locked_conf is not None:
                                 val = locked_conf[0].value
                                 locked_conf.delete()
                                 vif = vif + '\'mac=' + val + ', bridge=' + network.name + '\'' + ','
@@ -89,7 +109,7 @@ class XenClient:
                         else:
                             locked_conf = Local_Network_MAC_Address.objects.get( network_configuration = network.id)
                             val = locked_conf.mac_id
-                            if locked_conf is not None and len(locked_conf) > 0:
+                            if locked_conf is not None:
                                 net_name = str(user.id) + '_' + str(course.id) + '_' + network.name
                                 vif = vif + '\'mac=' + val + ', bridge=' + net_name + '\'' + ','
                                 user_net_config.bridge, obj_created = User_Bridge.objects.get_or_create(name=net_name)
@@ -128,7 +148,7 @@ class XenClient:
             available_conf.save()
             conf.delete()
         logger.debug("Removing User bridges..")
-        bridges_to_delete = User_Bridge.objects.filter(name__startswith=str(user.id) + '_')
+        bridges_to_delete = User_Bridge.objects.filter(name__startswith=str(user.id) + '_' + str(course.id))
         for bridge in bridges_to_delete:
             bridge.delete()
 
@@ -150,11 +170,27 @@ class XenClient:
                 conf.bridge.created = True
                 conf.bridge.save()
 
-            vm = xen.start_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
+            display_server = config.get('VITAL', 'DISPLAY_SERVER')
+
+            if display_server == 'SPICE':
+                vm_options = ';'.join('{}="{}"'.format(key, val) for (
+                    key, val) in get_spice_options().iteritems())
+                logger.debug('VM OPTIONS : %s', vm_options)
+                # vm_options = ''
+            elif display_server == 'VNC':
+                vm_options = ''
+            else:
+                logger.error('ERROR : Invalid Display Server found - %s.' \
+                    'Starting with NoVNC', display_server)
+                display_server = 'VNC'
+                vm_options = ''
+
+            vm = xen.start_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id), vm_options)
             vm['xen_server'] = xen.name
+            vm['display_type'] = display_server
             return vm
 
-    def stop_vm(self, server, user, course_id, vm_id):
+    def remove_network_bridges(self, server, user, course_id, vm_id):
         xen = SneakyXenLoadBalancer().get_server(server)
 
         with transaction.atomic():
@@ -181,7 +217,10 @@ class XenClient:
                     xen.remove_bridge(user, bridge.name)
                     bridge.created = False
                     bridge.save()
-            xen.stop_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
+
+    def stop_vm(self, server, user, course_id, vm_id):
+        xen = SneakyXenLoadBalancer().get_server(server)
+        xen.stop_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
 
     def rebase_vm(self, user, course_id, vm_id):
         xen = SneakyXenLoadBalancer().get_best_server(user, course_id)
@@ -227,8 +266,8 @@ class XenServer:
     def stop_vm(self, user, vm_name):
         self.proxy.xenapi.stop_vm(user.email, user.password, vm_name)
 
-    def start_vm(self, user, vm_name):
-        return self.proxy.xenapi.start_vm(user.email, user.password, vm_name)
+    def start_vm(self, user, vm_name, vm_options=''):
+        return self.proxy.xenapi.start_vm(user.email, user.password, vm_name, vm_options)
 
     def save_vm(self, user, vm_name):
         return self.proxy.xenapi.save_vm(user.email, user.password, vm_name)
@@ -254,7 +293,8 @@ class XenServer:
     def is_bridge_up(self, user, name):
         return self.proxy.xenapi.is_bridge_up(user.email, user.password, name)
 
-
+    def get_dom_details(self, user):
+        return self.proxy.xenapi.get_dom_details(user.email, user.password)
 
 class SneakyXenLoadBalancer:
 
@@ -327,3 +367,136 @@ class SneakyXenLoadBalancer:
                 server.status = 'INACTIVE'
             finally:
                 server.save()
+                self.send_stats_to_influxdb(server)
+
+    def send_stats_to_influxdb(self, server):
+        """
+        Send Stats to InfluxDB for Grafana Visualization
+        :param server: server instance with all the values from the xen Machines
+        """
+        timestr = datetime.datetime.utcnow().replace(microsecond=0).isoformat() + 'Z'
+        json_body = [
+            {
+                "measurement": "used_memory",
+                "tags": {
+                    "host": server.name
+                },
+                "time": timestr,
+                "fields": {
+                    "value": server.used_memory
+                }
+            },
+            {
+                "measurement": "no_of_students",
+                "tags": {
+                    "host": server.name
+                },
+                "time": timestr,
+                "fields": {
+                    "value": server.no_of_students
+                }
+            },
+            {
+                "measurement": "no_of_courses",
+                "tags": {
+                    "host": server.name
+                },
+                "time": timestr,
+                "fields": {
+                    "value": server.no_of_courses
+                }
+            },
+            {
+                "measurement": "no_of_vms",
+                "tags": {
+                    "host": server.name
+                },
+                "time": timestr,
+                "fields": {
+                    "value": server.no_of_vms
+                }
+            },
+            {
+                "measurement": "utilization",
+                "tags": {
+                    "host": server.name
+                },
+                "time": timestr,
+                "fields": {
+                    "value": round(server.utilization, 5)
+                }
+            },
+            {
+                "measurement": "status",
+                "tags": {
+                    "host": server.name
+                },
+                "time": timestr,
+                "fields": {
+                    "value": server.status
+                }
+            }
+        ]
+
+        c = InfluxDBClient(host='localhost', port=8086)
+        c.switch_database('xen_stats')
+        c.write_points(json_body)
+        c.close()
+
+    def get_xen_dom_details(self):
+        # heart beat - 1 Minute stats collection
+        # this is exposed as a custom django command that will be executed on server start
+        # vital/management/commands
+        server_configs = config.items('Servers')
+        user = VLAB_User.objects.get(first_name='Cron', last_name='User')
+        for key, server_url in server_configs:
+            server = Xen_Server.objects.get(name=key)
+            try:
+                dom_detail_arr = []
+                vms = XenServer(key, server_url).get_dom_details(user)
+                for vm in vms:
+                    if 'Domain' not in vm['name'] and vm['name'].count('_') == 2:
+                        # Parse the data and format the same into a a json
+                        # logger.debug('Dom Details : {}'.format(vm))
+                        vm_details = vm['name'].split('_')
+                        student = VLAB_User.objects.get(id = vm_details[0])
+                        student_name = '{} {}'.format(student.first_name, student.last_name)
+                        if 'b' in vm['state']:
+                            vm_state = 'Blocked'
+                        elif 'r' in vm['state']:
+                            vm_state = 'Running'
+                        elif 'p' in vm['state']:
+                            vm_state = 'Paused'
+                        else:
+                            vm_state = 'Unknown'
+
+                        tags = {}
+                        tags['host'] = server.name
+                        tags['student'] = student_name
+                        tags['course'] = Course.objects.get(id = vm_details[1]).name
+			tags['vm_name'] = Virtual_Machine.objects.get(id = vm_details[2]).name
+                        tags['state'] = vm_state
+                        fields = {}
+                        fields['cpu_secs'] = long(vm['cpu_secs'])
+                        fields['cpu_per'] = float(vm['cpu_per'])
+                        fields['memory'] = long(vm['mem'])
+                        fields['mem_per'] = float(vm['mem_per'])
+                        fields['vcpus'] = int(vm['vcpus'])
+                        fields['networks'] = int(vm['nets'])
+                        timestr = datetime.datetime.utcnow().replace(microsecond=0).isoformat() + 'Z'
+                        dom_detail = {}
+                        dom_detail['measurement'] = 'vm_details'
+                        dom_detail['tags'] = tags
+                        dom_detail['time'] = timestr
+                        dom_detail['fields'] = fields
+
+                        dom_detail_arr.append(dom_detail)
+
+                if dom_detail_arr:
+                    c = InfluxDBClient(host='localhost', port=8086)
+                    c.switch_database('xen_dom_stats')
+                    c.write_points(dom_detail_arr)
+                    c.close()
+ 
+            except Exception as e:
+                logger.error(key+ ' ' + str(e))

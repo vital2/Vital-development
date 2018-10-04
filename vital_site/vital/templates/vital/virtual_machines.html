@@ -2,6 +2,17 @@
 
 {% if virtual_machines %}
 
+<script>
+    var clicked = false;
+    $('.ctrlbtn').on('click', function(e) {
+	if(clicked) {
+            e.preventDefault();
+	    $(this).off("click").attr('href', "javascript: void(0);");
+        }
+        clicked = true;
+    });
+</script>
+
 <div id="center" align="center" style="width: 800px">
     <div width="500px" style="position: relative">
         {% for vm in virtual_machines %}
@@ -10,21 +21,27 @@
             <div class="overlay" style="width:100%;height:100%">
                 <div style="height:33%;padding-top:7px">
                     {% if vm.state == 'R'%}
-                    <a href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/stop' onclick="openNav()">
+                    <a class='ctrlbtn' href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/stop' onclick="openNav()">
                         <img src="{% static  'vital/red-power.png' %}" width="30px" height="30px" title="Stop VM" />
                     </a>
                     {% else %}
-                    <a href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/start' onclick="openNav()">
+                    <a class='ctrlbtn' href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/start' onclick="openNav()">
                         <img src="{% static  'vital/green-power.png' %}" width="30px" height="30px" title="Start VM" />
                     </a>
                     {% endif %}
                 </div>
                 <div style="height:33%;">
-                    {% if vm.state == 'R'%}
-                    <a href="http://{{ server_name }}:{{ vm.terminal_port }}/vnc_auto.html" onclick="return windowpop(this.href, 'Terminal-{{ vm.id }}', 825, 680, {{ vm.id }})">
-                        <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console" />
-                    </a>
-                    <!--<a href="/vital/console/{{ vm.id }}"
+                    {% if vm.state == 'R' %}
+                        {% if display_type == 'SPICE' %}
+                            <a href="https://{{ server_name }}/spice/index.html?host={{ server_name }}&port={{ vm.terminal_port }}" onclick="return windowpop(this.href, 'Terminal-{{ vm.id }}', 825, 680, {{ vm.id }})">
+                                <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console" />
+                            </a>
+                        {% else %}
+                            <a href="http://{{ server_name }}:{{ vm.terminal_port }}/vnc_auto.html" onclick="return windowpop(this.href, 'Terminal-{{ vm.id }}', 825, 680, {{ vm.id }})">
+                                <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console" />
+                            </a>
+                        {% endif %}
+		    <!--<a href="/vital/console/{{ vm.id }}"
                                onclick="return windowpop(this.href, 'Terminal-{{ vm.id }}', 825, 680, {{ vm.id }})">
                                 <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console"/>
                             </a>-->

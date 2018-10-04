@@ -16,6 +16,8 @@ from ..models import VLAB_User, Allowed_Organization, User_VM_Config, Available_
 
 import logging
 import re
+import os
+import signal
 import json
 from random import randint
 
@@ -115,11 +117,14 @@ def activate(request):
                         django_login(request, user)
                         #audit(request, 'Activated user')
                         send_mail('Welcome to Vital',
-                                  'Hi ' + user.first_name + ',\r\n\n Welcome to Vital. Your account has been activated. '
+                                  'Hi ' + user.first_name + ',\r\n\nWelcome to Vital. Your account has been activated. '
                                                             'Please follow instructions '
                                                             'from your instructor to access the course VMs. '
-                                                            '\r\n\nSFTP Host : 128.238.66.35 \n Your SFTP account is '+user.sftp_account+' and password'
-                                                            ' is the same as vital.  \r\n\nVital',
+                                                            '\r\n\nSFTP Host : 128.238.77.36 \n Your SFTP account is '+user.sftp_account+' and password '
+                                                            'is the same as vital.'
+                                                            '\r\n\nFor help on using Vital Interface and SFTP Access please read the wiki '
+                                                            'https://github.com/vital2/virtual_lab/wiki/Vital-User-Guide '
+                                                            '\r\n\nVital',
                                   'no-reply-vital@nyu.edu', [user.email], fail_silently=False)
                         logger.debug('activated..'+user.email)
                         form = Authentication_Form()
@@ -211,9 +216,9 @@ def forgot_password(request):
                 activation_code = randint(100000, 999999)
                 user.activation_code = activation_code
                 user.save()
-                send_mail('Password reset mail', 'Hi '+user.first_name+',\r\n\n Please copy the following link to '
-                                                                       'reset your password to your browser. '
-                                                                       'http://'+config_ini.get("VITAL", "SERVER_NAME")+'/'
+                send_mail('Password reset mail', 'Hi '+user.first_name+',\r\n\nPlease click or copy the following link to '
+                                                                       'reset your password in your browser. '
+                                                                       'https://'+config_ini.get("VITAL", "SERVER_NAME")+'/'
                                                                        'vital/users/reset-password?user_email='
                           + user.email+'&activation_code='+str(activation_code)
                           + '.\r\n\nVital', 'no-reply-vital@nyu.edu',
@@ -248,7 +253,7 @@ def login(request):
                                   {'message': 'User is not active. ' +
                                               'Please check your mail(' +
                                               user.email + ') for ' +
-                                              'activation code',
+                                              'activation code. Also please check your SPAM folder as it may have been wrongly classified as spam.',
                                    'form': form})
                     # try:
                     #     Blocked_User.objects.get(user_id=user.id)
@@ -292,19 +297,7 @@ def stop_vms_during_logout(user):
     for user_vm in user_vms:
         vm = user_vm.vm
         if not vm.course.allow_long_running_vms:
-            cmd = 'kill ' + user_vm.no_vnc_pid
-            p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
-            out, err = p.communicate()
-            if not p.returncode == 0:
-                if 'No such process' not in err.rstrip():
-                    raise Exception('ERROR : cannot stop the vm '
-                                    '\n Reason : %s' % err.rstrip())
             XenClient().stop_vm(user_vm.xen_server, user, vm.course.id, vm.id)
-            config = Available_Config()
-            config.category = 'TERM_PORT'
-            config.value = user_vm.terminal_port
-            config.save()
-            user_vm.delete()
         else:
             all_vms_shutdown = False
     return all_vms_shutdown
@@ -335,9 +328,9 @@ def release_vm(request, user_id, vm_id):
                 return HttpResponse('FAILED')
             else:
                 vm = User_VM_Config.objects.get(user_id=user_id, vm_id=vm_id)
-                logger.debug('VM : {}'.format(vm.no_vnc_pid))
+                logger.debug('VM @ Display Port : {}'.format(vm.no_vnc_pid))
 
-                cmd = 'kill ' + vm.no_vnc_pid
+                cmd = 'kill -9 ' + vm.no_vnc_pid
                 p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
                 out, err = p.communicate()
                 if not p.returncode == 0:

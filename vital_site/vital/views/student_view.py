@@ -46,7 +46,7 @@ def virtual_machines(request, course_id):
     """
     # logger.debug("in detail vms")
     params = dict()
-    virtual_machines = Virtual_Machine.objects.filter(course_id=course_id)
+    virtual_machines = Virtual_Machine.objects.filter(course_id=course_id).order_by('id')
     server_name = config_ini.get('VITAL', 'SERVER_NAME')
     for vm in virtual_machines:
         user_vm_configs = vm.user_vm_config_set.filter(user_id=request.user.id)
@@ -62,6 +62,7 @@ def virtual_machines(request, course_id):
     params['virtual_machines'] = virtual_machines
     params['course_id'] = course_id
     params['server_name'] = server_name
+    params['display_type'] = config_ini.get('VITAL', 'DISPLAY_SERVER')
 
     # if not request.GET.get('message', '') == '':
     #     params['message'] = request.GET.get('message')
@@ -95,13 +96,19 @@ def console(request, vm_id):
     server_name = config_ini.get('VITAL', 'SERVER_NAME')
     vm = Virtual_Machine.objects.get(id=vm_id)
     user_vm_config = vm.user_vm_config_set.get(user_id=request.user.id)
-    return render(request, 'vital/console.html', {"server_name":server_name, "terminal_port":user_vm_config.terminal_port})
+    logger.debug('Server : {}'.format(config_ini.get('VITAL', 'DISPLAY_SERVER')))
+    if config_ini.get('VITAL', 'DISPLAY_SERVER') == 'SPICE':
+        return render(request, 'vital/console-spice.html', {
+            "server_name":server_name, "terminal_port":user_vm_config.terminal_port})
+    # By default always VNC is used as Display Server
+    return render(request, 'vital/console-vnc.html', {
+            "server_name":server_name, "terminal_port":user_vm_config.terminal_port})
 
 
 def start_novnc(config, started_vm):
     """
     starts the novnc server for client to connect to
-    :param config: AvailableConfig object to save vnc pid
+    :param config: User VM Config object to save vnc pid
     :param started_vm: object refering to the started VM
     :return: None
     """
@@ -115,17 +122,20 @@ def start_novnc(config, started_vm):
         if locked_conf is not None and len(locked_conf) > 0:
             val = locked_conf[0].value
             locked_conf.delete()
-            launch_script = config_ini.get("VITAL", "NOVNC_LAUNCH_SCRIPT")
-            cmd = launch_script+' --listen {} ' \
-                  '--vnc {}:{}'.format(val, started_vm['xen_server'], started_vm['vnc_port'])
+            if started_vm['display_type'] == 'SPICE':
+                launch_script = config_ini.get("VITAL", "SPICE_LAUNCH_SCRIPT")
+            else:
+                # It's either Spice or VNC (Always defaults to VNC)
+                launch_script = config_ini.get("VITAL", "NOVNC_LAUNCH_SCRIPT")    
+            cmd = launch_script + ' {} {}:{}'.format(val, started_vm['xen_server'], started_vm['vnc_port'])
             logger.debug("start novnc - "+cmd)
             p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
             config.no_vnc_pid = p.pid
-            line = p.stdout.readline()
-            if 'on port' in line:
-                port = line[line.index('on port') + 7:].strip()
-                config.terminal_port = port
-                flag = False
+            # line = p.stdout.readline()
+            # if 'on port' in line:
+            #     port = line[line.index('on port') + 7:].strip()
+            config.terminal_port = val
+            flag = False
         if cnt >= 100:
             raise Exception('Server busy : cannot start VM')
 
@@ -167,6 +177,7 @@ def start_vm(request, course_id, vm_id):
         logger.error(str(e))
         audit(request, 'Error starting Virtual machine ' + str(vm.name) + '( ' + e.message + ' )')
         if 'Connection refused' not in str(e).rstrip() or started_vm is not None:
+            XenClient().remove_network_bridges(vm.xen_server, request.user, course_id, vm_id)
             XenClient().stop_vm(started_vm['xen_server'], request.user, course_id, vm_id)
         return redirect('/vital/courses/' + course_id + '/vms?message=Unable to start VM - ' + vm.name)
 
@@ -195,6 +206,7 @@ def stop_vm(request, course_id, vm_id):
     #         raise Exception('ERROR : cannot stop the vm '
     #                         '\n Reason : %s' % err.rstrip())
     try:
+        XenClient().remove_network_bridges(vm.xen_server, request.user, course_id, vm_id)
         XenClient().stop_vm(vm.xen_server, request.user, course_id, vm_id)
     #     config = Available_Config()
     #     config.category = 'TERM_PORT'

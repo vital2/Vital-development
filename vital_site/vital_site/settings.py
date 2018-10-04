@@ -18,7 +18,7 @@ SECRET_KEY = config.get("Security", "SECRET_KEY")
 DEBUG = False
 
 ALLOWED_HOSTS = ['*']
-
+ADMINS = config.get("Email", "VITAL_ADMINS")
 
 # Application definition
 
@@ -110,7 +110,7 @@ AUTH_USER_MODEL = 'vital.VLAB_User'
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'US/Eastern'
 
 USE_I18N = True
 
@@ -153,6 +153,11 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
         },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True
+        },
     },
     'loggers': {
         'django': {
@@ -173,6 +178,8 @@ EMAIL_HOST_USER = config.get("Email", "VITAL_EMAIL_USER")
 EMAIL_HOST_PASSWORD = config.get("Email", "VITAL_EMAIL_PWD")
 EMAIL_PORT = config.get("Email", "VITAL_EMAIL_PORT")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# Email Host for Error Reporting
+SERVER_EMAIL = EMAIL_HOST
 
 PASSWORD_MIN_LENGTH = 8
 PASSWORD_COMPLEXITY = {"UPPER":  1, "LOWER":  1, "DIGITS": 1}
