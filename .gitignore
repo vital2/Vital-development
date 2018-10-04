@@ -2,3 +2,6 @@
 *.log
 .idea/
 .vscode/
+
+# Mac OS
+.DS_Store
