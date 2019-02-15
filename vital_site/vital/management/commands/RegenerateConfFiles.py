@@ -1,8 +1,12 @@
 from django.core.management.base import BaseCommand
+from glob import glob
 import logging
-from vital.models import VLAB_User, Course, Registered_Course 
-from vital.utils import XenClient
+import ConfigParser
+import os, errno, shutil
+from vital.models import VLAB_User, Course, Registered_Course, User_Network_Configuration, Available_Config, \
+    User_Bridge, Local_Network_MAC_Address
 
+config = ConfigParser.ConfigParser()
 logger = logging.getLogger(__name__)
 
 
@@ -28,11 +32,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         course_id = int(options['course_id'])
         user_id = int(options['user_id'])
+        regUsers = []
 
         course = Course.objects.get(id=course_id)
 
         if user_id:
-            user = VLAB_User.objects.get(id=user.user_id)
+            user = VLAB_User.objects.get(id=user_id)
             regUsers.append(user)
         else:
             regUsers = Registered_Course.objects.filter(course=course)
@@ -86,17 +91,17 @@ class Command(BaseCommand):
     def delete_student_configs(self, user, course):
         # choosing best server under assumption that VM conf and dsk will be on gluster
         # ap4414 EDIT : releasing only the MAC assigned to course_net vif#
-        net_confs_to_delete = User_Network_Configuration.objects.filter(user_id=user.id, course=course, is_course_net=True)
-        for conf in net_confs_to_delete:
-            available_conf = Available_Config()
-            available_conf.category = 'MAC_ADDR'
-            available_conf.value = conf.mac_id
-            available_conf.save()
-            conf.delete()
-        logger.debug("Removing User bridges..")
-        bridges_to_delete = User_Bridge.objects.filter(name__startswith=str(user.id) + '_' + str(course.id))
-        for bridge in bridges_to_delete:
-            bridge.delete()
+        # net_confs_to_delete = User_Network_Configuration.objects.filter(user_id=user.id, course=course, is_course_net=True)
+        # for conf in net_confs_to_delete:
+        #     available_conf = Available_Config()
+        #     available_conf.category = 'MAC_ADDR'
+        #     available_conf.value = conf.mac_id
+        #     available_conf.save()
+        #     conf.delete()
+        # logger.debug("Removing User bridges..")
+        # bridges_to_delete = User_Bridge.objects.filter(name__startswith=str(user.id) + '_' + str(course.id))
+        # for bridge in bridges_to_delete:
+        #     bridge.delete()
 
         logger.debug("Removing User Network configs...")
         for vm in course.virtual_machine_set.all():
@@ -113,7 +118,6 @@ class Command(BaseCommand):
 
     def create_student_configs(self, user, course):
         # choosing best server under assumption that VM conf and dsk will be on gluster
-        xen = SneakyXenLoadBalancer().get_best_server(user, course.id)
         logger.debug('Number of VMs in course: ' + str(len(course.virtual_machine_set.all())))
         for vm in course.virtual_machine_set.all():
             networks = vm.network_configuration_set.all().order_by('name')
@@ -143,14 +147,14 @@ class Command(BaseCommand):
                             if locked_conf is not None:
                                 net_name = str(user.id) + '_' + str(course.id) + '_' + network.name
                                 vif = vif + '\'mac=' + val + ', bridge=' + net_name + '\'' + ','
-                                user_net_config.bridge, obj_created = User_Bridge.objects.get_or_create(name=net_name)
+                                # user_net_config.bridge, obj_created = User_Bridge.objects.get_or_create(name=net_name)
 
-                        user_net_config.user_id = user.id
-                        user_net_config.mac_id = val
-                        user_net_config.vm = vm
-                        user_net_config.course = course
-                        user_net_config.is_course_net = network.is_course_net
-                        user_net_config.save()
+                        # user_net_config.user_id = user.id
+                        # user_net_config.mac_id = val
+                        # user_net_config.vm = vm
+                        # user_net_config.course = course
+                        # user_net_config.is_course_net = network.is_course_net
+                        # user_net_config.save()
                         flag = False
 
                         if cnt >= 100:

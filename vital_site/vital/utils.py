@@ -87,6 +87,7 @@ class XenClient:
         for vm in course.virtual_machine_set.all():
             networks = vm.network_configuration_set.all().order_by('name')
             vif = ''
+
             with transaction.atomic():
             #ap4414 EDIT : MAC address allotment to be identical across student NW's
                 for network in networks:
