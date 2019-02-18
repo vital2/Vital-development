@@ -120,45 +120,11 @@ class Command(BaseCommand):
         # choosing best server under assumption that VM conf and dsk will be on gluster
         logger.debug('Number of VMs in course: ' + str(len(course.virtual_machine_set.all())))
         for vm in course.virtual_machine_set.all():
-            networks = vm.network_configuration_set.all().order_by('name')
+            net_confs = User_Network_Configuration.objects.filter(user_id=user.id, vm=vm,
+                                                                course=course).order_by('id')
             vif = ''
-            with transaction.atomic():
-            #ap4414 EDIT : MAC address allotment to be identical across student NW's
-                for network in networks:
-                    flag = True
-                    cnt = 0
-                    # hack to handle concurrent requests
-                    while flag:
-                        # EDIT : Across all student local networks, each VM VIFs will have has same MAC#
-                        val = "00"
-                        cnt += 1
-                        user_net_config = User_Network_Configuration()
-                        if network.is_course_net:
-                            available_config = Available_Config.objects.filter(category='MAC_ADDR').order_by('id').first()
-                            locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
-                            if locked_conf is not None:
-                                val = locked_conf[0].value
-                                locked_conf.delete()
-                                vif = vif + '\'mac=' + val + ', bridge=' + network.name + '\'' + ','
-                                user_net_config.bridge, obj_created = User_Bridge.objects.get_or_create(name=network.name, created=True)
-                        else:
-                            locked_conf = Local_Network_MAC_Address.objects.get( network_configuration = network.id)
-                            val = locked_conf.mac_id
-                            if locked_conf is not None:
-                                net_name = str(user.id) + '_' + str(course.id) + '_' + network.name
-                                vif = vif + '\'mac=' + val + ', bridge=' + net_name + '\'' + ','
-                                # user_net_config.bridge, obj_created = User_Bridge.objects.get_or_create(name=net_name)
-
-                        # user_net_config.user_id = user.id
-                        # user_net_config.mac_id = val
-                        # user_net_config.vm = vm
-                        # user_net_config.course = course
-                        # user_net_config.is_course_net = network.is_course_net
-                        # user_net_config.save()
-                        flag = False
-
-                        if cnt >= 100:
-                            raise Exception('Server Busy : Registration incomplete')
+            for conf in net_confs:
+                vif = vif + '\'mac=' + conf.mac_id + ', bridge=' + conf.bridge.name + '\','
 
             vif = vif[:len(vif) - 1]
             logger.debug('Registering with vif:' + vif + ' for user ' + user.email)
@@ -187,7 +153,7 @@ class Command(BaseCommand):
             f.write(new_data)
             f.close()
             logger.debug('Setup conf file for ' + name)
-            logger.debug('Finished setting up '+name)
+            logger.debug('Finished setting up ' + name)
 
             
             # xen.setup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id), str(course.id) + '_' + str(vm.id), vif)
