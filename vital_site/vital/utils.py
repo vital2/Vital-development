@@ -228,7 +228,7 @@ class XenClient:
         virtual_machine = Virtual_Machine.objects.get(id=vm_id)
         course = Course.objects.get(id=course_id)
         net_confs = User_Network_Configuration.objects.filter(user_id=user.id, vm=virtual_machine,
-                                                              course=course)
+                                                              course=course).order_by('id')
         vif = ''
         for conf in net_confs:
             vif = vif + '\'mac=' + conf.mac_id + ', bridge=' + conf.bridge.name + '\','
