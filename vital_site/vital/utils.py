@@ -85,8 +85,9 @@ class XenClient:
         xen = SneakyXenLoadBalancer().get_best_server(user, course.id)
         logger.debug('Number of VMs in course: ' + str(len(course.virtual_machine_set.all())))
         for vm in course.virtual_machine_set.all():
-            networks = vm.network_configuration_set.all()
+            networks = vm.network_configuration_set.all().order_by('name')
             vif = ''
+
             with transaction.atomic():
             #ap4414 EDIT : MAC address allotment to be identical across student NW's
                 for network in networks:
@@ -227,7 +228,7 @@ class XenClient:
         virtual_machine = Virtual_Machine.objects.get(id=vm_id)
         course = Course.objects.get(id=course_id)
         net_confs = User_Network_Configuration.objects.filter(user_id=user.id, vm=virtual_machine,
-                                                              course=course)
+                                                              course=course).order_by('id')
         vif = ''
         for conf in net_confs:
             vif = vif + '\'mac=' + conf.mac_id + ', bridge=' + conf.bridge.name + '\','
