@@ -89,20 +89,6 @@ class Command(BaseCommand):
 
 
     def delete_student_configs(self, user, course):
-        # choosing best server under assumption that VM conf and dsk will be on gluster
-        # ap4414 EDIT : releasing only the MAC assigned to course_net vif#
-        # net_confs_to_delete = User_Network_Configuration.objects.filter(user_id=user.id, course=course, is_course_net=True)
-        # for conf in net_confs_to_delete:
-        #     available_conf = Available_Config()
-        #     available_conf.category = 'MAC_ADDR'
-        #     available_conf.value = conf.mac_id
-        #     available_conf.save()
-        #     conf.delete()
-        # logger.debug("Removing User bridges..")
-        # bridges_to_delete = User_Bridge.objects.filter(name__startswith=str(user.id) + '_' + str(course.id))
-        # for bridge in bridges_to_delete:
-        #     bridge.delete()
-
         logger.debug("Removing User Network configs...")
         for vm in course.virtual_machine_set.all():
             name = user.id + '_' + course.id + '_' + vm.id
@@ -117,7 +103,6 @@ class Command(BaseCommand):
                                     '\n Reason : %s' % str(e).rstrip())
 
     def create_student_configs(self, user, course):
-        # choosing best server under assumption that VM conf and dsk will be on gluster
         logger.debug('Number of VMs in course: ' + str(len(course.virtual_machine_set.all())))
         for vm in course.virtual_machine_set.all():
             net_confs = User_Network_Configuration.objects.filter(user_id=user.id, vm=vm,
@@ -154,8 +139,5 @@ class Command(BaseCommand):
             f.close()
             logger.debug('Setup conf file for ' + name)
             logger.debug('Finished setting up ' + name)
-
-            
-            # xen.setup_vm(user, str(user.id) + '_' + str(course.id) + '_' + str(vm.id), str(course.id) + '_' + str(vm.id), vif)
             logger.debug('Registered user ' + user.email)
 
