@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from ..models import Course, Registered_Course, Virtual_Machine, User_VM_Config, Available_Config, \
     User_Network_Configuration
 from ..forms import Course_Registration_Form
-from ..utils import audit, XenClient, get_notification_message
+from ..utils import audit, XenClient, get_notification_message, get_free_tcp_port
 import logging
 from subprocess import Popen, PIPE
 from django.db import transaction
@@ -112,33 +112,20 @@ def start_novnc(config, started_vm):
     :param started_vm: object refering to the started VM
     :return: None
     """
-    flag = True
-    cnt = 0
-    # hack to handle concurrent requests
-    while flag:
-        available_config = Available_Config.objects.filter(category='TERM_PORT').order_by('id')[0]
-        locked_conf = Available_Config.objects.select_for_update().filter(id=available_config.id)
-        cnt += 1
-        if locked_conf is not None and len(locked_conf) > 0:
-            val = locked_conf[0].value
-            locked_conf.delete()
-            if started_vm['display_type'] == 'SPICE':
-                launch_script = config_ini.get("VITAL", "SPICE_LAUNCH_SCRIPT")
-            else:
-                # It's either Spice or VNC (Always defaults to VNC)
-                launch_script = config_ini.get("VITAL", "NOVNC_LAUNCH_SCRIPT")    
-            cmd = launch_script + ' {} {}:{}'.format(val, started_vm['xen_server'], started_vm['vnc_port'])
-            logger.debug("start novnc - "+cmd)
-            p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
-            config.no_vnc_pid = p.pid
-            # line = p.stdout.readline()
-            # if 'on port' in line:
-            #     port = line[line.index('on port') + 7:].strip()
-            config.terminal_port = val
-            flag = False
-        if cnt >= 100:
-            raise Exception('Server busy : cannot start VM')
-
+    with transaction.atomic():
+        locked_conf = User_VM_Config.objects.select_for_update().get(id=config.id)
+        val = get_free_tcp_port()
+        if started_vm['display_type'] == 'SPICE':
+            launch_script = config_ini.get("VITAL", "SPICE_LAUNCH_SCRIPT")
+        else:
+            # It's either Spice or VNC (Always defaults to VNC)
+            launch_script = config_ini.get("VITAL", "NOVNC_LAUNCH_SCRIPT")
+        cmd = launch_script + ' {} {}:{}'.format(val, started_vm['xen_server'], started_vm['vnc_port'])
+        logger.debug("start novnc - "+cmd)
+        p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
+        locked_conf.no_vnc_pid = p.pid
+        locked_conf.terminal_port = val
+        locked_conf.save()
 
 @login_required(login_url='/vital/login/')
 def start_vm(request, course_id, vm_id):
@@ -150,25 +137,28 @@ def start_vm(request, course_id, vm_id):
     :return: starts the VM and redirects ti Course VM page
     """
     logger.debug("starting vm - " + str(request.user.id)+'_'+course_id+'_'+vm_id)
-    config = User_VM_Config()
     started_vm = None
     vm = None
     try:
         vm = Virtual_Machine.objects.get(pk=vm_id)
         audit(request, 'Starting Virtual machine ' + str(vm.name))
+        # config = User_VM_Config()
+        config = User_VM_Config.objects.filter(user_id = request.user.id, vm_id = vm_id)
+        if len(config) == 0:
+            config = User_VM_Config()
         with transaction.atomic():
-            config.vm = vm
-            config.user_id = request.user.id
             # start vm with xen api which returns handle to the vm
             started_vm = XenClient().start_vm(request.user, course_id, vm_id)
+            config.vm = vm
+            config.user_id = request.user.id
             config.vnc_port = started_vm['vnc_port']
             config.xen_server = started_vm['xen_server']
-
-            # run novnc launch script
-            start_novnc(config, started_vm)
             config.save()
-            audit(request, 'Started Virtual machine ' + str(vm.name))
-            return redirect('/vital/courses/' + course_id + '/vms?message=' + vm.name + ' VM started')
+
+        # run novnc launch script
+        start_novnc(config, started_vm)
+        audit(request, 'Started Virtual machine ' + str(vm.name))
+        return redirect('/vital/courses/' + course_id + '/vms?message=' + vm.name + ' VM started')
     except Virtual_Machine.DoesNotExist as e:
         logger.error(str(e))
         audit(request, 'Error starting Virtual machine ' + str(vm_id) + '( Does not exist )')
@@ -206,7 +196,7 @@ def stop_vm(request, course_id, vm_id):
     #         raise Exception('ERROR : cannot stop the vm '
     #                         '\n Reason : %s' % err.rstrip())
     try:
-        XenClient().remove_network_bridges(vm.xen_server, request.user, course_id, vm_id)
+        # XenClient().remove_network_bridges(vm.xen_server, request.user, course_id, vm_id)
         XenClient().stop_vm(vm.xen_server, request.user, course_id, vm_id)
     #     config = Available_Config()
     #     config.category = 'TERM_PORT'

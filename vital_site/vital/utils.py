@@ -1,6 +1,7 @@
 import logging
 import xmlrpclib
 import datetime
+import socket
 from models import Audit, Available_Config, User_Network_Configuration, Virtual_Machine, \
     User_VM_Config, Course, VLAB_User, Xen_Server, User_Bridge, Local_Network_MAC_Address
 import ConfigParser
@@ -60,6 +61,17 @@ def get_spice_options():
     }
     return spice_opts
 
+def get_free_tcp_port():
+    """
+    Starts a socket connection to grab a free port (Involves a race
+        condition but will do for now)
+    :return: An open port in the system
+    """
+    tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    tcp.bind(('', 0))
+    _, port = tcp.getsockname()
+    tcp.close()
+    return port
 
 class XenClient:
 
@@ -85,7 +97,7 @@ class XenClient:
         xen = SneakyXenLoadBalancer().get_best_server(user, course.id)
         logger.debug('Number of VMs in course: ' + str(len(course.virtual_machine_set.all())))
         for vm in course.virtual_machine_set.all():
-            networks = vm.network_configuration_set.all()
+            networks = vm.network_configuration_set.all().order_by('name')
             vif = ''
             with transaction.atomic():
             #ap4414 EDIT : MAC address allotment to be identical across student NW's
@@ -227,10 +239,11 @@ class XenClient:
         virtual_machine = Virtual_Machine.objects.get(id=vm_id)
         course = Course.objects.get(id=course_id)
         net_confs = User_Network_Configuration.objects.filter(user_id=user.id, vm=virtual_machine,
-                                                              course=course)
+                                                              course=course).order_by('id')
         vif = ''
         for conf in net_confs:
             vif = vif + '\'mac=' + conf.mac_id + ', bridge=' + conf.bridge.name + '\','
+            logger.debug('Updating Conf with vif:' + vif + ' for user ' + user.email)
         vif = vif[:len(vif)-1]
         xen.cleanup_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id))
         xen.setup_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id), str(course_id) + '_' + str(vm_id),

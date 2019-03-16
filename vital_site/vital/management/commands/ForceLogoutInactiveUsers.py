@@ -48,10 +48,10 @@ class Command(BaseCommand):
                                 logger.error('Error stopping NoVNC Client with PID ' + str(started_vm.no_vnc_pid) + str(e))
 
                             XenClient().stop_vm(started_vm.xen_server, user, started_vm.vm.course.id, started_vm.vm.id)
-                            config = Available_Config()
-                            config.category = 'TERM_PORT'
-                            config.value = started_vm.terminal_port
-                            config.save()
+                            # config = Available_Config()
+                            # config.category = 'TERM_PORT'
+                            # config.value = started_vm.terminal_port
+                            # config.save()
                             if not started_vm.vm.course.allow_long_running_vms:
                                 stupid_user = True
                             started_vm.delete()

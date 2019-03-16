@@ -14,8 +14,12 @@ ifconfig bond0.$vlan 10.$vlan.1.1 netmask 255.255.255.0 broadcast 10.$vlan.1.255
 #iptables -t nat -A POSTROUTING -s 10.$vlan.1.0/24 -o eth0 -j SNAT --to 128.238.77.20
 #iptables -A INPUT -i bond0.$vlan -p udp --dport 67:68 --sport 67:68 -j ACCEPT
 
+##as11552 : EDIT : Add rules to allow DNS requests from Student VM's
+iptables -A INPUT -s 10.$vlan.1.0/24 -p udp -m udp --dport 53 -j ACCEPT
+iptables -A OUTPUT -d 10.$vlan.1.0/24 -p udp -m udp --sport 53 -j ACCEPT
+
 ##ap4414 EDIT: moving NAT forward requests to front of the chain
-iptables -t nat -I POSTROUTING 1 -s 10.$vlan.1.0/24 -o eth0 -j SNAT --to 128.238.77.20
+iptables -t nat -I POSTROUTING 1 -s 10.$vlan.1.0/24 -o enp5s0 -j SNAT --to 128.238.77.21
 iptables -I INPUT 1 -i bond0.$vlan -p udp --dport 67:68 --sport 67:68 -j ACCEPT
 
 ##ap4414 EDIT: drop any traffic to Vital web-server

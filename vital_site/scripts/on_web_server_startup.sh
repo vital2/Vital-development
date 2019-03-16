@@ -23,6 +23,7 @@ array=(${nets// / })
 
 # Flush Iptables
 iptables -F
+iptables -t nat -F
 
 for var in "${array[@]}"
 do
@@ -42,4 +43,4 @@ done
 # to enable NAT from xen
 #iptables -t nat -A POSTROUTING -s 192.168.35.0/24 -o eth0 -j MASQUERADE
 ##ap4414 EDIT: moving iptables rules to the front of the chain
-iptables -t nat -I POSTROUTING 1 -s 192.168.35.0/24 -o eth0 -j MASQUERADE
+iptables -t nat -I POSTROUTING 1 -s 192.168.35.0/24 -o enp5s0 -j MASQUERADE
