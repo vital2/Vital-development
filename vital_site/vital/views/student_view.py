@@ -1,12 +1,15 @@
 from django.shortcuts import get_object_or_404, render, redirect, render_to_response
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from ..models import Course, Registered_Course, Virtual_Machine, User_VM_Config, Available_Config, \
     User_Network_Configuration
 from ..forms import Course_Registration_Form
 from ..utils import audit, XenClient, get_notification_message, get_free_tcp_port
-import logging
 from subprocess import Popen, PIPE
-from django.db import transaction
+
+import logging
+import redis
+import uuid
 import ConfigParser
 
 logger = logging.getLogger(__name__)
@@ -47,7 +50,6 @@ def virtual_machines(request, course_id):
     # logger.debug("in detail vms")
     params = dict()
     virtual_machines = Virtual_Machine.objects.filter(course_id=course_id).order_by('id')
-    server_name = config_ini.get('VITAL', 'SERVER_NAME')
     for vm in virtual_machines:
         user_vm_configs = vm.user_vm_config_set.filter(user_id=request.user.id)
         if user_vm_configs is not None and not len(user_vm_configs) == 0:
@@ -56,12 +58,13 @@ def virtual_machines(request, course_id):
             for config in user_vm_configs:
                 if config.vm.id == vm.id:
                     vm.terminal_port = config.terminal_port
+                    vm.token = config.token
                     break
         else:
             vm.state = 'S'
     params['virtual_machines'] = virtual_machines
     params['course_id'] = course_id
-    params['server_name'] = server_name
+    params['server_name'] = config_ini.get('VITAL', 'SERVER_NAME')
     params['display_type'] = config_ini.get('VITAL', 'DISPLAY_SERVER')
 
     # if not request.GET.get('message', '') == '':
@@ -127,6 +130,31 @@ def start_novnc(config, started_vm):
         locked_conf.terminal_port = val
         locked_conf.save()
 
+def vm_create_websockify_token(config, started_vm):
+    redis_host = config_ini.get('VITAL', 'REDIS_HOST')
+    redis_port = int(config_ini.get('VITAL', 'REDIS_PORT'))
+    redis_password = config_ini.get('VITAL', 'REDIS_PASS')
+
+    try:
+        r = redis.Redis(host=redis_host, port=redis_port, password=redis_password, db=0)
+           
+        while True:
+            token = str(uuid.uuid4())
+            if r.exists(token):
+                continue
+
+            tokenString = '{}:{}'.format(started_vm['xen_server'], started_vm['vnc_port'])
+            r.set(token, tokenString)
+            break
+
+        with transaction.atomic():
+            locked_conf = User_VM_Config.objects.select_for_update().get(id=config.id)
+            locked_conf.token = token
+            locked_conf.save()
+    
+    except Exception as e:
+        raise e
+
 @login_required(login_url='/vital/login/')
 def start_vm(request, course_id, vm_id):
     """
@@ -156,7 +184,8 @@ def start_vm(request, course_id, vm_id):
             config.save()
 
         # run novnc launch script
-        start_novnc(config, started_vm)
+        # start_novnc(config, started_vm)
+        vm_create_websockify_token(config, started_vm)
         audit(request, 'Started Virtual machine ' + str(vm.name))
         return redirect('/vital/courses/' + course_id + '/vms?message=' + vm.name + ' VM started')
     except Virtual_Machine.DoesNotExist as e:
