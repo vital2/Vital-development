@@ -4,6 +4,7 @@ from django.utils import timezone
 from vital.models import Course, Registered_Course, User_Network_Configuration, Available_Config, User_VM_Config
 from django.utils.crypto import get_random_string
 import ConfigParser
+import os
 
 logger = logging.getLogger(__name__)
 config = ConfigParser.ConfigParser()
@@ -24,12 +25,12 @@ class Command(BaseCommand):
             required=True
         )
 
-    def delete_student_configs(self, user_id, course_id):
+    def delete_student_configs(self, user_id, course):
         logger.debug("Removing User configs...")
         conf_path = config.get("VMConfig", "VM_CONF_LOCATION")
         qcow_path = config.get("VMConfig", "VM_QCOW_LOCATION")
         for vm in course.virtual_machine_set.all():
-            name = user_id + '_' + course_id + '_' + vm.id
+            name = '{}_{}_{}'.format(user_id, course.id, vm.id)
             try:
                 os.remove(conf_path + '/' + name + '.conf')
                 os.remove(qcow_path + '/' + name + '.qcow')
@@ -45,8 +46,8 @@ class Command(BaseCommand):
         course_id = options['course_id']
         course = Course.objects.get(id=course_id)
         print "Removing course: "+course.name+" (ID:"+ str(course.id) +")"
-        for user_id in (Registered_Course.objects.filter(course=course)).values("user_id", flat=True):
-            self.delete_student_configs(user_id, course_id)
+        for user_id in (Registered_Course.objects.filter(course=course)).values_list("user_id", flat=True):
+            self.delete_student_configs(user_id, course)
         print "Removing registered students"
         Registered_Course.objects.filter(course=course).delete()
         print "Removing registered user network configs"
@@ -61,4 +62,4 @@ class Command(BaseCommand):
         reg_code = get_random_string(length=8)
         course.registration_code = reg_code
         course.save()
-        print "The course has been reset. The new registration code is "+reg_code
+        print "The course has been reset. The new registration code is " + reg_code
