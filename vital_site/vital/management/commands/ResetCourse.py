@@ -5,6 +5,7 @@ from vital.models import Course, Registered_Course, User_Network_Configuration, 
 from django.utils.crypto import get_random_string
 import ConfigParser
 import os
+import errno
 
 logger = logging.getLogger(__name__)
 config = ConfigParser.ConfigParser()
