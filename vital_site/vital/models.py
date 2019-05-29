@@ -117,6 +117,7 @@ class User_VM_Config(models.Model):
     vnc_port = models.CharField(max_length=10)
     terminal_port = models.CharField(max_length=10)
     no_vnc_pid = models.CharField(max_length=10)
+    token = models.CharField(max_length=50)
 
 
 class Available_Config(models.Model):
