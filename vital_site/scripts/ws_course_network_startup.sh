@@ -5,6 +5,7 @@ host=$(awk -F ":" '/VITAL_DB_HOST/ {print $2}' /home/vital/config.ini | tr -d ' 
 pass=$(awk -F ":" '/VITAL_DB_PWD/ {print $2}' /home/vital/config.ini | tr -d ' ')
 sftp=$(awk -F ":" '/SFTP_ADDR/ {print $2}' /home/vital/config.ini | tr -d ' ')
 localrepo=$(awk -F ":" '/LOCAL_REPO/ {print $2}' /home/vital/config.ini | tr -d ' ')
+port=$(awk -F ":" '/VITAL_DB_PORT/ {print $2}' /home/vital/config.ini | tr -d ' ')
 
 vlan=$1
 vconfig add bond0 $vlan
@@ -41,7 +42,7 @@ iptables -I FORWARD 4 -i bond0.$vlan -s $SERVER_IP -d 10.$vlan.1.0/24 -j ACCEPT
 
 iptables -I FORWARD 5 -i bond0.$vlan -s 10.$vlan.1.0/24 -d 10.$vlan.1.0/24 -j ACCEPT
 
-requires_internet=$(PGPASSWORD=$pass psql -U postgres -d vital_db -h $host -t -c "SELECT n.has_internet_access from vital_course c join vital_network_configuration n on c.id=n.course_id where n.is_course_net=True and c.id="+$vlan)
+requires_internet=$(PGPASSWORD=$pass psql -U postgres -d vital_db -h $host -p $port -t -c "SELECT n.has_internet_access from vital_course c join vital_network_configuration n on c.id=n.course_id where n.is_course_net=True and c.id="+$vlan)
 
 if [ $requires_internet = 't' ]
 then

@@ -115,7 +115,9 @@ class User_VM_Config(models.Model):
     vm = models.ForeignKey(Virtual_Machine)
     user_id = models.IntegerField(default=0)
     vnc_port = models.CharField(max_length=10)
-    token = models.CharField(max_length=36)
+    terminal_port = models.CharField(max_length=10)
+    no_vnc_pid = models.CharField(max_length=10)
+    token = models.CharField(max_length=50)
 
 
 class Available_Config(models.Model):

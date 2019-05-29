@@ -4,14 +4,24 @@ from django.utils import timezone
 
 import zmq
 import vital.tasks as tasks
+import ConfigParser
+
+config = ConfigParser.ConfigParser()
+config.optionxform=str
+
+# TODO change to common config file in shared location
+config.read("/home/vital/config.ini")
+
+zmqMaster = config.get("VITAL", "ZMQ_MASTER")
 
 class Command(BaseCommand):
     help = "Command to start a zmq Slave listening for tasks"
 
     def handle(self, *args, **options):
+        zmqMaster = config.get("VITAL", "ZMQ_MASTER")
         context = zmq.Context()
         socket = context.socket(zmq.PULL)
-        socket.connect('tcp://Vlab-server:5001')
+        socket.connect('tcp://' + zmqMaster + ':5001')
 
         while True:
             try:

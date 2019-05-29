@@ -4,7 +4,7 @@ from django.db import transaction
 from ..models import Course, Registered_Course, Virtual_Machine, User_VM_Config, Available_Config, \
     User_Network_Configuration
 from ..forms import Course_Registration_Form
-from ..utils import audit, XenClient, get_notification_message, get_free_tcp_port
+from ..utils import audit, XenClient, get_notification_message#, get_free_tcp_port
 from subprocess import Popen, PIPE
 
 import logging
@@ -117,7 +117,6 @@ def start_novnc(config, started_vm):
     """
     with transaction.atomic():
         locked_conf = User_VM_Config.objects.select_for_update().get(id=config.id)
-        val = get_free_tcp_port()
         if started_vm['display_type'] == 'SPICE':
             launch_script = config_ini.get("VITAL", "SPICE_LAUNCH_SCRIPT")
         else:
