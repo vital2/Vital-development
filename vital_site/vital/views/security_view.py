@@ -9,6 +9,7 @@ from subprocess import Popen, PIPE
 from captcha.models import CaptchaStore
 from captcha.helpers import captcha_image_url
 import ConfigParser
+import uuid
 
 from ..forms import Registration_Form, User_Activation_Form, Authentication_Form, Reset_Password_Form, \
     Forgot_Password_Form
@@ -213,14 +214,14 @@ def forgot_password(request):
         if form.is_valid():
             try:
                 user = VLAB_User.objects.get(email=form.cleaned_data['email'])
-                activation_code = randint(100000, 999999)
+                activation_code = str(uuid.uuid4()).replace('_', '')
                 user.activation_code = activation_code
                 user.save()
                 send_mail('Password reset mail', 'Hi '+user.first_name+',\r\n\nPlease click or copy the following link to '
                                                                        'reset your password in your browser. '
                                                                        'https://'+config_ini.get("VITAL", "SERVER_NAME")+'/'
                                                                        'vital/users/reset-password?user_email='
-                          + user.email+'&activation_code='+str(activation_code)
+                          + user.email+'&activation_code='+activation_code
                           + '.\r\n\nVital', 'no-reply-vital@nyu.edu',
                           [user.email], fail_silently=False)
             except VLAB_User.DoesNotExist:

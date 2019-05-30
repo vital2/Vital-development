@@ -47,7 +47,7 @@ class VLAB_User(AbstractBaseUser, PermissionsMixin):
     department = models.ForeignKey(Department, null=True)
     phone = models.CharField(max_length=200, null=True)
     is_active = models.BooleanField(default=False)
-    activation_code = models.IntegerField(null=True)
+    activation_code = models.CharField(max_length=32)
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_faculty = models.BooleanField(default=False)
