@@ -20,7 +20,6 @@ import re
 import os
 import signal
 import json
-from random import randint
 
 config_ini = ConfigParser.ConfigParser()
 config_ini.optionxform=str
@@ -64,7 +63,7 @@ def register(request):
                 user.sftp_account = user.email[:user.email.find('@')]
                 user.sftp_pass = user.password  # workaround to set sftp account
                 user.set_password(user.password)  # hashes the password
-                activation_code = randint(100000, 999999)
+                activation_code = str(uuid.uuid4()).replace('-', '')
                 user.activation_code = activation_code
 
                 #TODO temporary fix until sftp issue solved
@@ -110,7 +109,7 @@ def activate(request):
             try:
                 user = VLAB_User.objects.get(email=form.cleaned_data['user_email'])
                 if not user.is_active:
-                    if user.activation_code == int(form.cleaned_data['code']):
+                    if user.activation_code == form.cleaned_data['code']:
                         user.is_active = True
                         user.activation_code = None
                         user.save()
@@ -180,7 +179,7 @@ def reset_password(request):
             else:
                 logger.debug(form.cleaned_data['user_email']+'-'+form.cleaned_data['activation_code'])
                 user = VLAB_User.objects.get(email=form.cleaned_data['user_email'])
-                if user.activation_code == int(form.cleaned_data['activation_code']):
+                if user.activation_code == form.cleaned_data['activation_code']:
                     user.set_password(form.cleaned_data['password'])
                     user.sftp_pass = form.cleaned_data['password']
                     user.activation_code=None
@@ -214,7 +213,7 @@ def forgot_password(request):
         if form.is_valid():
             try:
                 user = VLAB_User.objects.get(email=form.cleaned_data['email'])
-                activation_code = str(uuid.uuid4()).replace('_', '')
+                activation_code = str(uuid.uuid4()).replace('-', '')
                 user.activation_code = activation_code
                 user.save()
                 send_mail('Password reset mail', 'Hi '+user.first_name+',\r\n\nPlease click or copy the following link to '
