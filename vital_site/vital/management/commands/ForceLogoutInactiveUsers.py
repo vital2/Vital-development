@@ -4,10 +4,7 @@ import logging
 import time
 from django.utils import timezone
 from vital.models import VLAB_User, Course, User_VM_Config, Available_Config
-from vital.views import stop_vms_during_logout
 from vital.utils import XenClient, audit
-from subprocess import Popen, PIPE
-from random import randint
 from django.core.mail import send_mail
 import os
 import signal
@@ -77,4 +74,5 @@ class Command(BaseCommand):
                 if kill:
                     session.delete()
 
-            time.sleep(3600) # Run every 1 hour
+            # Run every 1 hour
+            time.sleep(3600)
