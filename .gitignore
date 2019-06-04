@@ -1,7 +1,15 @@
 *.pyc
 *.log
-.idea/
-.vscode/
 
 # Mac OS
 .DS_Store
+
+# IDE Files
+.idea/
+.vscode/
+
+# Virtual Environment
+venv/
+
+# Configurations
+config.ini
