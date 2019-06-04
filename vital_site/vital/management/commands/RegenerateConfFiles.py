@@ -1,12 +1,12 @@
 from django.core.management.base import BaseCommand
 from glob import glob
 import logging
-import ConfigParser
+import configparser
 import os, errno, shutil
 from vital.models import VLAB_User, Course, Registered_Course, User_Network_Configuration, Available_Config, \
     User_Bridge, Local_Network_MAC_Address
 
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 logger = logging.getLogger(__name__)
 
 
@@ -46,7 +46,7 @@ class Command(BaseCommand):
             user = VLAB_User.objects.get(id=user.user_id)
             self.delete_student_configs(user, course)
             self.create_student_configs(user, course)
-            print 'Reset Conf Files for user {} {} in Course {}'.format(user.first_name, user.last_name, course.name)
+            print('Reset Conf Files for user {} {} in Course {}'.format(user.first_name, user.last_name, course.name))
 
     def copyFile(self, src, dst, buffer_size=10485760, perserveFileDate=True):
         '''
@@ -118,7 +118,7 @@ class Command(BaseCommand):
             base_vm = course.id + '_' + vm.id
             
             try:
-            self.copyFile(config.get("VMConfig", "VM_CONF_LOCATION") + '/clean/' + base_vm + '.conf',
+                self.copyFile(config.get("VMConfig", "VM_CONF_LOCATION") + '/clean/' + base_vm + '.conf',
                      config.get("VMConfig", "VM_CONF_LOCATION") + '/' + name + '.conf', perserveFileDate=False)
             except Exception as e:
                 logger.error(' Error while creating VM conf - {}'.format(name))
