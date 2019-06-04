@@ -3,17 +3,17 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from ..models import Course, Registered_Course, Virtual_Machine, User_VM_Config, Available_Config, \
     User_Network_Configuration
-from ..forms import Course_Registration_Form
+from vital.forms.student_form import Course_Registration_Form
 from ..utils import audit, XenClient, get_notification_message#, get_free_tcp_port
 from subprocess import Popen, PIPE
 
 import logging
 import redis
 import uuid
-import ConfigParser
+import configparser
 
 logger = logging.getLogger(__name__)
-config_ini = ConfigParser.ConfigParser()
+config_ini = configparser.ConfigParser()
 config_ini.optionxform=str
 
 # TODO change to common config file in shared location

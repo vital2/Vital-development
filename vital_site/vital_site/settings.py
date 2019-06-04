@@ -9,7 +9,12 @@ import configparser
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 config = configparser.ConfigParser()
-config.read("/home/vital/config.ini")
+
+# this is the original!
+#config.read("/home/vital/config.ini")
+
+# here's the new
+config.read("config.ini")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config.get("Security", "SECRET_KEY")
@@ -145,7 +150,9 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/vital/vital.log',
+            # original - changed for Python 3
+            #'filename': '/var/log/vital/vital.log',
+            'filename': 'vital.log',
             'maxBytes': 1024*1024*1, # 1 MB
             'backupCount': 15,
             'formatter': 'verbose'

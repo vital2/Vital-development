@@ -1,3 +1,3 @@
-from student_view import *
-from security_view import *
-from faculty_view import *
+from vital.views.student_view import *
+from vital.views.security_view import *
+from vital.views.faculty_view import *
