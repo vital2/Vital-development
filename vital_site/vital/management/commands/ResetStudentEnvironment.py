@@ -4,11 +4,13 @@ from vital.utils import XenServer, XenClient
 import logging
 from subprocess import Popen, PIPE
 from django.contrib.sessions.models import Session
-import ConfigParser
+import configparser
+import os
+import signal
 from django.db import transaction
 
 logger = logging.getLogger(__name__)
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.optionxform=str
 
 # TODO change to common config file in shared location
