@@ -1,14 +1,14 @@
-import ConfigParser
+import configparser
 import logging
 import os
 import zmq
 import redis
 
-from utils import XenClient
-from models import VLAB_User, User_VM_Config
+from vital.utils import XenClient
+from vital.models import VLAB_User, User_VM_Config
 
 logger = logging.getLogger(__name__)
-config_ini = ConfigParser.ConfigParser()
+config_ini = configparser.ConfigParser()
 config_ini.optionxform=str
 
 # TODO change to common config file in shared location

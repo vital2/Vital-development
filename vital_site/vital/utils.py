@@ -1,16 +1,16 @@
 import logging
-import xmlrpclib
+import xmlrpc
 import datetime
 import socket
-from models import Audit, Available_Config, User_Network_Configuration, Virtual_Machine, \
+from vital.models import Audit, Available_Config, User_Network_Configuration, Virtual_Machine, \
     User_VM_Config, Course, VLAB_User, Xen_Server, User_Bridge, Local_Network_MAC_Address
-import ConfigParser
+import configparser
 from decimal import *
 from django.db import transaction
 from influxdb import InfluxDBClient
 
 logger = logging.getLogger(__name__)
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.optionxform=str
 
 # TODO change to common config file in shared location
@@ -263,7 +263,8 @@ class XenServer:
 
     def __init__(self, name, url):
         self.name = name
-        self.proxy = xmlrpclib.ServerProxy(url)
+        # TODO - this was updated for Python 3.7
+        self.proxy = xmlrpc.client.ServerProxy(url)
 
     def list_vms(self, user):
         return self.proxy.xenapi.list_all_vms(user.email, user.password)
@@ -488,12 +489,14 @@ class SneakyXenLoadBalancer:
                         tags['host'] = server.name
                         tags['student'] = student_name
                         tags['course'] = Course.objects.get(id = vm_details[1]).name
-			tags['vm_name'] = Virtual_Machine.objects.get(id = vm_details[2]).name
+                        tags['vm_name'] = Virtual_Machine.objects.get(id = vm_details[2]).name
                         tags['state'] = vm_state
                         fields = {}
-                        fields['cpu_secs'] = long(vm['cpu_secs'])
+                        # this was changed from long() to int() in Python 3
+                        fields['cpu_secs'] = int(vm['cpu_secs'])
                         fields['cpu_per'] = float(vm['cpu_per'])
-                        fields['memory'] = long(vm['mem'])
+                        # this was changed from long() to int() in Python 3
+                        fields['memory'] = int(vm['mem'])
                         fields['mem_per'] = float(vm['mem_per'])
                         fields['vcpus'] = int(vm['vcpus'])
                         fields['networks'] = int(vm['nets'])

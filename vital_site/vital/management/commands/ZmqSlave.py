@@ -4,15 +4,16 @@ from django.utils import timezone
 
 import zmq
 import vital.tasks as tasks
-import ConfigParser
+import configparser
 
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.optionxform=str
 
 # TODO change to common config file in shared location
 config.read("/home/vital/config.ini")
 
 zmqMaster = config.get("VITAL", "ZMQ_MASTER")
+
 
 class Command(BaseCommand):
     help = "Command to start a zmq Slave listening for tasks"
@@ -30,8 +31,8 @@ class Command(BaseCommand):
                 task_kwargs = task_data.pop('task_kwargs')
                 getattr(tasks, task)(**task_kwargs)
             
-            except Exception, e:
-                print e
+            except Exception as e:
+                print(e)
 
-        socket.close()
-        context.term()
+            socket.close()
+            context.term()
