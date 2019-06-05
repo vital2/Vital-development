@@ -54,7 +54,7 @@ MIDDLEWARE_CLASSES = [
 MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware'
+    'django.contrib.messages.middleware.MessageMiddleware',
 ]
 
 ROOT_URLCONF = 'vital_site.urls'
@@ -80,17 +80,26 @@ WSGI_APPLICATION = 'vital_site.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
+
+# FIXME - original below, must adde flag for using SQLite in 'dev mode'
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': config.get("Database", "VITAL_DB_NAME"),
+#         'USER': config.get("Database", "VITAL_DB_USER"),
+#         'PASSWORD': config.get("Database", "VITAL_DB_PWD"),
+#         'HOST': config.get("Database", "VITAL_DB_HOST"),
+#         'PORT': config.get("Database", "VITAL_DB_PORT"),
+#     }
+# }
+
+# TODO - make flag to launch this configuration
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': config.get("Database", "VITAL_DB_NAME"),
-        'USER': config.get("Database", "VITAL_DB_USER"),
-        'PASSWORD': config.get("Database", "VITAL_DB_PWD"),
-        'HOST': config.get("Database", "VITAL_DB_HOST"),
-        'PORT': config.get("Database", "VITAL_DB_PORT"),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
