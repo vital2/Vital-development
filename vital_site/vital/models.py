@@ -109,7 +109,9 @@ class Virtual_Machine(models.Model):
     # added on_delete argument: https://www.valentinog.com/blog/django-missing-argument-on-delete/
     course = models.ForeignKey(Course, on_delete=models.PROTECT)
     name = models.CharField(max_length=200)
-    type = models.ForeignKey(Virtual_Machine_Type, null=True)
+
+    # added on_delete argument: https://www.valentinog.com/blog/django-missing-argument-on-delete/
+    type = models.ForeignKey(Virtual_Machine_Type, null=True, on_delete=models.PROTECT)
 
 
 class User_VM_Config(models.Model):
