@@ -20,7 +20,9 @@ config.read("config.ini")
 SECRET_KEY = config.get("Security", "SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# FIXME - we need to serve static files when DEBUG is False!
+# https://docs.djangoproject.com/en/2.2/howto/static-files/
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 ADMINS = config.get("Email", "VITAL_ADMINS")
