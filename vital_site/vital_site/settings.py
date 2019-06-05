@@ -52,8 +52,8 @@ MIDDLEWARE_CLASSES = [
 
 # this was added as per https://code.djangoproject.com/ticket/30237
 MIDDLEWARE = [
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 ]
 
