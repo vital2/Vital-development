@@ -108,26 +108,29 @@ def console(request, vm_id):
             "server_name":server_name, "terminal_port":user_vm_config.terminal_port})
 
 
-def start_novnc(config, started_vm):
-    """
-    starts the novnc server for client to connect to
-    :param config: User VM Config object to save vnc pid
-    :param started_vm: object refering to the started VM
-    :return: None
-    """
-    with transaction.atomic():
-        locked_conf = User_VM_Config.objects.select_for_update().get(id=config.id)
-        if started_vm['display_type'] == 'SPICE':
-            launch_script = config_ini.get("VITAL", "SPICE_LAUNCH_SCRIPT")
-        else:
-            # It's either Spice or VNC (Always defaults to VNC)
-            launch_script = config_ini.get("VITAL", "NOVNC_LAUNCH_SCRIPT")
-        cmd = launch_script + ' {} {}:{}'.format(val, started_vm['xen_server'], started_vm['vnc_port'])
-        logger.debug("start novnc - "+cmd)
-        p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
-        locked_conf.no_vnc_pid = p.pid
-        locked_conf.terminal_port = val
-        locked_conf.save()
+# This function was commented out due to an unresolved variable
+# TODO - figure out what 'val' is!
+# def start_novnc(config, started_vm):
+#     """
+#     starts the novnc server for client to connect to
+#     :param config: User VM Config object to save vnc pid
+#     :param started_vm: object refering to the started VM
+#     :return: None
+#     """
+#     with transaction.atomic():
+#         locked_conf = User_VM_Config.objects.select_for_update().get(id=config.id)
+#         if started_vm['display_type'] == 'SPICE':
+#             launch_script = config_ini.get("VITAL", "SPICE_LAUNCH_SCRIPT")
+#         else:
+#             # It's either Spice or VNC (Always defaults to VNC)
+#             launch_script = config_ini.get("VITAL", "NOVNC_LAUNCH_SCRIPT")
+#         cmd = launch_script + ' {} {}:{}'.format(val, started_vm['xen_server'], started_vm['vnc_port'])
+#         logger.debug("start novnc - "+cmd)
+#         p = Popen(cmd.split(), stdout=PIPE, stderr=PIPE)
+#         locked_conf.no_vnc_pid = p.pid
+#         locked_conf.terminal_port = val
+#         locked_conf.save()
+
 
 def vm_create_websockify_token(config, started_vm):
     redis_host = config_ini.get('VITAL', 'REDIS_HOST')
@@ -153,6 +156,7 @@ def vm_create_websockify_token(config, started_vm):
     
     except Exception as e:
         raise e
+
 
 @login_required(login_url='/vital/login/')
 def start_vm(request, course_id, vm_id):

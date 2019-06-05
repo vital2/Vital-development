@@ -8,7 +8,7 @@ from ..utils import XenClient, audit, get_notification_message
 from subprocess import Popen, PIPE
 from captcha.models import CaptchaStore
 from captcha.helpers import captcha_image_url
-import ConfigParser
+import configparser
 import uuid
 
 from ..forms import Registration_Form, User_Activation_Form, Authentication_Form, Reset_Password_Form, \
@@ -21,7 +21,7 @@ import os
 import signal
 import json
 
-config_ini = ConfigParser.ConfigParser()
+config_ini = configparser.ConfigParser()
 config_ini.optionxform=str
 
 # TODO change to common config file in shared location
