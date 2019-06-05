@@ -5,6 +5,7 @@ django-passwords
 django-registration
 django-session-security
 django-simple-captcha
+image
 influxdb
 Pillow
 psycopg2

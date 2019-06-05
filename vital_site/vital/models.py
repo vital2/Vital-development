@@ -42,8 +42,10 @@ class VLAB_User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField('email address', unique=True, db_index=True)
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
-    admitted_on = models.ForeignKey(Intake_Period, null=True, blank=True)
-    department = models.ForeignKey(Department, null=True)
+    # added on_delete argument: https://www.valentinog.com/blog/django-missing-argument-on-delete/
+    admitted_on = models.ForeignKey(Intake_Period, null=True, blank=True, on_delete=models.PROTECT)
+    department = models.ForeignKey(Department, null=True, on_delete=models.PROTECT)
+
     phone = models.CharField(max_length=200, null=True)
     is_active = models.BooleanField(default=False)
     activation_code = models.CharField(max_length=50, null=True)
@@ -104,14 +106,16 @@ class Virtual_Machine_Type(models.Model):
 
 
 class Virtual_Machine(models.Model):
-    course = models.ForeignKey(Course)
+    # added on_delete argument: https://www.valentinog.com/blog/django-missing-argument-on-delete/
+    course = models.ForeignKey(Course, on_delete=models.PROTECT)
     name = models.CharField(max_length=200)
     type = models.ForeignKey(Virtual_Machine_Type, null=True)
 
 
 class User_VM_Config(models.Model):
     xen_server = models.CharField(max_length=50)
-    vm = models.ForeignKey(Virtual_Machine)
+    # added on_delete argument: https://www.valentinog.com/blog/django-missing-argument-on-delete/
+    vm = models.ForeignKey(Virtual_Machine,  on_delete=models.PROTECT)
     user_id = models.IntegerField(default=0)
     vnc_port = models.CharField(max_length=10)
     terminal_port = models.CharField(max_length=10)
@@ -126,8 +130,10 @@ class Available_Config(models.Model):
 
 class Network_Configuration(models.Model):
     name = models.CharField(max_length=10)
-    course = models.ForeignKey(Course)
-    virtual_machine = models.ForeignKey(Virtual_Machine)
+    # added on_delete argument: https://www.valentinog.com/blog/django-missing-argument-on-delete/
+    course = models.ForeignKey(Course, on_delete=models.PROTECT)
+    virtual_machine = models.ForeignKey(Virtual_Machine, on_delete=models.PROTECT)
+
     is_course_net = models.BooleanField(default=False)
     has_internet_access = models.BooleanField(default=False)
 
@@ -138,10 +144,13 @@ class User_Bridge(models.Model):
 
 
 class User_Network_Configuration(models.Model):
-    vm = models.ForeignKey(Virtual_Machine)
-    course = models.ForeignKey(Course)
+    # added on_delete argument: https://www.valentinog.com/blog/django-missing-argument-on-delete/
+    vm = models.ForeignKey(Virtual_Machine, on_delete=models.PROTECT)
+    course = models.ForeignKey(Course, on_delete=models.PROTECT)
+
     user_id = models.IntegerField(default=0)
-    bridge = models.ForeignKey(User_Bridge)
+    # added on_delete argument: https://www.valentinog.com/blog/django-missing-argument-on-delete/
+    bridge = models.ForeignKey(User_Bridge, on_delete=models.PROTECT)
     mac_id = models.CharField(max_length=50)
     is_course_net = models.BooleanField(default=False)
 
@@ -155,14 +164,16 @@ class Faculty(models.Model):
         (TEACHING_ASSISTANT, 'TeachingAssistant'),
         (OWNER, 'Owner')
     )
-    course = models.ForeignKey(Course)
-    user = models.ForeignKey(VLAB_User, null=True)
+    # added on_delete argument: https://www.valentinog.com/blog/django-missing-argument-on-delete/
+    course = models.ForeignKey(Course, on_delete=models.PROTECT)
+    user = models.ForeignKey(VLAB_User, null=True, on_delete=models.PROTECT)
     type = models.CharField(max_length=2, choices=TYPE_CHOICES, default=PROFESSOR)
 
 
 class Registered_Course(models.Model):
     user_id = models.IntegerField(default=0)
-    course = models.ForeignKey(Course)
+    # added on_delete argument: https://www.valentinog.com/blog/django-missing-argument-on-delete/
+    course = models.ForeignKey(Course, on_delete=models.PROTECT)
     registered_date = models.DateTimeField(default=datetime.now)
 
 
@@ -186,11 +197,14 @@ class Xen_Server(models.Model):
 class Auto_Start_Resources(models.Model):
     name = models.CharField(max_length=15, unique=True)
     type = models.CharField(max_length=10)
-    course = models.ForeignKey(Course)
+    # added on_delete argument: https://www.valentinog.com/blog/django-missing-argument-on-delete/
+    course = models.ForeignKey(Course, on_delete=models.PROTECT)
 
 
 #adding new tables for maintaing student local network MAC id's
 class Local_Network_MAC_Address(models.Model):
-    course = models.ForeignKey(Course)
-    network_configuration = models.ForeignKey(Network_Configuration)
+    # added on_delete argument: https://www.valentinog.com/blog/django-missing-argument-on-delete/
+    course = models.ForeignKey(Course, on_delete=models.PROTECT)
+    network_configuration = models.ForeignKey(Network_Configuration, on_delete=models.PROTECT)
+
     mac_id = models.CharField(max_length=200)
