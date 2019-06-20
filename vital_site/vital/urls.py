@@ -16,7 +16,8 @@ urlpatterns = [
     url(r'^users/register/$', views.register, name='user_register'),
     url(r'^users/activate/$', views.activate, name='user_activate'),
     url(r'^users/(?P<user_id>[0-9]+)/vms/(?P<vm_id>[0-9]+)/release-vm/$', views.release_vm, name='user_releaseVM'),
-    url(r'^login/$', views.login, name='login'),
+    # got rid of trailing slash on /login/
+    url(r'^login', views.login, name='login'),
     url(r'^logout/$', views.logout, name='logout'),
     url(r'^users/reset-password', views.reset_password, name='user_reset_password'),
     url(r'^users/forgot-password', views.forgot_password, name='user_forgot_password'),
