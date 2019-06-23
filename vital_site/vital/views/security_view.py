@@ -123,7 +123,7 @@ def activate(request):
                                                             '\r\n\nSFTP Host : 128.238.77.36 \n Your SFTP account is '+user.sftp_account+' and password '
                                                             'is the same as vital.'
                                                             '\r\n\nFor help on using Vital Interface and SFTP Access please read the wiki '
-                                                            'https://github.com/vital2/virtual_lab/wiki/Vital-User-Guide '
+                                                            'https://github.com/vital2/virtual_lab/VitalGuide.pdf'
                                                             '\r\n\nVital',
                                   'no-reply-vital@nyu.edu', [user.email], fail_silently=False)
                         logger.debug('activated..'+user.email)
