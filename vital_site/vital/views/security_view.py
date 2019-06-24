@@ -129,7 +129,7 @@ def activate(request):
                         logger.debug('activated..'+user.email)
                         form = Authentication_Form()
                         # return render(request, 'vital/login.html', {'form': form })
-                        return redirect('/vital')
+                        return redirect('')
                     else:
                         message = 'Please check your activation code'
                 else:
@@ -197,7 +197,7 @@ def reset_password(request):
 
                     user.save()
                     update_session_auth_hash(request, user)
-                    return redirect('/vital')  # change here to home page
+                    return redirect('')  # change here to home page
                 else:
                     error_message = 'Please use the link sent to you in your email'
     else:
@@ -248,7 +248,7 @@ def login(request):
                 if user.is_active:
                     django_login(request, user)
                     audit(request, 'User logged in')
-                    return redirect('/vital')
+                    return redirect('')
                 else:
                     form = User_Activation_Form(initial={'user_email': user.email})
                     return render(request, 'vital/user_registration_validate.html',
@@ -288,7 +288,7 @@ def logout(request):
     logger.debug(">>>>>>>>>>>>>>>>>>" + str(request.user))
     audit(request, 'User logged out')
     django_logout(request)
-    return redirect('/vital/login')
+    return redirect('/login')
 
 
 def stop_vms_during_logout(user):
@@ -305,15 +305,15 @@ def stop_vms_during_logout(user):
     return all_vms_shutdown
 
 
-@login_required(login_url='/vital/login/')
+@login_required(login_url='/login/')
 def index(request):
     logger.debug("In index")
     user = request.user
     if not user.is_faculty and not user.is_admin:
-        return redirect('/vital/courses/registered')  # change here to home page
+        return redirect('/courses/registered')  # change here to home page
     elif user.is_faculty:
         logger.debug('user is a faculty')
-        return redirect('/vital/courses/advising')  # change here to home page
+        return redirect('/courses/advising')  # change here to home page
     else:
         logger.debug('user is admin')
 
@@ -347,7 +347,7 @@ def release_vm(request, user_id, vm_id):
                 config.save()
                 vm.delete()
                 # audit(request, 'Stopped Virtual machine ' + str(virtual_machine.name))
-                # return redirect('/vital/courses/14/vms?message=VM stopped...')
+                # return redirect('/courses/14/vms?message=VM stopped...')
                 return HttpResponse('SUCCESS')
     except Exception as e:
         logger.error(str(e))
