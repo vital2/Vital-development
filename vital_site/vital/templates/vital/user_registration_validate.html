@@ -12,7 +12,7 @@
 </p>
 {% endif %}
 
-<form action="{% url 'vital:user_activate' %}" method='POST'>
+<form action="{% url 'user_activate' %}" method='POST'>
     {% csrf_token %}
 {% if error_message %}
 <p class="error">
