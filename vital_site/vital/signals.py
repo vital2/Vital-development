@@ -19,6 +19,8 @@ def sig_user_logged_in(sender, user, request, **kwargs):
         pass
     new_user_session = User_Session()
     new_user_session.user_id = user.id
+
+    # FIXME - session key is coming up NULL after registration
     new_user_session.session_key = request.session.session_key
     new_user_session.save()
 
