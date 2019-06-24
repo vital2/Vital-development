@@ -20,7 +20,7 @@ config_ini.optionxform=str
 config_ini.read("/home/vital/config.ini")
 
 
-@login_required(login_url='/vital/login/')
+@login_required(login_url='/login/')
 def registered_courses(request):
     """
     lists all registered courses for logged in user
@@ -39,7 +39,7 @@ def registered_courses(request):
     return render(request, 'vital/registered_courses.html', {'reg_courses': reg_courses, 'message':message})
 
 
-@login_required(login_url='/vital/login/')
+@login_required(login_url='/login/')
 def virtual_machines(request, course_id):
     """
     lists all VMs of the selected course
@@ -72,7 +72,7 @@ def virtual_machines(request, course_id):
 
     return render_to_response('vital/virtual_machines.html', params)
 
-@login_required(login_url='/vital/login/')
+@login_required(login_url='/login/')
 def course_vms(request, course_id):
     """
     Stub method for rendering course Page
@@ -88,7 +88,7 @@ def course_vms(request, course_id):
     return render(request, 'vital/course_vms.html', params)
 
 
-@login_required(login_url='/vital/login/')
+@login_required(login_url='/login/')
 def console(request, vm_id):
     """
     fetches terminal port and server name for novnc console
@@ -158,7 +158,7 @@ def vm_create_websockify_token(config, started_vm):
         raise e
 
 
-@login_required(login_url='/vital/login/')
+@login_required(login_url='/login/')
 def start_vm(request, course_id, vm_id):
     """
     starts the specified VM
@@ -190,21 +190,21 @@ def start_vm(request, course_id, vm_id):
         # start_novnc(config, started_vm)
         vm_create_websockify_token(config, started_vm)
         audit(request, 'Started Virtual machine ' + str(vm.name))
-        return redirect('/vital/courses/' + course_id + '/vms?message=' + vm.name + ' VM started')
+        return redirect('/courses/' + course_id + '/vms?message=' + vm.name + ' VM started')
     except Virtual_Machine.DoesNotExist as e:
         logger.error(str(e))
         audit(request, 'Error starting Virtual machine ' + str(vm_id) + '( Does not exist )')
-        return redirect('/vital/courses/' + course_id + '/vms?message=Unable to start VM - ' + vm.name)
+        return redirect('/courses/' + course_id + '/vms?message=Unable to start VM - ' + vm.name)
     except Exception as e:
         logger.error(str(e))
         audit(request, 'Error starting Virtual machine ' + str(vm.name) + '( ' + e.message + ' )')
         if 'Connection refused' not in str(e).rstrip() or started_vm is not None:
             XenClient().remove_network_bridges(vm.xen_server, request.user, course_id, vm_id)
             XenClient().stop_vm(started_vm['xen_server'], request.user, course_id, vm_id)
-        return redirect('/vital/courses/' + course_id + '/vms?message=Unable to start VM - ' + vm.name)
+        return redirect('/courses/' + course_id + '/vms?message=Unable to start VM - ' + vm.name)
 
 
-@login_required(login_url='/vital/login/')
+@login_required(login_url='/login/')
 def stop_vm(request, course_id, vm_id):
     """
     stops the specified VM
@@ -236,13 +236,13 @@ def stop_vm(request, course_id, vm_id):
     #     config.save()
     #     vm.delete()
         audit(request, 'Stopped Virtual machine ' + str(virtual_machine.name))
-        return redirect('/vital/courses/' + course_id + '/vms?message=VM stopped...')
+        return redirect('/courses/' + course_id + '/vms?message=VM stopped...')
     except Exception as e:
         audit(request, 'Error stopping Virtual machine ' + str(virtual_machine.name)+'('+e.message+')')
         raise e
 
 
-@login_required(login_url='/vital/login/')
+@login_required(login_url='/login/')
 def rebase_vm(request, course_id, vm_id):
     """
     rebase the specified VM to initial state
@@ -265,10 +265,10 @@ def rebase_vm(request, course_id, vm_id):
     except Exception as e:
         audit(request, 'Error re-imaged Virtual machine ' + str(virtual_machine.name))
         raise e
-    return redirect('/vital/courses/' + course_id + '/vms?message=VM rebased to initial state..')
+    return redirect('/courses/' + course_id + '/vms?message=VM rebased to initial state..')
 
 
-@login_required(login_url='/vital/login/')
+@login_required(login_url='/login/')
 def register_for_course(request):
     """
     creates necessary VMs for the specified course
@@ -300,7 +300,7 @@ def register_for_course(request):
                             registered_course = Registered_Course(course_id=course.id, user_id=user.id)
                             registered_course.save()
                             audit(request, 'Registered for course ' + str(course.name))
-                            return redirect('/vital/courses/registered/')
+                            return redirect('/courses/registered/')
                         else:
                             audit(request, 'Error registering for course ' + str(course.name) + ' (Inactive/Capacity Full)')
                             error_message = 'The course is either inactive or has reached its maximum student capacity.'
@@ -311,7 +311,7 @@ def register_for_course(request):
     return render(request, 'vital/course_register.html', {'form': form, 'error_message': error_message})
 
 
-@login_required(login_url='/vital/login/')
+@login_required(login_url='/login/')
 def unregister_from_course(request, course_id):
     """
     removes all VMs attached to a selected course and removes course finally from the users profile
@@ -336,7 +336,7 @@ def unregister_from_course(request, course_id):
         XenClient().unregister_student_vms(request.user, course_to_remove.course)
         audit(request, 'Un-registered from course ' + str(course.name))
         course_to_remove.delete()
-        return redirect('/vital/courses/registered/')
+        return redirect('/courses/registered/')
     except Exception as e:
         audit(request, 'Error while Un-registering from course ' + str(course.name)+' ('+e.message+')')
         raise e
