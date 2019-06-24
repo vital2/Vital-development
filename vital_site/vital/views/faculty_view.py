@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-@login_required(login_url='/vital/login/')
+@login_required(login_url='/login/')
 def advising_courses(request):
     logger.debug("In registered courses")
     faculty_records = Faculty.objects.filter(user_id=request.user.id)
@@ -17,7 +17,7 @@ def advising_courses(request):
     return render(request, 'vital/advising_courses.html', {'advising_courses': adv_courses})
 
 
-@login_required(login_url='/vital/login/')
+@login_required(login_url='/login/')
 def course_detail(request, course_id):
     logger.debug("in course detail")
     professors = ''
