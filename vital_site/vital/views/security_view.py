@@ -129,7 +129,7 @@ def activate(request):
                         logger.debug('activated..'+user.email)
                         form = Authentication_Form()
                         # return render(request, 'vital/login.html', {'form': form })
-                        return redirect('')
+                        return redirect('/')
                     else:
                         message = 'Please check your activation code'
                 else:
@@ -197,7 +197,7 @@ def reset_password(request):
 
                     user.save()
                     update_session_auth_hash(request, user)
-                    return redirect('')  # change here to home page
+                    return redirect('/')  # change here to home page
                 else:
                     error_message = 'Please use the link sent to you in your email'
     else:
@@ -248,7 +248,7 @@ def login(request):
                 if user.is_active:
                     django_login(request, user)
                     audit(request, 'User logged in')
-                    return redirect('')
+                    return redirect('/')
                 else:
                     form = User_Activation_Form(initial={'user_email': user.email})
                     return render(request, 'vital/user_registration_validate.html',
