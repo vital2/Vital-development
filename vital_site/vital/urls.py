@@ -4,7 +4,7 @@ from . import views
 
 app_name = 'vital'
 urlpatterns = [
-    url(r'^$', views.login, name='login'),
+    url(r'^$', views.index, name='index'),
     url(r'^courses/register/$', views.register_for_course, name='course_register'),
     url(r'^courses/(?P<course_id>[0-9]+)/deregister/$', views.unregister_from_course, name='course_deregister'),
     url(r'^courses/(?P<course_id>[0-9]+)/vms/$', views.course_vms, name='course_vms'),
