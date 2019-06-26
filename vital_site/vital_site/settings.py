@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'vital_site.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-'''
+
 # FIXME - original below, must adde flag for using SQLite in 'dev mode'
 DATABASES = {
 	'default': {
@@ -94,16 +94,16 @@ DATABASES = {
         'PORT': config.get("Database", "VITAL_DB_PORT"),
 	}
 }
-'''
-    # TODO - make flag to launch this configuration
 
+    # TODO - make flag to launch this configuration
+'''
 DATABASES = {
     'default': {
     'ENGINE': 'django.db.backends.sqlite3',
     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 }
 }
-
+'''
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
