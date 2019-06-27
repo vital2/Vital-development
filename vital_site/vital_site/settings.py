@@ -14,7 +14,8 @@ config = configparser.ConfigParser()
 #config.read("/home/vital/config.ini")
 
 # here's the new
-config.read("config.ini")
+# config.read("config.ini")
+config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'config.ini'))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config.get("Security", "SECRET_KEY")
