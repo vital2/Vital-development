@@ -15,4 +15,4 @@ venv/
 config.ini
 
 # migration files
-*/migrations
+migrations/*
