@@ -15,7 +15,7 @@ config = configparser.ConfigParser()
 
 # here's the new
 # config.read("config.ini")
-# changing location for config.ini
+# changing location for config.ini - it should be next to settings.py in vital_site
 config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'config.ini'))
 
 # SECURITY WARNING: keep the secret key used in production secret!
