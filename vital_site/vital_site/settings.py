@@ -8,6 +8,8 @@ import configparser
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+#SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
+
 config = configparser.ConfigParser()
 
 # this is the original!
