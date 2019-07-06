@@ -1,5 +1,6 @@
 import logging
 import xmlrpc
+import xmlrpc.client
 import datetime
 import socket
 from vital.models import Audit, Available_Config, User_Network_Configuration, Virtual_Machine, \
@@ -274,6 +275,7 @@ class XenServer:
 
     def setup_vm(self, user, vm_name, base_name, vif=None):
         self.proxy.xenapi.setup_vm(user.email, user.password, vm_name, base_name, vif)
+        logger.debug("getting out of setup_vm")
 
     def cleanup_vm(self, user, vm_name):
         self.proxy.xenapi.cleanup_vm(user.email, user.password, vm_name)
