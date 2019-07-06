@@ -200,7 +200,7 @@ def start_vm(request, course_id, vm_id):
         audit(request, 'Error starting Virtual machine ' + str(vm.name) + '( ' + e + ' )')
         if 'Connection refused' not in str(e).rstrip() or started_vm is not None:
             #EDIT:SAHIL:vm had no attribute xen_server
-            XenClient().remove_network_bridges(started_vm.vm['xen_server'], request.user, course_id, vm_id)
+            XenClient().remove_network_bridges(started_vm['xen_server'], request.user, course_id, vm_id)
             XenClient().stop_vm(started_vm['xen_server'], request.user, course_id, vm_id)
         return redirect('/courses/' + course_id + '/vms?message=Unable to start VM - ' + vm.name)
 
