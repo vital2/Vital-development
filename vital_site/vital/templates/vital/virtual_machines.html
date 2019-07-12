@@ -21,11 +21,11 @@
             <div class="overlay" style="width:100%;height:100%">
                 <div style="height:33%;padding-top:7px">
                     {% if vm.state == 'R'%}
-                    <a class='ctrlbtn' href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/stop' onclick="openNav()">
+                    <a class='ctrlbtn' href='/courses/{{ course_id }}/vms/{{ vm.id }}/stop' onclick="openNav()">
                         <img src="{% static  'vital/red-power.png' %}" width="30px" height="30px" title="Stop VM" />
                     </a>
                     {% else %}
-                    <a class='ctrlbtn' href='/vital/courses/{{ course_id }}/vms/{{ vm.id }}/start' onclick="openNav()">
+                    <a class='ctrlbtn' href='/courses/{{ course_id }}/vms/{{ vm.id }}/start' onclick="openNav()">
                         <img src="{% static  'vital/green-power.png' %}" width="30px" height="30px" title="Start VM" />
                     </a>
                     {% endif %}
