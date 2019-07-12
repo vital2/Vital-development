@@ -16,3 +16,6 @@ config.ini
 
 # migration files
 migrations/*
+
+# logs
+vital_site/vital.log
