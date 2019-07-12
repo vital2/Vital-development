@@ -6,7 +6,6 @@ import socket
 from vital.models import Audit, Available_Config, User_Network_Configuration, Virtual_Machine, \
     User_VM_Config, Course, VLAB_User, Xen_Server, User_Bridge, Local_Network_MAC_Address
 import configparser
-from decimal import *
 from django.db import transaction
 from influxdb import InfluxDBClient
 
@@ -169,8 +168,9 @@ class XenClient:
     def start_vm(self, user, course_id, vm_id):
         logger.debug('XenClient - in start_vm')
         xen = SneakyXenLoadBalancer().get_best_server(user, course_id)
-        net_confs = User_Network_Configuration.objects.filter(user_id=user.id, vm__id=vm_id,
-                                                              course__id=course_id, bridge__created=False)
+        
+        net_confs = User_Network_Configuration.objects.filter(user_id=user.id, vm__id=vm_id, course__id=course_id, bridge__created=False)
+        
         with transaction.atomic():
             for conf in net_confs:
                 try:
@@ -185,7 +185,7 @@ class XenClient:
                 conf.bridge.save()
 
             display_server = config.get('VITAL', 'DISPLAY_SERVER')
-
+            
             if display_server == 'SPICE':
                 vm_options = ';'.join('{}="{}"'.format(key, val) for (
                     key, val) in get_spice_options().iteritems())
@@ -198,10 +198,12 @@ class XenClient:
                     'Starting with NoVNC', display_server)
                 display_server = 'VNC'
                 vm_options = ''
-
+            
             vm = xen.start_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id), vm_options)
+            logger.debug(" after vm got assigned")
             vm['xen_server'] = xen.name
             vm['display_type'] = display_server
+            
             return vm
 
     def remove_network_bridges(self, server, user, course_id, vm_id):
@@ -284,7 +286,11 @@ class XenServer:
         self.proxy.xenapi.stop_vm(user.email, user.password, vm_name)
 
     def start_vm(self, user, vm_name, vm_options=''):
-        return self.proxy.xenapi.start_vm(user.email, user.password, vm_name, vm_options)
+        logger.debug("getting into start_vm function")
+        vm = self.proxy.xenapi.start_vm(user.email, user.password, vm_name, vm_options)
+        logger.debug("getting out stat_vm function")
+        logger.debug(vm)
+        return vm
 
     def save_vm(self, user, vm_name):
         return self.proxy.xenapi.save_vm(user.email, user.password, vm_name)
@@ -296,7 +302,11 @@ class XenServer:
         return self.proxy.xenapi.kill_zombie_vm(user.email, user.password, vm_id)
 
     def create_bridge(self, user, name):
-        self.proxy.xenapi.create_bridge(user.email, user.password, name)
+        try:
+            logger.debug("in create_bridge")
+            self.proxy.xenapi.create_bridge(user.email, user.password, name)
+        except Exception:
+            logger.debug("cauhgt")
 
     def remove_bridge(self, user, name):
         self.proxy.xenapi.remove_bridge(user.email, user.password, name)
@@ -372,7 +382,7 @@ class SneakyXenLoadBalancer:
                 server.no_of_students = len(students)
                 server.no_of_courses = len(courses)
                 server.no_of_vms = len(vms)
-                server.utilization = Decimal(server.used_memory)/Decimal(server.total_memory)
+                server.utilization = float(server.used_memory)/float(server.total_memory)
                 server.status = 'ACTIVE'
             except Exception as e:
                 logger.error(key+str(e))
@@ -454,7 +464,7 @@ class SneakyXenLoadBalancer:
                 }
             }
         ]
-
+        
         c = InfluxDBClient(host='localhost', port=8086)
         c.switch_database('xen_stats')
         c.write_points(json_body)

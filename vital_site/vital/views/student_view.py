@@ -179,13 +179,15 @@ def start_vm(request, course_id, vm_id):
             config = User_VM_Config()
         with transaction.atomic():
             # start vm with xen api which returns handle to the vm
+            
             started_vm = XenClient().start_vm(request.user, course_id, vm_id)
+            logger.debug("after started vm")
             config.vm = vm
             config.user_id = request.user.id
             config.vnc_port = started_vm['vnc_port']
             config.xen_server = started_vm['xen_server']
             config.save()
-
+            
         # run novnc launch script
         # start_novnc(config, started_vm)
         vm_create_websockify_token(config, started_vm)

@@ -34,5 +34,5 @@ class Command(BaseCommand):
             except Exception as e:
                 print(e)
 
-            socket.close()
-            context.term()
+        socket.close()
+        context.term()

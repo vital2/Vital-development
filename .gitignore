@@ -1,5 +1,6 @@
 *.pyc
 *.log
+*.swp
 
 # Mac OS
 .DS_Store
@@ -16,6 +17,7 @@ config.ini
 
 # migration files
 migrations/*
+zmqmaster
 
 # logs
 vital_site/vital.log
