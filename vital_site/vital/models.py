@@ -152,7 +152,7 @@ class User_Network_Configuration(models.Model):
 
     user_id = models.IntegerField(default=0)
     # added on_delete argument: https://www.valentinog.com/blog/django-missing-argument-on-delete/
-    bridge = models.ForeignKey(User_Bridge, on_delete=models.PROTECT)
+    bridge = models.ForeignKey(User_Bridge, on_delete=models.CASCADE)
     mac_id = models.CharField(max_length=50)
     is_course_net = models.BooleanField(default=False)
 
