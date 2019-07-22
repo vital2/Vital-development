@@ -339,7 +339,7 @@ def unregister_from_course(request, course_id):
         XenClient().unregister_student_vms(request.user, course_to_remove.course)
         audit(request, 'Un-registered from course ' + str(course.name))
         course_to_remove.delete()
-        return redirect('/courses/registered')
+        return redirect('/courses/registered/')
     except Exception as e:
         audit(request, 'Error while Un-registering from course ' + str(course.name)+' ('+e.message+')')
         raise e
