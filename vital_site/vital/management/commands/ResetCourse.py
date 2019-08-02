@@ -3,12 +3,12 @@ import logging
 from django.utils import timezone
 from vital.models import Course, Registered_Course, User_Network_Configuration, Available_Config, User_VM_Config
 from django.utils.crypto import get_random_string
-import ConfigParser
+import configparser
 import os
 import errno
 
 logger = logging.getLogger(__name__)
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.optionxform=str
 
 # TODO change to common config file in shared location
