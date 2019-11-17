@@ -1,0 +1,17 @@
+Django==1.9.1
+django-crontab==0.7.0
+django-jquery==1.9.1
+django-passwords==0.3.7
+django-registration==2.0.3
+django-session-security==2.3.1
+django-simple-captcha==0.5.1
+Pillow==3.1.0
+psycopg2==2.7.1
+requests==2.9.1
+six==1.10.0
+South==1.0.2
+stripe==1.27.1
+wheel==0.24.0
+pyzmq
+gunicorn
+redis
