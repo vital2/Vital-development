@@ -11,8 +11,8 @@ class Command(BaseCommand):
            "Users marked faculty/admin/staff will not be removed."
 
     def handle(self, *args, **options):
-        two_years = timezone.now() + timezone.timedelta(days=-730)
-        users = VLAB_User.objects.filter(created_date__lte=two_years)
+        two_years = timezone.now() + timezone.timedelta(days=-280)
+        users = VLAB_User.objects.filter(created_date__gte=two_years)
         # is there a better way to check if there are VMs running for these users
         for user in users:
             Registered_Course.objects.filter(user_id=user.id).delete()

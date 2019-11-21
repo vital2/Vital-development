@@ -134,7 +134,7 @@ class Network_Configuration(models.Model):
 
 
 class User_Bridge(models.Model):
-    name = models.CharField(max_length=15, primary_key=True)
+    name = models.CharField(max_length=50, primary_key=True)
     created = models.BooleanField(default=False)
 
 
