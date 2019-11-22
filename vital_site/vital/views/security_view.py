@@ -63,11 +63,7 @@ def register(request):
                 user.sftp_account = user.email[:user.email.find('@')]
                 user.sftp_pass = user.password  # workaround to set sftp account
                 user.set_password(user.password)  # hashes the password
-<<<<<<< HEAD
-                activation_code = str(uuid.uuid4()).replace('-', '')
-=======
                 activation_code = str(randint(100000, 999999))
->>>>>>> master
                 user.activation_code = activation_code
 
                 #TODO temporary fix until sftp issue solved
