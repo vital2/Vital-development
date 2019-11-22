@@ -38,7 +38,7 @@
                             </a>
                         {% else %}
                             <!-- <a href="http://{{ server_name }}:42713/vnc_auto.html?token={{ vm.token }}" onclick="return windowpop(this.href, 'Terminal-{{ vm.id }}', 825, 680, {{ vm.id }})"> -->
-                            <a href="https://{{ server_name }}/vmconsole/vnc_auto.html?token={{ vm.token }}" onclick="return windowpop(this.href, 'Terminal-{{ vm.id }}', 825, 680, {{ vm.id }})">
+                            <a href="https://{{ server_name }}/vmconsole/vnc_lite.html?token={{ vm.token }}&scale=true" onclick="return windowpop(this.href, 'Terminal-{{ vm.id }}', 825, 680, {{ vm.id }})">
                                 <img src="{% static  'vital/console.ico' %}" width="30px" height="30px" title="View console" />
                             </a>
                         {% endif %}
