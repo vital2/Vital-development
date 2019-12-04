@@ -1,0 +1,48 @@
+{% extends 'vital/base.html' %}
+{% block content %}
+
+<script>
+$(document).ready(setup);
+
+function setup () {
+    $('form').submit(function() {
+        $(this).find('input[type="submit"]').prop('disabled', true);
+    });
+}
+</script>
+
+<div style="width: 100%" align="left">
+    <h5 style="padding-left: 20px"> Register for course </h5>
+</div>
+
+{% if message %}
+<p style="color: green">{{ message }}</p> {% endif %}
+<form action="{% url 'vital:course_register' %}" method='POST'>
+    {% csrf_token %} 
+    {% if error_message %}
+    <p class="error">
+        {{ error_message }}
+    </p>
+    {% endif %}
+    <table style="width: auto">
+        {% for field in form.visible_fields %}
+        <tr>
+            <td>{{ field.label_tag }}</td>
+            <td>{{ field }}</td>
+            {% if field.errors %}
+            <td colspan="2" align="right">
+                {% for error in field.errors %}
+                <div style="font-size: 10px; color: red" align="right">{{ error }}</div>
+                {% endfor %}
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="2" align="right">
+                <input type='submit' value='Register' onclick="openNav()"/>
+            </td>
+        </tr>
+    </table>
+</form>
+{% endblock content %}
