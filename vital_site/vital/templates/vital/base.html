@@ -56,15 +56,15 @@
     <div id="hug">
     <div id="header-wrapper">
 	<div id="header">
-	  <a href="/vital" title="NYU Tandon School of Engineering" id="logo">
+	  <a href="/" title="NYU Tandon School of Engineering" id="logo">
 	    <img src="{% static 'vital/NYU_Tandon_logo.png' %}" alt="NYU Tandon School of Engineering" width="257" height="40">
 	  </a>
 	  <img src="{% static 'vital/poly_header.png' %}" id="poly-header" width="254px" height="12px">
 	  <div id="user-nav-container">
           <ul id="user-nav">
             {% if user.is_faculty %}
-                <li class="menu-335"><a href="/vital/courses/registered/">Registered Courses</a></li>
-                <li class="menu-335"><a href="/vital/courses/advising/">Advising Courses</a></li>
+                <li class="menu-335"><a href="/courses/registered/">Registered Courses</a></li>
+                <li class="menu-335"><a href="/courses/advising/">Advising Courses</a></li>
             {% endif %}
             {% if user.is_admin %}
                 <li class="menu-334"><a href="http://engineering.nyu.edu/alumni">Courses</a></li>
@@ -72,9 +72,9 @@
             {% endif %}
             {% if user.is_authenticated %}
                 {% if not user.is_admin and not user.is_faculty %}
-                <li class="menu-335"><a href="/vital/courses/registered/">Registered Courses</a></li>
+                <li class="menu-335"><a href="/courses/registered/">Registered Courses</a></li>
                 {% endif %}
-                <li class="menu-334"><a href="/vital/users/reset-password">Reset Password</a></li>
+                <li class="menu-334"><a href="/users/reset-password">Reset Password</a></li>
             {% endif %}
 	    <li class="menu-335"><a href="https://bugzilla.poly.edu">Report Issue</a></li>
             <li class="menu-335"><a href="https://github.com/vital2/virtual_lab/wiki/Vital-User-Guide">wiki</a></li>
@@ -89,7 +89,7 @@
             <div style="float: left; width: 50%">Vital</div>
             {% if request.user.first_name%}
                 <div style="float: left;font-size: 12px; color: white; text-align:right;width: 50%">Welcome, {{ request.user.first_name }} &nbsp;| &nbsp;
-                <a href="/vital/logout">Logout</a>&nbsp;</div>
+                <a href="/logout">Logout</a>&nbsp;</div>
             {% endif %}
 		</div>
 	</div> 
