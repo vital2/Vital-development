@@ -45,7 +45,7 @@ class Command(BaseCommand):
             print(e)
             pass
 
-
+        print("Removing conf and qcow course files")
         for files in os.listdir("/mnt/vlab-datastore/vital/vm_dsk/"):
             #print(files)
             if files.find(str(course_id)) == 3:
@@ -69,6 +69,8 @@ class Command(BaseCommand):
             if files.find(str(course_id)) == 0:
                 files = "/mnt/vlab-datastore/vital/vm_dsk/clean/" + files
                 os.remove(files)
+
+        print("Removing dhcpd file")
         try:
 
             st = "/home/vlab_scp/vmnet_conf/vlab-natdhcp/Nat-" + str(course_id) + ".dchpd" 
@@ -77,6 +79,7 @@ class Command(BaseCommand):
             print(st+":"+str(e))
             pass
 
+        print("Removing vlan interfaces")
         remvlan = "vconfig rem bond0." + str(course_id)
         downvlan = "ip link set dev bond0."+ str(course_id) + " down"
         
@@ -87,6 +90,7 @@ class Command(BaseCommand):
         output, error = process.communicate()
         print(output)
         
+        print("Removing iptable rule")
         delrule = "iptables -D FORWARD -i bond0." + str(course_id) + " -s 10." + str(course_id) + ".1.0/24 -j REJECT"
         process = subprocess.Popen(delrule.split(), stdout=subprocess.PIPE)
         output, error = process.communicate()
