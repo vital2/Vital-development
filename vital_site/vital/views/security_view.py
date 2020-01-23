@@ -20,6 +20,7 @@ import re
 import os
 import signal
 import json
+from random import randint
 
 config_ini = ConfigParser.ConfigParser()
 config_ini.optionxform=str
@@ -63,11 +64,7 @@ def register(request):
                 user.sftp_account = user.email[:user.email.find('@')]
                 user.sftp_pass = user.password  # workaround to set sftp account
                 user.set_password(user.password)  # hashes the password
-<<<<<<< HEAD
-                activation_code = str(uuid.uuid4()).replace('-', '')
-=======
                 activation_code = str(randint(100000, 999999))
->>>>>>> master
                 user.activation_code = activation_code
 
                 #TODO temporary fix until sftp issue solved
@@ -133,7 +130,7 @@ def activate(request):
                         logger.debug('activated..'+user.email)
                         form = Authentication_Form()
                         # return render(request, 'vital/login.html', {'form': form })
-                        return redirect('/vital')
+                        return redirect('/')
                     else:
                         message = 'Please check your activation code'
                 else:
@@ -179,7 +176,7 @@ def reset_password(request):
 
                 user.save()
                 update_session_auth_hash(request, user)
-                return redirect('/vital')  # change here to home page
+                return redirect('/')  # change here to home page
             else:
                 logger.debug(form.cleaned_data['user_email']+'-'+form.cleaned_data['activation_code'])
                 user = VLAB_User.objects.get(email=form.cleaned_data['user_email'])
@@ -199,7 +196,7 @@ def reset_password(request):
 
                     user.save()
                     update_session_auth_hash(request, user)
-                    return redirect('/vital')  # change here to home page
+                    return redirect('/')  # change here to home page
                 else:
                     error_message = 'Please use the link sent to you in your email'
     else:
@@ -250,7 +247,7 @@ def login(request):
                 if user.is_active:
                     django_login(request, user)
                     audit(request, 'User logged in')
-                    return redirect('/vital')
+                    return redirect('/')
                 else:
                     form = User_Activation_Form(initial={'user_email': user.email})
                     return render(request, 'vital/user_registration_validate.html',
@@ -290,7 +287,7 @@ def logout(request):
     logger.debug(">>>>>>>>>>>>>>>>>>" + str(request.user))
     audit(request, 'User logged out')
     django_logout(request)
-    return redirect('/vital/login')
+    return redirect('/login')
 
 
 def stop_vms_during_logout(user):
@@ -307,15 +304,15 @@ def stop_vms_during_logout(user):
     return all_vms_shutdown
 
 
-@login_required(login_url='/vital/login/')
+@login_required(login_url='/login/')
 def index(request):
     logger.debug("In index")
     user = request.user
     if not user.is_faculty and not user.is_admin:
-        return redirect('/vital/courses/registered')  # change here to home page
+        return redirect('/courses/registered')  # change here to home page
     elif user.is_faculty:
         logger.debug('user is a faculty')
-        return redirect('/vital/courses/advising')  # change here to home page
+        return redirect('/courses/advising')  # change here to home page
     else:
         logger.debug('user is admin')
 
