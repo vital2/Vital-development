@@ -1,0 +1,89 @@
+Chain INPUT (policy ACCEPT 41M packets, 62G bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+43117   14M ACCEPT     udp  --  bond0.15 any     anywhere             anywhere             udp spts:bootps:bootpc dpts:bootps:bootpc
+  856  281K ACCEPT     udp  --  bond0.13 any     anywhere             anywhere             udp spts:bootps:bootpc dpts:bootps:bootpc
+   36 11808 ACCEPT     udp  --  bond0.16 any     anywhere             anywhere             udp spts:bootps:bootpc dpts:bootps:bootpc
+    0     0 ACCEPT     udp  --  bond0.22 any     anywhere             anywhere             udp spts:bootps:bootpc dpts:bootps:bootpc
+  208 68224 ACCEPT     udp  --  bond0.20 any     anywhere             anywhere             udp spts:bootps:bootpc dpts:bootps:bootpc
+    0     0 ACCEPT     udp  --  bond0.23 any     anywhere             anywhere             udp spts:bootps:bootpc dpts:bootps:bootpc
+    3   966 ACCEPT     udp  --  bond0.21 any     anywhere             anywhere             udp spts:bootps:bootpc dpts:bootps:bootpc
+    0     0 ACCEPT     udp  --  bond0.18 any     anywhere             anywhere             udp spts:bootps:bootpc dpts:bootps:bootpc
+    0     0 ACCEPT     udp  --  any    any     10.18.1.0/24         anywhere             udp dpt:domain
+    0     0 DROP       all  --  any    any     10.18.1.0/24         anywhere            
+    0     0 ACCEPT     udp  --  any    any     10.21.1.0/24         anywhere             udp dpt:domain
+    0     0 DROP       all  --  any    any     10.21.1.0/24         anywhere            
+    0     0 ACCEPT     udp  --  any    any     10.23.1.0/24         anywhere             udp dpt:domain
+    0     0 DROP       all  --  any    any     10.23.1.0/24         anywhere            
+16842 1033K ACCEPT     udp  --  any    any     10.20.1.0/24         anywhere             udp dpt:domain
+ 9991  600K DROP       all  --  any    any     10.20.1.0/24         anywhere            
+    0     0 ACCEPT     udp  --  any    any     10.22.1.0/24         anywhere             udp dpt:domain
+    0     0 DROP       all  --  any    any     10.22.1.0/24         anywhere            
+    0     0 ACCEPT     udp  --  any    any     10.16.1.0/24         anywhere             udp dpt:domain
+   48  2272 DROP       all  --  any    any     10.16.1.0/24         anywhere            
+    0     0 ACCEPT     udp  --  any    any     10.13.1.0/24         anywhere             udp dpt:domain
+    0     0 DROP       all  --  any    any     10.13.1.0/24         anywhere            
+    0     0 ACCEPT     udp  --  any    any     10.15.1.0/24         anywhere             udp dpt:domain
+   18  1058 DROP       all  --  any    any     10.15.1.0/24         anywhere            
+
+Chain FORWARD (policy ACCEPT 862K packets, 930M bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 ACCEPT     icmp --  any    any     vital-localrepo      anywhere             icmp echo-reply state RELATED,ESTABLISHED
+   30  2520 ACCEPT     icmp --  any    any     vlab-sftp            anywhere             icmp echo-reply state RELATED,ESTABLISHED
+    0     0 ACCEPT     icmp --  any    any     anywhere             vital-localrepo      icmp echo-request state NEW,RELATED,ESTABLISHED
+    0     0 ACCEPT     tcp  --  bond0.15 any     10.15.1.0/24         vlab-sftp            tcp dpt:ssh
+   30  2520 ACCEPT     icmp --  any    any     anywhere             vlab-sftp            icmp echo-request state NEW,RELATED,ESTABLISHED
+    0     0 ACCEPT     all  --  bond0.15 any     vlab-sftp            10.15.1.0/24        
+    0     0 ACCEPT     tcp  --  bond0.15 any     10.15.1.0/24         vital-localrepo      tcp dpt:http
+    0     0 ACCEPT     all  --  bond0.15 any     vital-localrepo      10.15.1.0/24        
+    0     0 ACCEPT     all  --  bond0.15 any     10.15.1.0/24         10.15.1.0/24        
+4497K  301M REJECT     all  --  bond0.15 any     10.15.1.0/24         anywhere             reject-with icmp-port-unreachable
+  969 4895K ACCEPT     tcp  --  bond0.13 any     10.13.1.0/24         vlab-sftp            tcp dpt:ssh
+    0     0 ACCEPT     all  --  bond0.13 any     vlab-sftp            10.13.1.0/24        
+    0     0 ACCEPT     tcp  --  bond0.13 any     10.13.1.0/24         vital-localrepo      tcp dpt:http
+    0     0 ACCEPT     all  --  bond0.13 any     vital-localrepo      10.13.1.0/24        
+    0     0 ACCEPT     all  --  bond0.13 any     10.13.1.0/24         10.13.1.0/24        
+4638K  317M REJECT     all  --  bond0.13 any     10.13.1.0/24         anywhere             reject-with icmp-port-unreachable
+    0     0 ACCEPT     tcp  --  bond0.16 any     10.16.1.0/24         vlab-sftp            tcp dpt:ssh
+    0     0 ACCEPT     all  --  bond0.16 any     vlab-sftp            10.16.1.0/24        
+    0     0 ACCEPT     tcp  --  bond0.16 any     10.16.1.0/24         vital-localrepo      tcp dpt:http
+    0     0 ACCEPT     all  --  bond0.16 any     vital-localrepo      10.16.1.0/24        
+    0     0 ACCEPT     all  --  bond0.16 any     10.16.1.0/24         10.16.1.0/24        
+    0     0 ACCEPT     tcp  --  bond0.22 any     10.22.1.0/24         vlab-sftp            tcp dpt:ssh
+    0     0 ACCEPT     all  --  bond0.22 any     vlab-sftp            10.22.1.0/24        
+    0     0 ACCEPT     tcp  --  bond0.22 any     10.22.1.0/24         vital-localrepo      tcp dpt:http
+    0     0 ACCEPT     all  --  bond0.22 any     vital-localrepo      10.22.1.0/24        
+    0     0 ACCEPT     all  --  bond0.22 any     10.22.1.0/24         10.22.1.0/24        
+    0     0 REJECT     all  --  bond0.22 any     10.22.1.0/24         anywhere             reject-with icmp-port-unreachable
+   62  8010 ACCEPT     tcp  --  bond0.20 any     10.20.1.0/24         vlab-sftp            tcp dpt:ssh
+    0     0 ACCEPT     all  --  bond0.20 any     vlab-sftp            10.20.1.0/24        
+    0     0 ACCEPT     tcp  --  bond0.20 any     10.20.1.0/24         vital-localrepo      tcp dpt:http
+    0     0 ACCEPT     all  --  bond0.20 any     vital-localrepo      10.20.1.0/24        
+    0     0 ACCEPT     all  --  bond0.20 any     10.20.1.0/24         10.20.1.0/24        
+    0     0 ACCEPT     tcp  --  bond0.23 any     10.23.1.0/24         vlab-sftp            tcp dpt:ssh
+    0     0 ACCEPT     all  --  bond0.23 any     vlab-sftp            10.23.1.0/24        
+    0     0 ACCEPT     tcp  --  bond0.23 any     10.23.1.0/24         vital-localrepo      tcp dpt:http
+    0     0 ACCEPT     all  --  bond0.23 any     vital-localrepo      10.23.1.0/24        
+    0     0 ACCEPT     all  --  bond0.23 any     10.23.1.0/24         10.23.1.0/24        
+    0     0 REJECT     all  --  bond0.23 any     10.23.1.0/24         anywhere             reject-with icmp-port-unreachable
+    0     0 ACCEPT     tcp  --  bond0.21 any     10.21.1.0/24         vlab-sftp            tcp dpt:ssh
+    0     0 ACCEPT     all  --  bond0.21 any     vlab-sftp            10.21.1.0/24        
+    0     0 ACCEPT     tcp  --  bond0.21 any     10.21.1.0/24         vital-localrepo      tcp dpt:http
+    0     0 ACCEPT     all  --  bond0.21 any     vital-localrepo      10.21.1.0/24        
+    0     0 ACCEPT     all  --  bond0.21 any     10.21.1.0/24         10.21.1.0/24        
+    0     0 ACCEPT     tcp  --  bond0.18 any     10.18.1.0/24         vlab-sftp            tcp dpt:ssh
+    0     0 ACCEPT     all  --  bond0.18 any     vlab-sftp            10.18.1.0/24        
+    0     0 ACCEPT     tcp  --  bond0.18 any     10.18.1.0/24         vital-localrepo      tcp dpt:http
+    0     0 ACCEPT     all  --  bond0.18 any     vital-localrepo      10.18.1.0/24        
+    0     0 ACCEPT     all  --  bond0.18 any     10.18.1.0/24         10.18.1.0/24        
+    0     0 REJECT     all  --  bond0.18 any     10.18.1.0/24         anywhere             reject-with icmp-port-unreachable
+
+Chain OUTPUT (policy ACCEPT 51M packets, 32G bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 ACCEPT     udp  --  any    any     anywhere             10.18.1.0/24         udp spt:domain
+    0     0 ACCEPT     udp  --  any    any     anywhere             10.21.1.0/24         udp spt:domain
+    0     0 ACCEPT     udp  --  any    any     anywhere             10.23.1.0/24         udp spt:domain
+    0     0 ACCEPT     udp  --  any    any     anywhere             10.20.1.0/24         udp spt:domain
+    0     0 ACCEPT     udp  --  any    any     anywhere             10.22.1.0/24         udp spt:domain
+    0     0 ACCEPT     udp  --  any    any     anywhere             10.16.1.0/24         udp spt:domain
+    0     0 ACCEPT     udp  --  any    any     anywhere             10.13.1.0/24         udp spt:domain
+    0     0 ACCEPT     udp  --  any    any     anywhere             10.15.1.0/24         udp spt:domain

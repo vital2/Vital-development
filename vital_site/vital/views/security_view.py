@@ -9,6 +9,7 @@ from subprocess import Popen, PIPE
 from captcha.models import CaptchaStore
 from captcha.helpers import captcha_image_url
 import ConfigParser
+import uuid
 
 from ..forms import Registration_Form, User_Activation_Form, Authentication_Form, Reset_Password_Form, \
     Forgot_Password_Form
@@ -63,7 +64,7 @@ def register(request):
                 user.sftp_account = user.email[:user.email.find('@')]
                 user.sftp_pass = user.password  # workaround to set sftp account
                 user.set_password(user.password)  # hashes the password
-                activation_code = randint(100000, 999999)
+                activation_code = str(randint(100000, 999999))
                 user.activation_code = activation_code
 
                 #TODO temporary fix until sftp issue solved
@@ -109,7 +110,7 @@ def activate(request):
             try:
                 user = VLAB_User.objects.get(email=form.cleaned_data['user_email'])
                 if not user.is_active:
-                    if user.activation_code == int(form.cleaned_data['code']):
+                    if user.activation_code == form.cleaned_data['code']:
                         user.is_active = True
                         user.activation_code = None
                         user.save()
@@ -129,7 +130,7 @@ def activate(request):
                         logger.debug('activated..'+user.email)
                         form = Authentication_Form()
                         # return render(request, 'vital/login.html', {'form': form })
-                        return redirect('/vital')
+                        return redirect('/')
                     else:
                         message = 'Please check your activation code'
                 else:
@@ -175,11 +176,11 @@ def reset_password(request):
 
                 user.save()
                 update_session_auth_hash(request, user)
-                return redirect('/vital')  # change here to home page
+                return redirect('/')  # change here to home page
             else:
                 logger.debug(form.cleaned_data['user_email']+'-'+form.cleaned_data['activation_code'])
                 user = VLAB_User.objects.get(email=form.cleaned_data['user_email'])
-                if user.activation_code == int(form.cleaned_data['activation_code']):
+                if user.activation_code == form.cleaned_data['activation_code']:
                     user.set_password(form.cleaned_data['password'])
                     user.sftp_pass = form.cleaned_data['password']
                     user.activation_code=None
@@ -195,7 +196,7 @@ def reset_password(request):
 
                     user.save()
                     update_session_auth_hash(request, user)
-                    return redirect('/vital')  # change here to home page
+                    return redirect('/')  # change here to home page
                 else:
                     error_message = 'Please use the link sent to you in your email'
     else:
@@ -213,14 +214,14 @@ def forgot_password(request):
         if form.is_valid():
             try:
                 user = VLAB_User.objects.get(email=form.cleaned_data['email'])
-                activation_code = randint(100000, 999999)
+                activation_code = str(uuid.uuid4()).replace('-', '')
                 user.activation_code = activation_code
                 user.save()
                 send_mail('Password reset mail', 'Hi '+user.first_name+',\r\n\nPlease click or copy the following link to '
                                                                        'reset your password in your browser. '
                                                                        'https://'+config_ini.get("VITAL", "SERVER_NAME")+'/'
                                                                        'vital/users/reset-password?user_email='
-                          + user.email+'&activation_code='+str(activation_code)
+                          + user.email+'&activation_code='+activation_code
                           + '.\r\n\nVital', 'no-reply-vital@nyu.edu',
                           [user.email], fail_silently=False)
             except VLAB_User.DoesNotExist:
@@ -246,7 +247,7 @@ def login(request):
                 if user.is_active:
                     django_login(request, user)
                     audit(request, 'User logged in')
-                    return redirect('/vital')
+                    return redirect('/')
                 else:
                     form = User_Activation_Form(initial={'user_email': user.email})
                     return render(request, 'vital/user_registration_validate.html',
@@ -286,7 +287,7 @@ def logout(request):
     logger.debug(">>>>>>>>>>>>>>>>>>" + str(request.user))
     audit(request, 'User logged out')
     django_logout(request)
-    return redirect('/vital/login')
+    return redirect('/login')
 
 
 def stop_vms_during_logout(user):
@@ -303,15 +304,15 @@ def stop_vms_during_logout(user):
     return all_vms_shutdown
 
 
-@login_required(login_url='/vital/login/')
+@login_required(login_url='/login/')
 def index(request):
     logger.debug("In index")
     user = request.user
     if not user.is_faculty and not user.is_admin:
-        return redirect('/vital/courses/registered')  # change here to home page
+        return redirect('/courses/registered')  # change here to home page
     elif user.is_faculty:
         logger.debug('user is a faculty')
-        return redirect('/vital/courses/advising')  # change here to home page
+        return redirect('/courses/advising')  # change here to home page
     else:
         logger.debug('user is admin')
 

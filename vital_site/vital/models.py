@@ -47,7 +47,7 @@ class VLAB_User(AbstractBaseUser, PermissionsMixin):
     department = models.ForeignKey(Department, null=True)
     phone = models.CharField(max_length=200, null=True)
     is_active = models.BooleanField(default=False)
-    activation_code = models.IntegerField(null=True)
+    activation_code = models.CharField(max_length=50, null=True)
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_faculty = models.BooleanField(default=False)
@@ -117,7 +117,7 @@ class User_VM_Config(models.Model):
     vnc_port = models.CharField(max_length=10)
     terminal_port = models.CharField(max_length=10)
     no_vnc_pid = models.CharField(max_length=10)
-    token = models.CharField(max_length=50)
+    token = models.CharField(max_length=50, null=True)
 
 
 class Available_Config(models.Model):
@@ -134,7 +134,7 @@ class Network_Configuration(models.Model):
 
 
 class User_Bridge(models.Model):
-    name = models.CharField(max_length=15, primary_key=True)
+    name = models.CharField(max_length=50, primary_key=True)
     created = models.BooleanField(default=False)
 
 

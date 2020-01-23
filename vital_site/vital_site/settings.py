@@ -158,6 +158,11 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler',
             'include_html': True
         },
+        'gelf': {
+            'class': 'graypy.GELFUDPHandler',
+            'host': 'Vlab-server',
+            'port': 12201,
+        },
     },
     'loggers': {
         'django': {
@@ -166,7 +171,7 @@ LOGGING = {
             'level':'ERROR',
         },
         'vital': {
-            'handlers': ['file', 'console'],
+            'handlers': ['file', 'console', 'gelf'],
             'level': 'DEBUG',
         },
     }
