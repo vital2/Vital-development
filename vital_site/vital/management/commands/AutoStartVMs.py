@@ -2,11 +2,11 @@ from django.core.management.base import BaseCommand, CommandError
 from vital.models import Auto_Start_Resources, VLAB_User
 from vital.utils import XenServer
 import time
-import ConfigParser
+import configparser
 import logging
 
 logger = logging.getLogger(__name__)
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.optionxform=str
 
 # TODO change to common config file in shared location

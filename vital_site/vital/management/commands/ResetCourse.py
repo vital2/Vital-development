@@ -3,12 +3,20 @@ import logging
 from django.utils import timezone
 from vital.models import Course, Registered_Course, User_Network_Configuration, Available_Config, User_VM_Config
 from django.utils.crypto import get_random_string
+<<<<<<< HEAD
 import ConfigParser
+=======
+import configparser
+>>>>>>> 7f2f8b96592d27ff0fed41e387b55cef37452a96
 import os
 import errno
 
 logger = logging.getLogger(__name__)
+<<<<<<< HEAD
 config = ConfigParser.ConfigParser()
+=======
+config = configparser.ConfigParser()
+>>>>>>> 7f2f8b96592d27ff0fed41e387b55cef37452a96
 config.optionxform=str
 
 # TODO change to common config file in shared location
@@ -46,12 +54,19 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         course_id = options['course_id']
         course = Course.objects.get(id=course_id)
+<<<<<<< HEAD
         print "Removing course: "+course.name+" (ID:"+ str(course.id) +")"
         for user_id in (Registered_Course.objects.filter(course=course)).values_list("user_id", flat=True):
             self.delete_student_configs(user_id, course)
         print "Removing registered students"
+=======
+        print("Removing course: "+course.name+" (ID:"+ str(course.id) +")")
+        for user_id in (Registered_Course.objects.filter(course=course)).values_list("user_id", flat=True):
+            self.delete_student_configs(user_id, course)
+        print("Removing registered students")
+>>>>>>> 7f2f8b96592d27ff0fed41e387b55cef37452a96
         Registered_Course.objects.filter(course=course).delete()
-        print "Removing registered user network configs"
+        print("Removing registered user network configs")
         user_nets = User_Network_Configuration.objects.filter(course=course)
         for net in user_nets:
             conf = Available_Config()
@@ -59,8 +74,12 @@ class Command(BaseCommand):
             conf.value = net.mac_id
             conf.save()
             net.delete()
-        print "Setting new registration code"
+        print("Setting new registration code")
         reg_code = get_random_string(length=8)
         course.registration_code = reg_code
         course.save()
+<<<<<<< HEAD
         print "The course has been reset. The new registration code is " + reg_code
+=======
+        print("The course has been reset. The new registration code is " + reg_code)
+>>>>>>> 7f2f8b96592d27ff0fed41e387b55cef37452a96

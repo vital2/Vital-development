@@ -1,7 +1,23 @@
 *.pyc
 *.log
-.idea/
-.vscode/
+*.swp
 
 # Mac OS
 .DS_Store
+
+# IDE Files
+.idea/
+.vscode/
+
+# Virtual Environment
+venv/
+
+# Configurations
+config.ini
+
+# migration files
+migrations/*
+zmqmaster
+
+# logs
+vital_site/vital.log

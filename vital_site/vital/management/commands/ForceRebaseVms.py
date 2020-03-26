@@ -34,7 +34,7 @@ class Command(BaseCommand):
         regUsers = Registered_Course.objects.filter(course=course)
         for user in regUsers:
             user = VLAB_User.objects.get(id=user.user_id)
-            print user.first_name
+            print(user.first_name)
             XenClient().rebase_vm(user, course_id, vm_id)
-            print 'Re-imaged Virtual machine for student {} {} in Course {}'.format(user.first_name, user.last_name, course.name)
+            print('Re-imaged Virtual machine for student {} {} in Course {}'.format(user.first_name, user.last_name, course.name))
 

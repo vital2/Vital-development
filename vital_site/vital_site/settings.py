@@ -3,18 +3,29 @@ Django settings for vital_site project.
 """
 
 import os
-import ConfigParser
+import configparser
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-config = ConfigParser.ConfigParser()
-config.read("/home/vital/config.ini")
+#SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
+
+config = configparser.ConfigParser()
+
+# this is the original!
+#config.read("/home/vital/config.ini")
+
+# here's the new
+# config.read("config.ini")
+# changing location for config.ini - it should be next to settings.py in vital_site
+config.read(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'config.ini'))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config.get("Security", "SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# FIXME - we need to serve static files when DEBUG is False!
+# https://docs.djangoproject.com/en/2.2/howto/static-files/
 DEBUG = False
 
 ALLOWED_HOSTS = ['*']
@@ -38,14 +49,18 @@ INSTALLED_APPS = [
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'session_security.middleware.SessionSecurityMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+# this was added as per https://code.djangoproject.com/ticket/30237
+MIDDLEWARE = [
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
 ]
 
 ROOT_URLCONF = 'vital_site.urls'
@@ -71,20 +86,27 @@ WSGI_APPLICATION = 'vital_site.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
+
+# FIXME - original below, must adde flag for using SQLite in 'dev mode'
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+	'default': {
+	'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': config.get("Database", "VITAL_DB_NAME"),
         'USER': config.get("Database", "VITAL_DB_USER"),
         'PASSWORD': config.get("Database", "VITAL_DB_PWD"),
         'HOST': config.get("Database", "VITAL_DB_HOST"),
         'PORT': config.get("Database", "VITAL_DB_PORT"),
-    }
+	}
 }
 
+# TODO - make flag to launch this configuration
+# DATABASES = {
+#     'default': {
+#     'ENGINE': 'django.db.backends.sqlite3',
+#     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 
-# Password validation
-# https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -105,7 +127,6 @@ AUTH_USER_MODEL = 'vital.VLAB_User'
 #AUTHENTICATION_BACKENDS = ['vital.backends.EmailAuthBackend', ]
 
 
-# Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
@@ -145,7 +166,9 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/vital/vital.log',
+            # original - changed for Python 3
+            #'filename': '/var/log/vital/vital.log',
+            'filename': 'vital.log',
             'maxBytes': 1024*1024*1, # 1 MB
             'backupCount': 15,
             'formatter': 'verbose'

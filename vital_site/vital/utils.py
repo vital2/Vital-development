@@ -1,16 +1,16 @@
 import logging
-import xmlrpclib
+import xmlrpc
+import xmlrpc.client
 import datetime
 import socket
-from models import Audit, Available_Config, User_Network_Configuration, Virtual_Machine, \
+from vital.models import Audit, Available_Config, User_Network_Configuration, Virtual_Machine, \
     User_VM_Config, Course, VLAB_User, Xen_Server, User_Bridge, Local_Network_MAC_Address
-import ConfigParser
-from decimal import *
+import configparser
 from django.db import transaction
 from influxdb import InfluxDBClient
 
 logger = logging.getLogger(__name__)
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.optionxform=str
 
 # TODO change to common config file in shared location
@@ -18,13 +18,13 @@ config.read("/home/vital/config.ini")
 
 
 def audit(request, action):
-    logger.debug('In audit')
-    if request.user.id is not None:
-        audit_record = Audit(done_by=request.user.id, action=action)
-    else:
-        audit_record = Audit(done_by=0, action=action)
-        logger.error('An action is being performed without actual user id.')
-    audit_record.save()
+	logger.debug('In audit')
+	if request.user.id is not None:
+		audit_record = Audit(done_by=request.user.id, action=action)
+	else:
+		audit_record = Audit(done_by=0, action=action)
+		logger.error('An action is being performed without actual user id.')
+	audit_record.save()
 
 
 def get_notification_message():
@@ -168,8 +168,9 @@ class XenClient:
     def start_vm(self, user, course_id, vm_id):
         logger.debug('XenClient - in start_vm')
         xen = SneakyXenLoadBalancer().get_best_server(user, course_id)
-        net_confs = User_Network_Configuration.objects.filter(user_id=user.id, vm__id=vm_id,
-                                                              course__id=course_id, bridge__created=False)
+        
+        net_confs = User_Network_Configuration.objects.filter(user_id=user.id, vm__id=vm_id, course__id=course_id, bridge__created=False)
+        
         with transaction.atomic():
             for conf in net_confs:
                 try:
@@ -184,7 +185,7 @@ class XenClient:
                 conf.bridge.save()
 
             display_server = config.get('VITAL', 'DISPLAY_SERVER')
-
+            
             if display_server == 'SPICE':
                 vm_options = ';'.join('{}="{}"'.format(key, val) for (
                     key, val) in get_spice_options().iteritems())
@@ -197,10 +198,12 @@ class XenClient:
                     'Starting with NoVNC', display_server)
                 display_server = 'VNC'
                 vm_options = ''
-
+            
             vm = xen.start_vm(user, str(user.id) + '_' + str(course_id) + '_' + str(vm_id), vm_options)
+            logger.debug(" after vm got assigned")
             vm['xen_server'] = xen.name
             vm['display_type'] = display_server
+            
             return vm
 
     def remove_network_bridges(self, server, user, course_id, vm_id):
@@ -263,7 +266,8 @@ class XenServer:
 
     def __init__(self, name, url):
         self.name = name
-        self.proxy = xmlrpclib.ServerProxy(url)
+        # TODO - this was updated for Python 3.7
+        self.proxy = xmlrpc.client.ServerProxy(url)
 
     def list_vms(self, user):
         return self.proxy.xenapi.list_all_vms(user.email, user.password)
@@ -273,6 +277,7 @@ class XenServer:
 
     def setup_vm(self, user, vm_name, base_name, vif=None):
         self.proxy.xenapi.setup_vm(user.email, user.password, vm_name, base_name, vif)
+        logger.debug("getting out of setup_vm")
 
     def cleanup_vm(self, user, vm_name):
         self.proxy.xenapi.cleanup_vm(user.email, user.password, vm_name)
@@ -281,7 +286,11 @@ class XenServer:
         self.proxy.xenapi.stop_vm(user.email, user.password, vm_name)
 
     def start_vm(self, user, vm_name, vm_options=''):
-        return self.proxy.xenapi.start_vm(user.email, user.password, vm_name, vm_options)
+        logger.debug("getting into start_vm function")
+        vm = self.proxy.xenapi.start_vm(user.email, user.password, vm_name, vm_options)
+        logger.debug("getting out stat_vm function")
+        logger.debug(vm)
+        return vm
 
     def save_vm(self, user, vm_name):
         return self.proxy.xenapi.save_vm(user.email, user.password, vm_name)
@@ -293,7 +302,11 @@ class XenServer:
         return self.proxy.xenapi.kill_zombie_vm(user.email, user.password, vm_id)
 
     def create_bridge(self, user, name):
-        self.proxy.xenapi.create_bridge(user.email, user.password, name)
+        try:
+            logger.debug("in create_bridge")
+            self.proxy.xenapi.create_bridge(user.email, user.password, name)
+        except Exception:
+            logger.debug("cauhgt")
 
     def remove_bridge(self, user, name):
         self.proxy.xenapi.remove_bridge(user.email, user.password, name)
@@ -369,7 +382,7 @@ class SneakyXenLoadBalancer:
                 server.no_of_students = len(students)
                 server.no_of_courses = len(courses)
                 server.no_of_vms = len(vms)
-                server.utilization = Decimal(server.used_memory)/Decimal(server.total_memory)
+                server.utilization = float(server.used_memory)/float(server.total_memory)
                 server.status = 'ACTIVE'
             except Exception as e:
                 logger.error(key+str(e))
@@ -451,7 +464,7 @@ class SneakyXenLoadBalancer:
                 }
             }
         ]
-
+        
         c = InfluxDBClient(host='localhost', port=8086)
         c.switch_database('xen_stats')
         c.write_points(json_body)
@@ -488,12 +501,14 @@ class SneakyXenLoadBalancer:
                         tags['host'] = server.name
                         tags['student'] = student_name
                         tags['course'] = Course.objects.get(id = vm_details[1]).name
-			tags['vm_name'] = Virtual_Machine.objects.get(id = vm_details[2]).name
+                        tags['vm_name'] = Virtual_Machine.objects.get(id = vm_details[2]).name
                         tags['state'] = vm_state
                         fields = {}
-                        fields['cpu_secs'] = long(vm['cpu_secs'])
+                        # this was changed from long() to int() in Python 3
+                        fields['cpu_secs'] = int(vm['cpu_secs'])
                         fields['cpu_per'] = float(vm['cpu_per'])
-                        fields['memory'] = long(vm['mem'])
+                        # this was changed from long() to int() in Python 3
+                        fields['memory'] = int(vm['mem'])
                         fields['mem_per'] = float(vm['mem_per'])
                         fields['vcpus'] = int(vm['vcpus'])
                         fields['networks'] = int(vm['nets'])

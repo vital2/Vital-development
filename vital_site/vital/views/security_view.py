@@ -8,7 +8,11 @@ from ..utils import XenClient, audit, get_notification_message
 from subprocess import Popen, PIPE
 from captcha.models import CaptchaStore
 from captcha.helpers import captcha_image_url
+<<<<<<< HEAD
 import ConfigParser
+=======
+import configparser
+>>>>>>> 7f2f8b96592d27ff0fed41e387b55cef37452a96
 import uuid
 
 from ..forms import Registration_Form, User_Activation_Form, Authentication_Form, Reset_Password_Form, \
@@ -20,9 +24,8 @@ import re
 import os
 import signal
 import json
-from random import randint
 
-config_ini = ConfigParser.ConfigParser()
+config_ini = configparser.ConfigParser()
 config_ini.optionxform=str
 
 # TODO change to common config file in shared location
@@ -64,7 +67,11 @@ def register(request):
                 user.sftp_account = user.email[:user.email.find('@')]
                 user.sftp_pass = user.password  # workaround to set sftp account
                 user.set_password(user.password)  # hashes the password
+<<<<<<< HEAD
                 activation_code = str(randint(100000, 999999))
+=======
+                activation_code = str(uuid.uuid4()).replace('-', '')
+>>>>>>> 7f2f8b96592d27ff0fed41e387b55cef37452a96
                 user.activation_code = activation_code
 
                 #TODO temporary fix until sftp issue solved
@@ -124,13 +131,13 @@ def activate(request):
                                                             '\r\n\nSFTP Host : 128.238.77.36 \n Your SFTP account is '+user.sftp_account+' and password '
                                                             'is the same as vital.'
                                                             '\r\n\nFor help on using Vital Interface and SFTP Access please read the wiki '
-                                                            'https://github.com/vital2/virtual_lab/wiki/Vital-User-Guide '
+                                                            'https://github.com/vital2/virtual_lab/VitalGuide.pdf'
                                                             '\r\n\nVital',
                                   'no-reply-vital@nyu.edu', [user.email], fail_silently=False)
                         logger.debug('activated..'+user.email)
                         form = Authentication_Form()
                         # return render(request, 'vital/login.html', {'form': form })
-                        return redirect('/vital')
+                        return redirect('/')
                     else:
                         message = 'Please check your activation code'
                 else:
@@ -176,7 +183,9 @@ def reset_password(request):
 
                 user.save()
                 update_session_auth_hash(request, user)
-                return redirect('/vital')  # change here to home page
+
+                # don't redirect to /vital - send to root (login page)
+                return redirect('/')
             else:
                 logger.debug(form.cleaned_data['user_email']+'-'+form.cleaned_data['activation_code'])
                 user = VLAB_User.objects.get(email=form.cleaned_data['user_email'])
@@ -196,7 +205,7 @@ def reset_password(request):
 
                     user.save()
                     update_session_auth_hash(request, user)
-                    return redirect('/vital')  # change here to home page
+                    return redirect('/')  # change here to home page
                 else:
                     error_message = 'Please use the link sent to you in your email'
     else:
@@ -247,7 +256,7 @@ def login(request):
                 if user.is_active:
                     django_login(request, user)
                     audit(request, 'User logged in')
-                    return redirect('/vital')
+                    return redirect('/')
                 else:
                     form = User_Activation_Form(initial={'user_email': user.email})
                     return render(request, 'vital/user_registration_validate.html',
@@ -287,7 +296,7 @@ def logout(request):
     logger.debug(">>>>>>>>>>>>>>>>>>" + str(request.user))
     audit(request, 'User logged out')
     django_logout(request)
-    return redirect('/vital/login')
+    return redirect('/login')
 
 
 def stop_vms_during_logout(user):
@@ -304,17 +313,18 @@ def stop_vms_during_logout(user):
     return all_vms_shutdown
 
 
-@login_required(login_url='/vital/login/')
+@login_required(login_url='/login/')
 def index(request):
     logger.debug("In index")
     user = request.user
     if not user.is_faculty and not user.is_admin:
-        return redirect('/vital/courses/registered')  # change here to home page
+        return redirect('/courses/registered')  # change here to home page
     elif user.is_faculty:
         logger.debug('user is a faculty')
-        return redirect('/vital/courses/advising')  # change here to home page
+        return redirect('/courses/advising')  # change here to home page
     else:
         logger.debug('user is admin')
+
 
 def release_vm(request, user_id, vm_id):
     logger.debug("in releaseVM")
@@ -323,9 +333,9 @@ def release_vm(request, user_id, vm_id):
     try:
         if request.method == 'GET':
             # Get the VM ID in request
-	    api_key = request.GET['api_key']
+            api_key = request.GET['api_key']
             if (api_key != config_ini.get("Security", "INTERNAL_API_KEY")):
-		logger.debug('Incorrect API Key found in Release Vm Request {}'.format(api_key))
+                logger.debug('Incorrect API Key found in Release Vm Request {}'.format(api_key))
                 return HttpResponse('FAILED')
             else:
                 vm = User_VM_Config.objects.get(user_id=user_id, vm_id=vm_id)
@@ -336,7 +346,8 @@ def release_vm(request, user_id, vm_id):
                 out, err = p.communicate()
                 if not p.returncode == 0:
                     if 'No such process' not in err.rstrip():
-                        logger.error('Error stopping NoVNC Client with PID ' + str(vm.no_vnc_pid) + '(' + err.rstrip() + ')')
+                        logger.error(
+                            'Error stopping NoVNC Client with PID ' + str(vm.no_vnc_pid) + '(' + err.rstrip() + ')')
 
                 config = Available_Config()
                 config.category = 'TERM_PORT'
@@ -344,8 +355,7 @@ def release_vm(request, user_id, vm_id):
                 config.save()
                 vm.delete()
                 # audit(request, 'Stopped Virtual machine ' + str(virtual_machine.name))
-                # return redirect('/vital/courses/14/vms?message=VM stopped...')
+                # return redirect('/courses/14/vms?message=VM stopped...')
                 return HttpResponse('SUCCESS')
-
     except Exception as e:
-	logger.error(str(e))
+        logger.error(str(e))
