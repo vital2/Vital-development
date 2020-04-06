@@ -73,7 +73,7 @@ class Command(BaseCommand):
         print("Removing dhcpd file")
         try:
 
-            st = "/home/vlab_scp/vmnet_conf/vlab-natdhcp/Nat-" + str(course_id) + ".dchpd" 
+            st = "/home/vlab_scp/vmnet_conf/vlab-natdhcp/Nat-" + str(course_id) + ".dhcpd" 
             os.remove(st)
         except Exception as e:
             print(st+":"+str(e))
