@@ -1,0 +1,32 @@
+{% extends 'vital/base.html' %}
+
+{% block content_without_center %}
+    <div id="center" align="center" style="width: 800px">
+{% if message %} <p style="color: green">{{ message }}&nbsp;&nbsp;&nbsp;<a href="/vital/courses/register">Register for new course</a></p> {% endif %}
+      {% if reg_courses %}
+      <div style="width: 100%" align="left">
+          <div style="width: 50%;float: left"><h5 style="padding-left: 10px"> Registered Courses </h5></div>
+          <div style="width: 50%;float: left;" align="right"><a href="/vital/courses/register">Add course</a></div></div>
+
+            <table width="75%" style="font-size: small">
+            <tr style="background-color: #d2bfde; color: white">
+                <th width="30%">Course</th>
+                <th width="20%">Course Number</th>
+                <th width="30%">Start Date</th>
+                <th width="20%">&nbsp;</th>
+            </tr>
+            {% for reg_course in reg_courses %}
+                <tr>{% if reg_course.course.status == "ACTIVE" %}
+                        <td><a href="{% url 'vital:course_vms' reg_course.course.id %}">{{ reg_course.course.name }}</a></td>
+                        {% else %}
+                        <td title="Course is inactive. Contact Faculty.">{{ reg_course.course.name }}</td>
+                        {% endif %}
+                    <td>{{ reg_course.course.course_number }}</td>
+                    <td>{{ reg_course.course.start_date }}</td>
+                    <td><a href="{% url 'vital:course_deregister' reg_course.course.id %}">Remove</a></td>
+                </tr>
+            {% endfor %}
+            </table>
+      {% endif %}
+    </div>
+{% endblock content_without_center %}

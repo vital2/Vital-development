@@ -1,0 +1,28 @@
+<html>
+<head>
+    {% load staticfiles %}
+     <script type="text/javascript" src="{% static 'vital/jquery-1.12.0.min.js' %}">
+</script>
+    <script type="text/javascript">
+      // focus the iframe
+      function setFocusIframe() {
+          var iframe = $("#vnc")[0];
+          iframe.contentWindow.focus();
+      }
+
+      // set the iframe focus (must be done with setTimeout)
+      function focusIframe() {
+         setTimeout(setFocusIframe, 100);
+      }
+
+      $( document ).ready(function() {
+         focusIframe();
+      });
+    </script>
+</head>
+<body bgcolor="black">
+{% include 'session_security/all.html' %}
+    <iframe id="vnc" src="http://{{ server_name }}:{{ terminal_port }}/vnc_auto.html" height="100%" width="100%">
+    </iframe>
+</body>
+</html>
