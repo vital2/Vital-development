@@ -6,14 +6,13 @@ from subprocess import Popen, PIPE
 from django.contrib.sessions.models import Session
 import ConfigParser
 from django.db import transaction
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 config = ConfigParser.ConfigParser()
 config.optionxform=str
 
-# TODO change to common config file in shared location
-config.read("/home/vital/config.ini")
-
+config.read("../../"+settings.CONFIG_PATH)
 
 class Command(BaseCommand):
 
