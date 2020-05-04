@@ -4,6 +4,8 @@ from django.core.mail import send_mail
 from django.http import HttpResponseNotAllowed, HttpResponse
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
+
 from ..utils import XenClient, audit, get_notification_message
 from subprocess import Popen, PIPE
 from captcha.models import CaptchaStore
@@ -26,7 +28,7 @@ config_ini = ConfigParser.ConfigParser()
 config_ini.optionxform=str
 
 # TODO change to common config file in shared location
-config_ini.read("/home/vital/config.ini")
+config_ini.read("../"+settings.CONFIG_PATH)
 
 
 logger = logging.getLogger(__name__)

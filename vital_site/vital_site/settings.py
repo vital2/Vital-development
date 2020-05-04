@@ -9,7 +9,8 @@ import ConfigParser
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 config = ConfigParser.ConfigParser()
-config.read("/home/vital/config.ini")
+CONFIG_PATH = "/home/vital/config.ini"
+config.read(CONFIG_PATH)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config.get("Security", "SECRET_KEY")

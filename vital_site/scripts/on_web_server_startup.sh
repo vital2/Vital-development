@@ -11,11 +11,11 @@
 
 # Read details from Config File
 # reading from config file
-dbhost=$(awk -F ":" '/VITAL_DB_HOST/ {print $2}' /home/vital/config.ini | tr -d ' ')
-dbpass=$(awk -F ":" '/VITAL_DB_PWD/ {print $2}' /home/vital/config.ini | tr -d ' ')
-dbname=$(awk -F ":" '/VITAL_DB_NAME/ {print $2}' /home/vital/config.ini | tr -d ' ')
-dbuser=$(awk -F ":" '/VITAL_DB_USER/ {print $2}' /home/vital/config.ini | tr -d ' ')
-dbport=$(awk -F ":" '/VITAL_DB_PORT/ {print $2}' /home/vital/config.ini | tr -d ' ')
+dbhost=$(awk -F ":" '/VITAL_DB_HOST/ {print $2}' ../../../../config/config.ini | tr -d ' ')
+dbpass=$(awk -F ":" '/VITAL_DB_PWD/ {print $2}' ../../../../config/config.ini | tr -d ' ')
+dbname=$(awk -F ":" '/VITAL_DB_NAME/ {print $2}' ../../../../config/config.ini | tr -d ' ')
+dbuser=$(awk -F ":" '/VITAL_DB_USER/ {print $2}' ../../../../config/config.ini | tr -d ' ')
+dbport=$(awk -F ":" '/VITAL_DB_PORT/ {print $2}' ../../../../config/config.ini | tr -d ' ')
 
 
 

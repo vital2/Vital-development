@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 import logging
 from django.utils import timezone
+from django.conf import settings
 
 import zmq
 import vital.tasks as tasks
@@ -10,7 +11,7 @@ config = ConfigParser.ConfigParser()
 config.optionxform=str
 
 # TODO change to common config file in shared location
-config.read("/home/vital/config.ini")
+config.read("../../"+settings.CONFIG_PATH)
 
 zmqMaster = config.get("VITAL", "ZMQ_MASTER")
 

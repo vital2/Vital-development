@@ -9,12 +9,14 @@ from decimal import *
 from django.db import transaction
 from influxdb import InfluxDBClient
 
+from django.conf import settings
+
 logger = logging.getLogger(__name__)
 config = ConfigParser.ConfigParser()
 config.optionxform=str
 
 # TODO change to common config file in shared location
-config.read("/home/vital/config.ini")
+config.read(settings.CONFIG_PATH)
 
 
 def audit(request, action):
