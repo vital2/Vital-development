@@ -4,7 +4,6 @@ from django.utils import timezone
 from vital.models import Course, Registered_Course, User_Network_Configuration, Available_Config, User_VM_Config
 from django.utils.crypto import get_random_string
 from django.conf import settings
-
 import ConfigParser
 import os
 import errno
