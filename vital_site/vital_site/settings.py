@@ -141,38 +141,39 @@ LOGGING = {
             'format': '%(levelname)s %(message)s'
         },
     },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
     'handlers': {
-        'file': {
+        'file_if_not_debug': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': '/var/log/vital/vital.log',
+            'maxBytes': 1024*1024*1, # 1 MB
+            'backupCount': 15,
+            'formatter': 'verbose',
+            'filters': ['require_debug_false']
+        },
+	'file_if_debug': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': '/var/log/vital/vital.log',
             'maxBytes': 1024*1024*1, # 1 MB
             'backupCount': 15,
-            'formatter': 'verbose'
-        },
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-        'mail_admins': {
-            'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler',
-            'include_html': True
-        },
-        'gelf': {
-            'class': 'graypy.GELFUDPHandler',
-            'host': 'Vlab-server',
-            'port': 12201,
+            'formatter': 'verbose',
+            'filters': ['require_debug_true']
         },
     },
     'loggers': {
-        'django': {
-            'handlers':['file'],
-            'propagate': True,
-            'level':'ERROR',
-        },
         'vital': {
-            'handlers': ['file', 'console', 'gelf'],
-            'level': 'DEBUG',
+            'handlers':['file_if_debug','file_if_not_debug'],
+            'propagate': True,
+            'level':'DEBUG',
         },
     }
 }

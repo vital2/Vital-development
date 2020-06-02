@@ -18,14 +18,9 @@ config.read("/home/vital/config.ini")
 
 
 def audit(request, action):
-    logger.debug('In audit')
-    if request.user.id is not None:
-        audit_record = Audit(done_by=request.user.id, action=action)
-    else:
-        audit_record = Audit(done_by=0, action=action)
+    logger.info(action +' by user '+str(request.user.id))
+    if request.user.id is None:
         logger.error('An action is being performed without actual user id.')
-    audit_record.save()
-
 
 def get_notification_message():
     try:
