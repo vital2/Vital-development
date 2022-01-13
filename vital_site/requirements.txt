@@ -5,7 +5,7 @@ django-passwords==0.3.7
 django-registration==2.0.3
 django-session-security==2.3.1
 django-simple-captcha==0.5.1
-Pillow==3.1.0
+Pillow==9.0.0
 psycopg2==2.7.1
 requests==2.9.1
 six==1.10.0
